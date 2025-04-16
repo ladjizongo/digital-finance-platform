@@ -1,13 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import GradientBackground from "@/components/GradientBackground";
+import LoginForm from "@/components/LoginForm";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <GradientBackground>
+      <div className="container mx-auto py-10">
+        <div className="flex flex-col items-center justify-center mb-8 fade-in">
+          <h1 className="text-4xl font-bold text-center mb-2">
+            App<span className="text-indigo-600">Name</span>
+          </h1>
+          <p className="text-gray-600 text-center max-w-md">
+            Sign in to access your dashboard and manage your account
+          </p>
+        </div>
+        
+        <LoginForm />
+        
+        <footer className="mt-16 text-center text-sm text-gray-500 fade-in">
+          <p>© 2025 AppName. All rights reserved.</p>
+        </footer>
       </div>
-    </div>
+    </GradientBackground>
   );
 };
 
