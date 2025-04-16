@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt } from "lucide-react";
+import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
@@ -194,6 +194,10 @@ const Dashboard = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+        
+        <div className="mb-8">
+          <FinancialHealthCard />
         </div>
         
         <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
