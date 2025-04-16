@@ -1,14 +1,16 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut } from "lucide-react";
+import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt } from "lucide-react";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
+  const navigate = useNavigate();
   
   // Mock financial data
   const financialData = {
@@ -99,9 +101,30 @@ const Dashboard = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink 
+                  className={navigationMenuTriggerStyle()}
+                  onClick={() => navigate("/transactions")}
+                >
                   <ArrowRightLeft className="mr-2 h-4 w-4" />
                   Transfers
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  className={navigationMenuTriggerStyle()}
+                  onClick={() => navigate("/transactions?tab=eft")}
+                >
+                  <Send className="mr-2 h-4 w-4" />
+                  EFT/Wire
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <NavigationMenuLink 
+                  className={navigationMenuTriggerStyle()}
+                  onClick={() => navigate("/transactions?tab=bill")}
+                >
+                  <Receipt className="mr-2 h-4 w-4" />
+                  Pay Bills
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
