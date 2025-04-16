@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [userId, setUserId] = useState("");
@@ -13,6 +14,7 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +42,9 @@ const LoginForm = () => {
       
       // In a real app, you would handle authentication here
       console.log("Login attempted with:", { userId });
+      
+      // Redirect to dashboard
+      navigate("/dashboard");
     }, 1500);
   };
 
