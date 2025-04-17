@@ -5,14 +5,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt } from "lucide-react";
+import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt, BarChart } from "lucide-react";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
   const navigate = useNavigate();
   
-  // Mock financial data
   const financialData = {
     totalBalance: 24850.75,
     accounts: [
@@ -43,7 +42,6 @@ const Dashboard = () => {
     ]
   };
   
-  // Filter transactions by active account
   const filteredTransactions = financialData.recentTransactions.filter(
     transaction => transaction.account === activeAccount
   );
@@ -129,8 +127,8 @@ const Dashboard = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                  <PieChart className="mr-2 h-4 w-4" />
-                  Insights
+                  <BarChart className="mr-2 h-4 w-4" />
+                  Business Health
                 </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
