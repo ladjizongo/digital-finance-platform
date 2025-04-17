@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -875,4 +876,45 @@ const FinancialHealthCard = () => {
                       dot={{ r: 4 }} 
                     />
                     <Line 
-                      type="
+                      type="monotone" 
+                      dataKey="expenses" 
+                      stroke="var(--color-expenses)" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="balance" 
+                      stroke="var(--color-balance)" 
+                      strokeWidth={2.5} 
+                      dot={{ r: 5 }} 
+                    />
+                  </LineChart>
+                </ChartContainer>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="pt-2">
+        {metrics && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => {
+              setMetrics(null);
+              setFile(null);
+              form.reset();
+              setActiveTab("upload");
+              setSelectedYear(undefined);
+            }}
+          >
+            Reset
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default FinancialHealthCard;
