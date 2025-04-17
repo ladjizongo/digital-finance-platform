@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Send, Repeat, Receipt, FileText, CreditCard, FileCheck2 } from "lucide-react";
+import { ArrowLeft, Send, Repeat, Receipt, FileText, CreditCard, FileCheck2, Mail } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,6 +35,15 @@ const Transactions = () => {
     { id: "5", name: "Credit Card Company", accountNumber: "321654987" },
   ];
 
+  // Mock contacts for email money transfer
+  const contacts = [
+    { id: "1", name: "John Smith", email: "john.smith@example.com" },
+    { id: "2", name: "Jane Doe", email: "jane.doe@example.com" },
+    { id: "3", name: "Robert Johnson", email: "robert.j@example.com" },
+    { id: "4", name: "Sarah Williams", email: "sarah.w@example.com" },
+    { id: "5", name: "Michael Brown", email: "michael.b@example.com" },
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -66,7 +75,7 @@ const Transactions = () => {
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <Tabs value={transactionType} onValueChange={setTransactionType} className="w-full">
-          <TabsList className="grid grid-cols-4 w-full mb-8">
+          <TabsList className="grid grid-cols-5 w-full mb-8">
             <TabsTrigger value="transfer" className="flex items-center">
               <Repeat className="mr-2 h-4 w-4" />
               Transfers
@@ -82,6 +91,10 @@ const Transactions = () => {
             <TabsTrigger value="bill" className="flex items-center">
               <Receipt className="mr-2 h-4 w-4" />
               Bill Payment
+            </TabsTrigger>
+            <TabsTrigger value="email" className="flex items-center">
+              <Mail className="mr-2 h-4 w-4" />
+              Email Transfer
             </TabsTrigger>
           </TabsList>
           
@@ -427,6 +440,118 @@ const Transactions = () => {
                 <CardFooter>
                   <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
                     {isSubmitting ? "Processing..." : "Schedule Payment"}
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+          
+          {/* Email Money Transfer */}
+          <TabsContent value="email">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Money Transfer</CardTitle>
+                <CardDescription>
+                  Send money directly to someone's email address
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleSubmit}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="emailFromAccount">From Account</Label>
+                    <Select defaultValue="1">
+                      <SelectTrigger id="emailFromAccount">
+                        <SelectValue placeholder="Select account" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {accounts.map(account => (
+                          <SelectItem key={account.id} value={account.id}>
+                            {account.name} ({account.number}) - ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="recipient">Recipient</Label>
+                    <Select>
+                      <SelectTrigger id="recipient">
+                        <SelectValue placeholder="Select a recipient or add new" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="new">+ Add New Recipient</SelectItem>
+                        {contacts.map(contact => (
+                          <SelectItem key={contact.id} value={contact.id}>
+                            {contact.name} - {contact.email}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="recipientName">Recipient Name</Label>
+                      <Input id="recipientName" placeholder="Full name of recipient" />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="recipientEmail">Recipient Email</Label>
+                      <Input id="recipientEmail" type="email" placeholder="email@example.com" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="emailAmount">Amount</Label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-gray-500">$</span>
+                      </div>
+                      <Input id="emailAmount" type="number" min="0.01" step="0.01" placeholder="0.00" className="pl-7" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="securityQuestion">Security Question</Label>
+                    <Input id="securityQuestion" placeholder="Question to verify recipient's identity" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="securityAnswer">Security Answer</Label>
+                    <Input id="securityAnswer" placeholder="Answer to security question" />
+                    <p className="text-sm text-gray-500">The recipient will need this answer to claim the funds.</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="emailMessage">Message (Optional)</Label>
+                    <Textarea id="emailMessage" placeholder="Add a personal message for the recipient" />
+                  </div>
+                  
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Checkbox id="saveRecipient" />
+                    <Label htmlFor="saveRecipient" className="text-sm font-normal">Save this recipient for future transfers</Label>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="notifyRecipient" defaultChecked />
+                    <Label htmlFor="notifyRecipient" className="text-sm font-normal">Send email notification to recipient</Label>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="expiryDate">Expiry Date</Label>
+                    <Input 
+                      id="expiryDate" 
+                      type="date" 
+                      defaultValue={new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0]} 
+                    />
+                    <p className="text-sm text-gray-500">The transfer will expire if not claimed by this date.</p>
+                  </div>
+                </CardContent>
+                
+                <CardFooter>
+                  <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+                    {isSubmitting ? "Processing..." : "Send Email Transfer"}
                   </Button>
                 </CardFooter>
               </form>
