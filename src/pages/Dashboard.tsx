@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +11,7 @@ import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
+  const [activeTab, setActiveTab] = useState("accounts");
   const navigate = useNavigate();
   
   const financialData = {
@@ -80,6 +82,7 @@ const Dashboard = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               setActiveAccount(account.id);
+                              setActiveTab("accounts");
                             }}
                           >
                             <div className="mb-2 mt-4 text-lg font-medium">
@@ -126,7 +129,12 @@ const Dashboard = () => {
                 </NavigationMenuLink>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <NavigationMenuLink 
+                  className={navigationMenuTriggerStyle()}
+                  onClick={() => {
+                    setActiveTab("businessHealth");
+                  }}
+                >
                   <BarChart className="mr-2 h-4 w-4" />
                   Business Health
                 </NavigationMenuLink>
@@ -135,126 +143,135 @@ const Dashboard = () => {
           </NavigationMenu>
         </div>
         
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
-              <DollarSign className="h-4 w-4 text-indigo-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${financialData.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Across all accounts
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Credit Card</CardTitle>
-              <CreditCard className="h-4 w-4 text-indigo-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${financialData.creditCard.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Current balance (Due: {financialData.creditCard.dueDate})
-              </p>
-              <div className="flex justify-between mt-4">
-                <span className="text-sm">Available Credit:</span>
-                <span className="text-sm font-medium">${financialData.creditCard.availableCredit.toLocaleString('en-US')}</span>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Mortgage</CardTitle>
-              <Home className="h-4 w-4 text-indigo-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${financialData.mortgage.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Current balance
-              </p>
-              <div className="flex justify-between mt-4">
-                <span className="text-sm">Monthly Payment:</span>
-                <span className="text-sm font-medium">${financialData.mortgage.monthlyPayment.toLocaleString('en-US')}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span className="text-sm">Next Payment:</span>
-                <span className="text-sm font-medium">{financialData.mortgage.nextPaymentDate}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="mb-8">
-          <FinancialHealthCard />
-        </div>
-        
-        <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
-          <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
-            {financialData.accounts.map(account => (
-              <TabsTrigger key={account.id} value={account.id}>
-                Account {account.id}
-              </TabsTrigger>
-            ))}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid grid-cols-2 w-full max-w-md mb-4">
+            <TabsTrigger value="accounts">Accounts</TabsTrigger>
+            <TabsTrigger value="businessHealth">Business Health</TabsTrigger>
           </TabsList>
           
-          {financialData.accounts.map(account => (
-            <TabsContent key={account.id} value={account.id} className="space-y-4">
+          <TabsContent value="accounts" className="space-y-4">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
               <Card>
-                <CardHeader>
-                  <CardTitle>{account.name}</CardTitle>
-                  <CardDescription>Account {account.accountNumber}</CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+                  <DollarSign className="h-4 w-4 text-indigo-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold mb-6">
-                    ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <div className="text-2xl font-bold">
+                    ${financialData.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
-                  
-                  <div className="border rounded-lg">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredTransactions.length > 0 ? (
-                          filteredTransactions.map(transaction => (
-                            <TableRow key={transaction.id}>
-                              <TableCell>{transaction.date}</TableCell>
-                              <TableCell>{transaction.description}</TableCell>
-                              <TableCell className={`text-right ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                                {transaction.amount < 0 ? '-' : '+'}${Math.abs(transaction.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={3} className="text-center py-4 text-gray-500">No recent transactions</TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Across all accounts
+                  </p>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Credit Card</CardTitle>
+                  <CreditCard className="h-4 w-4 text-indigo-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    ${financialData.creditCard.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Current balance (Due: {financialData.creditCard.dueDate})
+                  </p>
+                  <div className="flex justify-between mt-4">
+                    <span className="text-sm">Available Credit:</span>
+                    <span className="text-sm font-medium">${financialData.creditCard.availableCredit.toLocaleString('en-US')}</span>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button variant="outline">View All Transactions</Button>
-                  <Button>Make a Transfer</Button>
-                </CardFooter>
               </Card>
-            </TabsContent>
-          ))}
+              
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Mortgage</CardTitle>
+                  <Home className="h-4 w-4 text-indigo-600" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    ${financialData.mortgage.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Current balance
+                  </p>
+                  <div className="flex justify-between mt-4">
+                    <span className="text-sm">Monthly Payment:</span>
+                    <span className="text-sm font-medium">${financialData.mortgage.monthlyPayment.toLocaleString('en-US')}</span>
+                  </div>
+                  <div className="flex justify-between mt-1">
+                    <span className="text-sm">Next Payment:</span>
+                    <span className="text-sm font-medium">{financialData.mortgage.nextPaymentDate}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
+              <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
+                {financialData.accounts.map(account => (
+                  <TabsTrigger key={account.id} value={account.id}>
+                    Account {account.id}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              
+              {financialData.accounts.map(account => (
+                <TabsContent key={account.id} value={account.id} className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{account.name}</CardTitle>
+                      <CardDescription>Account {account.accountNumber}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-3xl font-bold mb-6">
+                        ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </div>
+                      
+                      <div className="border rounded-lg">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Description</TableHead>
+                              <TableHead className="text-right">Amount</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredTransactions.length > 0 ? (
+                              filteredTransactions.map(transaction => (
+                                <TableRow key={transaction.id}>
+                                  <TableCell>{transaction.date}</TableCell>
+                                  <TableCell>{transaction.description}</TableCell>
+                                  <TableCell className={`text-right ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                                    {transaction.amount < 0 ? '-' : '+'}${Math.abs(transaction.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            ) : (
+                              <TableRow>
+                                <TableCell colSpan={3} className="text-center py-4 text-gray-500">No recent transactions</TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <Button variant="outline">View All Transactions</Button>
+                      <Button>Make a Transfer</Button>
+                    </CardFooter>
+                  </Card>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </TabsContent>
+          
+          <TabsContent value="businessHealth" className="space-y-4">
+            <FinancialHealthCard />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
