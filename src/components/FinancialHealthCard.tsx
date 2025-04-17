@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,14 +108,10 @@ const FinancialHealthCard = () => {
     },
   });
 
-  // This would normally process the actual uploaded file
-  // For demo purposes, we're simulating metrics calculation
   const processFinancials = () => {
     setIsLoading(true);
     
-    // Simulate API call/processing time
     setTimeout(() => {
-      // Mock data - in a real app, this would be calculated from the uploaded file
       setMetrics({
         monthlyAverageBalance: 12580.75,
         cashFlow: [
@@ -205,15 +200,12 @@ const FinancialHealthCard = () => {
   const handleManualSubmit = (values: FinancialFormValues) => {
     setIsLoading(true);
     
-    // Calculate some derived values
     const totalAssets = values.currentAssets + values.longTermAssets;
     const totalLiabilities = values.currentLiabilities + values.longTermLiabilities;
     const calculatedEquity = totalAssets - totalLiabilities;
     const netIncome = values.revenue - values.expenses;
 
-    // Mock API processing delay
     setTimeout(() => {
-      // If metrics already exist, add a new year or update existing year
       if (metrics) {
         const existingYearIndex = metrics.yearlyData.findIndex(
           data => data.year === values.year
@@ -259,11 +251,9 @@ const FinancialHealthCard = () => {
         });
         setSelectedYear(values.year);
       } else {
-        // Create new metrics object
         setMetrics({
-          monthlyAverageBalance: values.revenue / 12, // Simple average
+          monthlyAverageBalance: values.revenue / 12,
           cashFlow: [
-            // Simple mock data based on entered values
             { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
             { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
             { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
@@ -315,7 +305,6 @@ const FinancialHealthCard = () => {
     }
   };
   
-  // Get current year data based on selected year
   const getCurrentYearData = () => {
     if (!metrics || !selectedYear) return null;
     return metrics.yearlyData.find(data => data.year === selectedYear) || metrics.yearlyData[0];
@@ -697,7 +686,15 @@ const FinancialHealthCard = () => {
                 <div className="rounded-lg border p-3">
                   <div className="text-sm font-medium text-muted-foreground">Receivable Days</div>
                   <div className="mt-1 flex items-baseline">
-                    <div className="text-2xl font-semibold">{currentYearData.receivableDays}</div>
+                    <div 
+                      className={`text-2xl font-semibold ${
+                        currentYearData.receivableDays === currentYearData.payableDays + 1 
+                          ? 'text-red-600' 
+                          : ''
+                      }`}
+                    >
+                      {currentYearData.receivableDays}
+                    </div>
                     <div className="ml-1 text-xs text-muted-foreground">days</div>
                   </div>
                   {currentYearData.receivableDays > 45 ? (
