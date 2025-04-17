@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,7 @@ interface YearlyMetrics {
   payableDays: number;
   receivableDays: number;
   biWeeklyPayroll: number;
+  monthlyPayroll: number;
   monthlyPayables: number;
   monthlyReceivables: number;
   assets: {
@@ -132,6 +132,7 @@ const FinancialHealthCard = () => {
             payableDays: 32,
             receivableDays: 45,
             biWeeklyPayroll: 8500,
+            monthlyPayroll: 8500 * 2.17,
             monthlyPayables: 45000,
             monthlyReceivables: 52000,
             assets: {
@@ -156,6 +157,7 @@ const FinancialHealthCard = () => {
             payableDays: 28,
             receivableDays: 42,
             biWeeklyPayroll: 9200,
+            monthlyPayroll: 9200 * 2.17,
             monthlyPayables: 48000,
             monthlyReceivables: 55000,
             assets: {
@@ -222,6 +224,7 @@ const FinancialHealthCard = () => {
           payableDays: values.payableDays,
           receivableDays: values.receivableDays,
           biWeeklyPayroll: values.biWeeklyPayroll,
+          monthlyPayroll: values.biWeeklyPayroll * 2.17,
           monthlyPayables: values.monthlyPayables,
           monthlyReceivables: values.monthlyReceivables,
           assets: {
@@ -273,6 +276,7 @@ const FinancialHealthCard = () => {
               payableDays: values.payableDays,
               receivableDays: values.receivableDays,
               biWeeklyPayroll: values.biWeeklyPayroll,
+              monthlyPayroll: values.biWeeklyPayroll * 2.17,
               monthlyPayables: values.monthlyPayables,
               monthlyReceivables: values.monthlyReceivables,
               assets: {
@@ -671,7 +675,7 @@ const FinancialHealthCard = () => {
             )}
             
             {currentYearData && (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
                 <div className="rounded-lg border p-3">
                   <div className="text-sm font-medium text-muted-foreground">Payable Days</div>
                   <div className="mt-1 flex items-baseline">
@@ -727,6 +731,21 @@ const FinancialHealthCard = () => {
                         maximumFractionDigits: 2 
                       })}
                     </div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border p-3">
+                  <div className="text-sm font-medium text-muted-foreground">Monthly Payroll Average</div>
+                  <div className="mt-1 flex items-baseline">
+                    <div className="text-2xl font-semibold">
+                      ${currentYearData.monthlyPayroll.toLocaleString('en-US', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                      })}
+                    </div>
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    Based on bi-weekly payroll
                   </div>
                 </div>
               </div>
@@ -856,45 +875,4 @@ const FinancialHealthCard = () => {
                       dot={{ r: 4 }} 
                     />
                     <Line 
-                      type="monotone" 
-                      dataKey="expenses" 
-                      stroke="var(--color-expenses)" 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="balance" 
-                      stroke="var(--color-balance)" 
-                      strokeWidth={2.5} 
-                      dot={{ r: 5 }} 
-                    />
-                  </LineChart>
-                </ChartContainer>
-              </div>
-            </div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="pt-2">
-        {metrics && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => {
-              setMetrics(null);
-              setFile(null);
-              form.reset();
-              setActiveTab("upload");
-              setSelectedYear(undefined);
-            }}
-          >
-            Reset
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
-  );
-};
-
-export default FinancialHealthCard;
+                      type="
