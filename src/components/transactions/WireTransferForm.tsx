@@ -1,0 +1,120 @@
+
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+
+interface Account {
+  id: string;
+  name: string;
+  number: string;
+  balance: number;
+}
+
+interface WireTransferFormProps {
+  accounts: Account[];
+  isSubmitting: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+const WireTransferForm = ({ accounts, isSubmitting, onSubmit }: WireTransferFormProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Wire Transfer</CardTitle>
+        <CardDescription>
+          Send funds via wire transfer domestically or internationally
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={onSubmit}>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="wireFromAccount">From Account</Label>
+            <Select defaultValue="1">
+              <SelectTrigger id="wireFromAccount">
+                <SelectValue placeholder="Select account" />
+              </SelectTrigger>
+              <SelectContent>
+                {accounts.map(account => (
+                  <SelectItem key={account.id} value={account.id}>
+                    {account.name} ({account.number}) - ${account.balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireRecipientName">Recipient Name</Label>
+            <Input id="wireRecipientName" placeholder="Full name of recipient" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="wireRoutingNumber">Routing Number / Swift Code</Label>
+              <Input id="wireRoutingNumber" placeholder="Enter bank routing number or swift code" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="wireAccountNumber">Account Number / IBAN</Label>
+              <Input id="wireAccountNumber" placeholder="Account number or IBAN" />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireRecipientBank">Recipient Bank Name</Label>
+            <Input id="wireRecipientBank" placeholder="Bank name" />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireRecipientAddress">Recipient Address</Label>
+            <Textarea id="wireRecipientAddress" placeholder="Enter full address" />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireTransferType">Transfer Type</Label>
+            <Select defaultValue="domestic">
+              <SelectTrigger id="wireTransferType">
+                <SelectValue placeholder="Select transfer type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="domestic">Domestic Wire</SelectItem>
+                <SelectItem value="international">International Wire</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireAmount">Amount</Label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className="text-gray-500">$</span>
+              </div>
+              <Input id="wireAmount" type="number" min="0.01" step="0.01" placeholder="0.00" className="pl-7" />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireDate">Date</Label>
+            <Input id="wireDate" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="wireDescription">Description / Purpose of Payment</Label>
+            <Textarea id="wireDescription" placeholder="Purpose of payment" />
+          </div>
+        </CardContent>
+        
+        <CardFooter>
+          <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+            {isSubmitting ? "Processing..." : "Send Wire Transfer"}
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
+  );
+};
+
+export default WireTransferForm;
