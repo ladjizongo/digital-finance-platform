@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,8 @@ interface YearlyMetrics {
   payableDays: number;
   receivableDays: number;
   biWeeklyPayroll: number;
+  monthlyPayables: number;
+  monthlyReceivables: number;
   assets: {
     currentAssets: number;
     longTermAssets: number;
@@ -71,6 +72,8 @@ const financialFormSchema = z.object({
   payableDays: z.coerce.number().min(0, { message: "Payable days must be 0 or greater" }),
   receivableDays: z.coerce.number().min(0, { message: "Receivable days must be 0 or greater" }),
   biWeeklyPayroll: z.coerce.number().min(0, { message: "Bi-weekly payroll must be 0 or greater" }),
+  monthlyPayables: z.coerce.number().min(0, { message: "Monthly payables must be 0 or greater" }),
+  monthlyReceivables: z.coerce.number().min(0, { message: "Monthly receivables must be 0 or greater" }),
   
   // Optional notes
   notes: z.string().optional(),
@@ -99,6 +102,8 @@ const FinancialHealthCard = () => {
       receivableDays: 0,
       biWeeklyPayroll: 0,
       notes: "",
+      monthlyPayables: 0,
+      monthlyReceivables: 0,
     },
   });
 
@@ -126,6 +131,8 @@ const FinancialHealthCard = () => {
             payableDays: 32,
             receivableDays: 45,
             biWeeklyPayroll: 8500,
+            monthlyPayables: 45000,
+            monthlyReceivables: 52000,
             assets: {
               currentAssets: 45000,
               longTermAssets: 230000,
@@ -148,6 +155,8 @@ const FinancialHealthCard = () => {
             payableDays: 28,
             receivableDays: 42,
             biWeeklyPayroll: 9200,
+            monthlyPayables: 48000,
+            monthlyReceivables: 55000,
             assets: {
               currentAssets: 58000,
               longTermAssets: 245000,
@@ -212,6 +221,8 @@ const FinancialHealthCard = () => {
           payableDays: values.payableDays,
           receivableDays: values.receivableDays,
           biWeeklyPayroll: values.biWeeklyPayroll,
+          monthlyPayables: values.monthlyPayables,
+          monthlyReceivables: values.monthlyReceivables,
           assets: {
             currentAssets: values.currentAssets,
             longTermAssets: values.longTermAssets,
@@ -261,6 +272,8 @@ const FinancialHealthCard = () => {
               payableDays: values.payableDays,
               receivableDays: values.receivableDays,
               biWeeklyPayroll: values.biWeeklyPayroll,
+              monthlyPayables: values.monthlyPayables,
+              monthlyReceivables: values.monthlyReceivables,
               assets: {
                 currentAssets: values.currentAssets,
                 longTermAssets: values.longTermAssets,
@@ -567,6 +580,45 @@ const FinancialHealthCard = () => {
                         />
                       </div>
                     </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-sm">Averages</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="monthlyPayables"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Monthly Payables ($)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="0.00" type="number" min="0" step="0.01" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Average monthly payables
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="monthlyReceivables"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Monthly Receivables ($)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="0.00" type="number" min="0" step="0.01" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Average monthly receivables
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
                     
                     <FormField
                       control={form.control}
@@ -654,10 +706,10 @@ const FinancialHealthCard = () => {
                 </div>
                 
                 <div className="rounded-lg border p-3">
-                  <div className="text-sm font-medium text-muted-foreground">Bi-Weekly Payroll</div>
+                  <div className="text-sm font-medium text-muted-foreground">Monthly Average Payables</div>
                   <div className="mt-1 flex items-baseline">
                     <div className="text-2xl font-semibold">
-                      ${currentYearData.biWeeklyPayroll.toLocaleString('en-US', { 
+                      ${currentYearData.monthlyPayables.toLocaleString('en-US', { 
                         minimumFractionDigits: 2, 
                         maximumFractionDigits: 2 
                       })}
@@ -666,10 +718,10 @@ const FinancialHealthCard = () => {
                 </div>
                 
                 <div className="rounded-lg border p-3">
-                  <div className="text-sm font-medium text-muted-foreground">Monthly Avg. Balance</div>
+                  <div className="text-sm font-medium text-muted-foreground">Monthly Average Receivables</div>
                   <div className="mt-1 flex items-baseline">
                     <div className="text-2xl font-semibold">
-                      ${metrics.monthlyAverageBalance.toLocaleString('en-US', { 
+                      ${currentYearData.monthlyReceivables.toLocaleString('en-US', { 
                         minimumFractionDigits: 2, 
                         maximumFractionDigits: 2 
                       })}
@@ -837,11 +889,3 @@ const FinancialHealthCard = () => {
             }}
           >
             Reset
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
-  );
-};
-
-export default FinancialHealthCard;
