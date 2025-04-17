@@ -14,10 +14,32 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface FinancialMetrics {
+interface YearlyMetrics {
+  year: string;
   payableDays: number;
   receivableDays: number;
+  biWeeklyPayroll: number;
+  assets: {
+    currentAssets: number;
+    longTermAssets: number;
+    totalAssets: number;
+  };
+  liabilities: {
+    currentLiabilities: number;
+    longTermLiabilities: number;
+    totalLiabilities: number;
+  };
+  equity: number;
+  income: {
+    revenue: number;
+    expenses: number;
+    netIncome: number;
+  };
+}
+
+interface FinancialMetrics {
   monthlyAverageBalance: number;
   cashFlow: {
     month: string;
@@ -25,42 +47,30 @@ interface FinancialMetrics {
     expenses: number;
     balance: number;
   }[];
-  // New financial statement data
-  financialStatements?: {
-    assets: {
-      currentAssets: number;
-      longTermAssets: number;
-      totalAssets: number;
-    };
-    liabilities: {
-      currentLiabilities: number;
-      longTermLiabilities: number;
-      totalLiabilities: number;
-    };
-    equity: number;
-    income: {
-      revenue: number;
-      expenses: number;
-      netIncome: number;
-    };
-  };
+  yearlyData: YearlyMetrics[];
+  selectedYear?: string;
 }
 
 const financialFormSchema = z.object({
+  // Year
+  year: z.string().min(4, { message: "Please select a year" }),
+  
   // Assets
-  currentAssets: z.string().transform((val) => parseFloat(val) || 0),
-  longTermAssets: z.string().transform((val) => parseFloat(val) || 0),
+  currentAssets: z.coerce.number().min(0, { message: "Current assets must be 0 or greater" }),
+  longTermAssets: z.coerce.number().min(0, { message: "Long-term assets must be 0 or greater" }),
   
   // Liabilities
-  currentLiabilities: z.string().transform((val) => parseFloat(val) || 0),
-  longTermLiabilities: z.string().transform((val) => parseFloat(val) || 0),
-  
-  // Equity (calculated field, but we'll include it for completeness)
-  equity: z.string().transform((val) => parseFloat(val) || 0),
+  currentLiabilities: z.coerce.number().min(0, { message: "Current liabilities must be 0 or greater" }),
+  longTermLiabilities: z.coerce.number().min(0, { message: "Long-term liabilities must be 0 or greater" }),
   
   // Income Statement
-  revenue: z.string().transform((val) => parseFloat(val) || 0),
-  expenses: z.string().transform((val) => parseFloat(val) || 0),
+  revenue: z.coerce.number().min(0, { message: "Revenue must be 0 or greater" }),
+  expenses: z.coerce.number().min(0, { message: "Expenses must be 0 or greater" }),
+  
+  // Metrics
+  payableDays: z.coerce.number().min(0, { message: "Payable days must be 0 or greater" }),
+  receivableDays: z.coerce.number().min(0, { message: "Receivable days must be 0 or greater" }),
+  biWeeklyPayroll: z.coerce.number().min(0, { message: "Bi-weekly payroll must be 0 or greater" }),
   
   // Optional notes
   notes: z.string().optional(),
@@ -73,17 +83,21 @@ const FinancialHealthCard = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [metrics, setMetrics] = useState<FinancialMetrics | null>(null);
   const [activeTab, setActiveTab] = useState<"upload" | "manual">("upload");
+  const [selectedYear, setSelectedYear] = useState<string | undefined>(undefined);
 
   const form = useForm<FinancialFormValues>({
     resolver: zodResolver(financialFormSchema),
     defaultValues: {
-      currentAssets: "0",
-      longTermAssets: "0",
-      currentLiabilities: "0",
-      longTermLiabilities: "0",
-      equity: "0",
-      revenue: "0",
-      expenses: "0",
+      year: new Date().getFullYear().toString(),
+      currentAssets: 0,
+      longTermAssets: 0,
+      currentLiabilities: 0,
+      longTermLiabilities: 0,
+      revenue: 0,
+      expenses: 0,
+      payableDays: 0,
+      receivableDays: 0,
+      biWeeklyPayroll: 0,
       notes: "",
     },
   });
@@ -97,8 +111,6 @@ const FinancialHealthCard = () => {
     setTimeout(() => {
       // Mock data - in a real app, this would be calculated from the uploaded file
       setMetrics({
-        payableDays: 32,
-        receivableDays: 45,
         monthlyAverageBalance: 12580.75,
         cashFlow: [
           { month: "Jan", income: 24000, expenses: 18000, balance: 6000 },
@@ -108,28 +120,58 @@ const FinancialHealthCard = () => {
           { month: "May", income: 28000, expenses: 20000, balance: 8000 },
           { month: "Jun", income: 29000, expenses: 22000, balance: 7000 },
         ],
-        financialStatements: {
-          assets: {
-            currentAssets: 45000,
-            longTermAssets: 230000,
-            totalAssets: 275000,
+        yearlyData: [
+          {
+            year: "2023",
+            payableDays: 32,
+            receivableDays: 45,
+            biWeeklyPayroll: 8500,
+            assets: {
+              currentAssets: 45000,
+              longTermAssets: 230000,
+              totalAssets: 275000,
+            },
+            liabilities: {
+              currentLiabilities: 35000,
+              longTermLiabilities: 150000,
+              totalLiabilities: 185000,
+            },
+            equity: 90000,
+            income: {
+              revenue: 320000,
+              expenses: 270000,
+              netIncome: 50000,
+            },
           },
-          liabilities: {
-            currentLiabilities: 35000,
-            longTermLiabilities: 150000,
-            totalLiabilities: 185000,
-          },
-          equity: 90000,
-          income: {
-            revenue: 320000,
-            expenses: 270000,
-            netIncome: 50000,
-          },
-        },
+          {
+            year: "2024",
+            payableDays: 28,
+            receivableDays: 42,
+            biWeeklyPayroll: 9200,
+            assets: {
+              currentAssets: 58000,
+              longTermAssets: 245000,
+              totalAssets: 303000,
+            },
+            liabilities: {
+              currentLiabilities: 38000,
+              longTermLiabilities: 140000,
+              totalLiabilities: 178000,
+            },
+            equity: 125000,
+            income: {
+              revenue: 380000,
+              expenses: 295000,
+              netIncome: 85000,
+            },
+          }
+        ],
+        selectedYear: "2024"
       });
       
+      setSelectedYear("2024");
       setIsLoading(false);
-      toast.success("Financial analysis complete!");
+      toast.success("Business health analysis complete!");
     }, 1500);
   };
 
@@ -158,20 +200,18 @@ const FinancialHealthCard = () => {
 
     // Mock API processing delay
     setTimeout(() => {
-      setMetrics({
-        payableDays: 30, // Estimated
-        receivableDays: 45, // Estimated
-        monthlyAverageBalance: values.revenue / 12, // Simple average
-        cashFlow: [
-          // Simple mock data based on entered values
-          { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-          { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-          { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-          { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-          { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-          { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-        ],
-        financialStatements: {
+      // If metrics already exist, add a new year or update existing year
+      if (metrics) {
+        const existingYearIndex = metrics.yearlyData.findIndex(
+          data => data.year === values.year
+        );
+        
+        const newYearlyData = [...metrics.yearlyData];
+        const newYearData: YearlyMetrics = {
+          year: values.year,
+          payableDays: values.payableDays,
+          receivableDays: values.receivableDays,
+          biWeeklyPayroll: values.biWeeklyPayroll,
           assets: {
             currentAssets: values.currentAssets,
             longTermAssets: values.longTermAssets,
@@ -188,25 +228,93 @@ const FinancialHealthCard = () => {
             expenses: values.expenses,
             netIncome,
           },
-        },
-      });
+        };
+        
+        if (existingYearIndex >= 0) {
+          newYearlyData[existingYearIndex] = newYearData;
+        } else {
+          newYearlyData.push(newYearData);
+        }
+        
+        setMetrics({
+          ...metrics,
+          yearlyData: newYearlyData,
+          selectedYear: values.year,
+        });
+        setSelectedYear(values.year);
+      } else {
+        // Create new metrics object
+        setMetrics({
+          monthlyAverageBalance: values.revenue / 12, // Simple average
+          cashFlow: [
+            // Simple mock data based on entered values
+            { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+          ],
+          yearlyData: [
+            {
+              year: values.year,
+              payableDays: values.payableDays,
+              receivableDays: values.receivableDays,
+              biWeeklyPayroll: values.biWeeklyPayroll,
+              assets: {
+                currentAssets: values.currentAssets,
+                longTermAssets: values.longTermAssets,
+                totalAssets,
+              },
+              liabilities: {
+                currentLiabilities: values.currentLiabilities,
+                longTermLiabilities: values.longTermLiabilities,
+                totalLiabilities,
+              },
+              equity: calculatedEquity,
+              income: {
+                revenue: values.revenue,
+                expenses: values.expenses,
+                netIncome,
+              },
+            }
+          ],
+          selectedYear: values.year,
+        });
+        setSelectedYear(values.year);
+      }
       
+      form.reset();
       setIsLoading(false);
-      toast.success("Financial analysis complete!");
+      toast.success("Business health analysis updated!");
     }, 1500);
   };
+  
+  const handleYearChange = (year: string) => {
+    if (metrics) {
+      setSelectedYear(year);
+    }
+  };
+  
+  // Get current year data based on selected year
+  const getCurrentYearData = () => {
+    if (!metrics || !selectedYear) return null;
+    return metrics.yearlyData.find(data => data.year === selectedYear) || metrics.yearlyData[0];
+  };
+  
+  const currentYearData = getCurrentYearData();
 
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-bold">Financial Health</CardTitle>
+        <CardTitle className="text-xl font-bold">Business Health</CardTitle>
         <BarChart className="h-5 w-5 text-indigo-600" />
       </CardHeader>
       <CardContent>
         {!metrics ? (
           <div className="space-y-4">
             <CardDescription>
-              Analyze your business financial health by uploading statements or entering data manually
+              Analyze your business health by uploading statements or entering data manually
             </CardDescription>
             
             <Tabs defaultValue="upload" value={activeTab} onValueChange={(value) => setActiveTab(value as "upload" | "manual")}>
@@ -251,6 +359,7 @@ const FinancialHealthCard = () => {
                       <li>Cash Flow Statement</li>
                       <li>Accounts Payable Aging</li>
                       <li>Accounts Receivable Aging</li>
+                      <li>Payroll Reports</li>
                     </ul>
                   </div>
                 </div>
@@ -259,6 +368,89 @@ const FinancialHealthCard = () => {
               <TabsContent value="manual" className="space-y-4 mt-4">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleManualSubmit)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="year"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Year</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select year" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="2022">2022</SelectItem>
+                              <SelectItem value="2023">2023</SelectItem>
+                              <SelectItem value="2024">2024</SelectItem>
+                              <SelectItem value="2025">2025</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-sm">Key Metrics</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="payableDays"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Payable Days</FormLabel>
+                              <FormControl>
+                                <Input placeholder="0" type="number" min="0" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Average days to pay vendors
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="receivableDays"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Receivable Days</FormLabel>
+                              <FormControl>
+                                <Input placeholder="0" type="number" min="0" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Average days to collect payments
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="biWeeklyPayroll"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Bi-Weekly Payroll ($)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="0.00" type="number" min="0" step="0.01" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Average bi-weekly payroll expense
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                    
                     <div className="space-y-4">
                       <h4 className="font-medium text-sm">Assets</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -395,7 +587,7 @@ const FinancialHealthCard = () => {
                     />
                     
                     <Button type="submit" disabled={isLoading} className="w-full">
-                      {isLoading ? "Processing..." : "Generate Financial Analysis"}
+                      {isLoading ? "Processing..." : "Generate Business Analysis"}
                       {!isLoading && <FileText className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>
@@ -405,57 +597,91 @@ const FinancialHealthCard = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="rounded-lg border p-3">
-                <div className="text-sm font-medium text-muted-foreground">Payable Days</div>
-                <div className="mt-1 flex items-baseline">
-                  <div className="text-2xl font-semibold">{metrics.payableDays}</div>
-                  <div className="ml-1 text-xs text-muted-foreground">days</div>
-                </div>
-                {metrics.payableDays > 30 ? (
-                  <div className="mt-1 text-xs text-amber-600">
-                    Above recommended 30 days
-                  </div>
-                ) : (
-                  <div className="mt-1 text-xs text-green-600">
-                    Within healthy range
-                  </div>
-                )}
+            {metrics.yearlyData.length > 1 && (
+              <div className="flex justify-end">
+                <Select 
+                  value={selectedYear} 
+                  onValueChange={handleYearChange}
+                >
+                  <SelectTrigger className="w-[120px]">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {metrics.yearlyData.map(data => (
+                      <SelectItem key={data.year} value={data.year}>
+                        {data.year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              
-              <div className="rounded-lg border p-3">
-                <div className="text-sm font-medium text-muted-foreground">Receivable Days</div>
-                <div className="mt-1 flex items-baseline">
-                  <div className="text-2xl font-semibold">{metrics.receivableDays}</div>
-                  <div className="ml-1 text-xs text-muted-foreground">days</div>
+            )}
+            
+            {currentYearData && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                <div className="rounded-lg border p-3">
+                  <div className="text-sm font-medium text-muted-foreground">Payable Days</div>
+                  <div className="mt-1 flex items-baseline">
+                    <div className="text-2xl font-semibold">{currentYearData.payableDays}</div>
+                    <div className="ml-1 text-xs text-muted-foreground">days</div>
+                  </div>
+                  {currentYearData.payableDays > 30 ? (
+                    <div className="mt-1 text-xs text-amber-600">
+                      Above recommended 30 days
+                    </div>
+                  ) : (
+                    <div className="mt-1 text-xs text-green-600">
+                      Within healthy range
+                    </div>
+                  )}
                 </div>
-                {metrics.receivableDays > 45 ? (
-                  <div className="mt-1 text-xs text-amber-600">
-                    Collection period is too long
+                
+                <div className="rounded-lg border p-3">
+                  <div className="text-sm font-medium text-muted-foreground">Receivable Days</div>
+                  <div className="mt-1 flex items-baseline">
+                    <div className="text-2xl font-semibold">{currentYearData.receivableDays}</div>
+                    <div className="ml-1 text-xs text-muted-foreground">days</div>
                   </div>
-                ) : (
-                  <div className="mt-1 text-xs text-green-600">
-                    Healthy collection period
+                  {currentYearData.receivableDays > 45 ? (
+                    <div className="mt-1 text-xs text-amber-600">
+                      Collection period is too long
+                    </div>
+                  ) : (
+                    <div className="mt-1 text-xs text-green-600">
+                      Healthy collection period
+                    </div>
+                  )}
+                </div>
+                
+                <div className="rounded-lg border p-3">
+                  <div className="text-sm font-medium text-muted-foreground">Bi-Weekly Payroll</div>
+                  <div className="mt-1 flex items-baseline">
+                    <div className="text-2xl font-semibold">
+                      ${currentYearData.biWeeklyPayroll.toLocaleString('en-US', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                      })}
+                    </div>
                   </div>
-                )}
-              </div>
-              
-              <div className="rounded-lg border p-3">
-                <div className="text-sm font-medium text-muted-foreground">Monthly Avg. Balance</div>
-                <div className="mt-1 flex items-baseline">
-                  <div className="text-2xl font-semibold">
-                    ${metrics.monthlyAverageBalance.toLocaleString('en-US', { 
-                      minimumFractionDigits: 2, 
-                      maximumFractionDigits: 2 
-                    })}
+                </div>
+                
+                <div className="rounded-lg border p-3">
+                  <div className="text-sm font-medium text-muted-foreground">Monthly Avg. Balance</div>
+                  <div className="mt-1 flex items-baseline">
+                    <div className="text-2xl font-semibold">
+                      ${metrics.monthlyAverageBalance.toLocaleString('en-US', { 
+                        minimumFractionDigits: 2, 
+                        maximumFractionDigits: 2 
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {metrics.financialStatements && (
+            {currentYearData && (
               <div className="space-y-4">
-                <h4 className="text-sm font-medium">Financial Statements Summary</h4>
+                <h4 className="text-sm font-medium">Financial Statements Summary ({currentYearData.year})</h4>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="rounded-lg border p-4">
                     <h5 className="font-medium mb-3">Balance Sheet</h5>
@@ -470,43 +696,43 @@ const FinancialHealthCard = () => {
                         <TableRow>
                           <TableCell>Current Assets</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.assets.currentAssets.toLocaleString('en-US')}
+                            ${currentYearData.assets.currentAssets.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Long-term Assets</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.assets.longTermAssets.toLocaleString('en-US')}
+                            ${currentYearData.assets.longTermAssets.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow className="font-medium">
                           <TableCell>Total Assets</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.assets.totalAssets.toLocaleString('en-US')}
+                            ${currentYearData.assets.totalAssets.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Current Liabilities</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.liabilities.currentLiabilities.toLocaleString('en-US')}
+                            ${currentYearData.liabilities.currentLiabilities.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Long-term Liabilities</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.liabilities.longTermLiabilities.toLocaleString('en-US')}
+                            ${currentYearData.liabilities.longTermLiabilities.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow className="font-medium">
                           <TableCell>Total Liabilities</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.liabilities.totalLiabilities.toLocaleString('en-US')}
+                            ${currentYearData.liabilities.totalLiabilities.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow className="font-medium">
                           <TableCell>Total Equity</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.equity.toLocaleString('en-US')}
+                            ${currentYearData.equity.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -526,19 +752,19 @@ const FinancialHealthCard = () => {
                         <TableRow>
                           <TableCell>Revenue</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.income.revenue.toLocaleString('en-US')}
+                            ${currentYearData.income.revenue.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Expenses</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.income.expenses.toLocaleString('en-US')}
+                            ${currentYearData.income.expenses.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                         <TableRow className="font-medium">
                           <TableCell>Net Income</TableCell>
                           <TableCell className="text-right">
-                            ${metrics.financialStatements.income.netIncome.toLocaleString('en-US')}
+                            ${currentYearData.income.netIncome.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
                       </TableBody>
@@ -607,6 +833,7 @@ const FinancialHealthCard = () => {
               setFile(null);
               form.reset();
               setActiveTab("upload");
+              setSelectedYear(undefined);
             }}
           >
             Reset
