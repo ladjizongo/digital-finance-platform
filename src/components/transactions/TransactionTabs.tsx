@@ -58,7 +58,7 @@ const TransactionTabs = ({
 
   return (
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid grid-cols-6 w-full mb-8">
+      <TabsList className="grid grid-cols-5 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <Repeat className="mr-2 h-4 w-4" />
           Transfers
@@ -79,11 +79,20 @@ const TransactionTabs = ({
           <Mail className="mr-2 h-4 w-4" />
           Email Transfer
         </TabsTrigger>
-        <TabsTrigger value="tax" className="flex items-center">
-          <Receipt className="mr-2 h-4 w-4" />
-          Gov Tax
-        </TabsTrigger>
       </TabsList>
+      
+      <div className="mb-6">
+        <a
+          href="https://www.irs.gov/payments"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+        >
+          <Receipt className="mr-2 h-4 w-4" />
+          Pay Government Tax
+          <span className="sr-only">(opens in new tab)</span>
+        </a>
+      </div>
       
       <TabsContent value="transfer">
         <TransferForm 
