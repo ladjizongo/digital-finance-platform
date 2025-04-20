@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,6 +26,9 @@ const Transactions = () => {
           break;
         case "email":
           setTransactionType("email");
+          break;
+        case "tax":
+          setTransactionType("tax");
           break;
         default:
           setTransactionType("transfer");

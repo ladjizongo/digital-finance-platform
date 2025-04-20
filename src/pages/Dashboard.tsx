@@ -153,6 +153,18 @@ const Dashboard = () => {
                         </a>
                       </NavigationMenuLink>
                     </li>
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none items-center gap-2 rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md"
+                          href="#"
+                          onClick={() => navigate("/transactions?tab=tax")}
+                        >
+                          <Receipt className="h-4 w-4" />
+                          <span>Pay Government Tax</span>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>

@@ -5,6 +5,7 @@ import EFTForm from "./EFTForm";
 import WireTransferForm from "./WireTransferForm";
 import BillPaymentForm from "./BillPaymentForm";
 import EmailTransferForm from "./EmailTransferForm";
+import GovTaxPaymentForm from "./GovTaxPaymentForm";
 
 interface Account {
   id: string;
@@ -57,7 +58,7 @@ const TransactionTabs = ({
 
   return (
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid grid-cols-5 w-full mb-8">
+      <TabsList className="grid grid-cols-6 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <Repeat className="mr-2 h-4 w-4" />
           Transfers
@@ -77,6 +78,10 @@ const TransactionTabs = ({
         <TabsTrigger value="email" className="flex items-center">
           <Mail className="mr-2 h-4 w-4" />
           Email Transfer
+        </TabsTrigger>
+        <TabsTrigger value="tax" className="flex items-center">
+          <Receipt className="mr-2 h-4 w-4" />
+          Gov Tax
         </TabsTrigger>
       </TabsList>
       
@@ -117,6 +122,14 @@ const TransactionTabs = ({
         <EmailTransferForm 
           accounts={accounts}
           contacts={contacts}
+          isSubmitting={isSubmitting}
+          onSubmit={onSubmit}
+        />
+      </TabsContent>
+      
+      <TabsContent value="tax">
+        <GovTaxPaymentForm 
+          accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
         />
