@@ -1,8 +1,8 @@
 import { Send, Repeat, Receipt, CreditCard, Mail, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
-import EFTForm from "./EFTForm";
-import WireTransferForm from "./WireTransferForm";
+import { EFTSection } from "./payment-forms/EFTSection";
+import { WireSection } from "./payment-forms/WireSection";
 import BillPaymentForm from "./BillPaymentForm";
 import EmailTransferForm from "./EmailTransferForm";
 import GovTaxPaymentForm from "./GovTaxPaymentForm";
@@ -65,11 +65,11 @@ const TransactionTabs = ({
         </TabsTrigger>
         <TabsTrigger value="eft" className="flex items-center">
           <CreditCard className="mr-2 h-4 w-4" />
-          EFT/ACH
+          EFT
         </TabsTrigger>
         <TabsTrigger value="wire" className="flex items-center">
           <Send className="mr-2 h-4 w-4" />
-          Wire Transfer
+          Wire
         </TabsTrigger>
         <TabsTrigger value="bill" className="flex items-center">
           <Receipt className="mr-2 h-4 w-4" />
@@ -114,7 +114,7 @@ const TransactionTabs = ({
       </TabsContent>
       
       <TabsContent value="eft">
-        <EFTForm 
+        <EFTSection 
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
@@ -122,7 +122,7 @@ const TransactionTabs = ({
       </TabsContent>
       
       <TabsContent value="wire">
-        <WireTransferForm 
+        <WireSection 
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
