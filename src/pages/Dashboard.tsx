@@ -101,33 +101,51 @@ const Dashboard = () => {
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
+
               <NavigationMenuItem>
-                <NavigationMenuLink 
-                  className={navigationMenuTriggerStyle()}
-                  onClick={() => navigate("/transactions")}
-                >
-                  <ArrowRightLeft className="mr-2 h-4 w-4" />
-                  Transfers
-                </NavigationMenuLink>
+                <NavigationMenuTrigger>Transactions</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[400px] gap-3 p-4">
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none items-center gap-2 rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md"
+                          href="#"
+                          onClick={() => navigate("/transactions")}
+                        >
+                          <ArrowRightLeft className="h-4 w-4" />
+                          <span>Transfers</span>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none items-center gap-2 rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md"
+                          href="#"
+                          onClick={() => navigate("/transactions?tab=eft")}
+                        >
+                          <Send className="h-4 w-4" />
+                          <span>EFT/Wire</span>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none items-center gap-2 rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md"
+                          href="#"
+                          onClick={() => navigate("/transactions?tab=bill")}
+                        >
+                          <Receipt className="h-4 w-4" />
+                          <span>Pay Bills</span>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
               </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  className={navigationMenuTriggerStyle()}
-                  onClick={() => navigate("/transactions?tab=eft")}
-                >
-                  <Send className="mr-2 h-4 w-4" />
-                  EFT/Wire
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink 
-                  className={navigationMenuTriggerStyle()}
-                  onClick={() => navigate("/transactions?tab=bill")}
-                >
-                  <Receipt className="mr-2 h-4 w-4" />
-                  Pay Bills
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+
               <NavigationMenuItem>
                 <NavigationMenuLink 
                   className={navigationMenuTriggerStyle()}
