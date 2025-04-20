@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt, BarChart, Mail } from "lucide-react";
+import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Receipt } from "lucide-react";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
@@ -62,6 +62,16 @@ const Dashboard = () => {
               >
                 <FileText className="mr-2 h-4 w-4" />
                 Link External Account
+                <span className="sr-only">(opens in new tab)</span>
+              </a>
+              <a
+                href="https://www.irs.gov/payments"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+              >
+                <Receipt className="mr-2 h-4 w-4" />
+                Pay Government Tax
                 <span className="sr-only">(opens in new tab)</span>
               </a>
               <span className="text-gray-600">Welcome, User</span>

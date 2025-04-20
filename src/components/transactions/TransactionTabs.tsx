@@ -81,19 +81,6 @@ const TransactionTabs = ({
         </TabsTrigger>
       </TabsList>
       
-      <div className="flex items-center space-x-4 mb-6">
-        <a
-          href="https://www.irs.gov/payments"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
-        >
-          <Receipt className="mr-2 h-4 w-4" />
-          Pay Government Tax
-          <span className="sr-only">(opens in new tab)</span>
-        </a>
-      </div>
-      
       <TabsContent value="transfer">
         <TransferForm 
           accounts={accounts}
