@@ -1,10 +1,9 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { receipt } from "lucide-react";
+import { Receipt } from "lucide-react";
 
 interface GovTaxPaymentFormProps {
   accounts: Array<{
