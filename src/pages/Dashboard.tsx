@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt, BarChart } from "lucide-react";
+import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Send, Receipt, BarChart, Mail } from "lucide-react";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
@@ -139,6 +138,18 @@ const Dashboard = () => {
                         >
                           <Receipt className="h-4 w-4" />
                           <span>Pay Bills</span>
+                        </a>
+                      </NavigationMenuLink>
+                    </li>
+                    <li className="row-span-3">
+                      <NavigationMenuLink asChild>
+                        <a
+                          className="flex h-full w-full select-none items-center gap-2 rounded-md bg-gradient-to-b from-muted/50 to-muted p-4 no-underline outline-none focus:shadow-md"
+                          href="#"
+                          onClick={() => navigate("/transactions?tab=email")}
+                        >
+                          <Mail className="h-4 w-4" />
+                          <span>Email Transfer</span>
                         </a>
                       </NavigationMenuLink>
                     </li>

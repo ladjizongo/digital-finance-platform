@@ -1,15 +1,37 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
 
 const Transactions = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionType, setTransactionType] = useState("transfer");
 
-  // Mock accounts data
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      switch (tab) {
+        case "eft":
+          setTransactionType("eft");
+          break;
+        case "wire":
+          setTransactionType("wire");
+          break;
+        case "bill":
+          setTransactionType("bill");
+          break;
+        case "email":
+          setTransactionType("email");
+          break;
+        default:
+          setTransactionType("transfer");
+      }
+    }
+  }, [searchParams]);
+
   const accounts = [
     { id: "1", name: "Checking Account", number: "****1234", balance: 3250.75 },
     { id: "2", name: "Savings Account", number: "****5678", balance: 15600.00 },
@@ -17,7 +39,6 @@ const Transactions = () => {
     { id: "4", name: "Retirement Account", number: "****3456", balance: 42500.00 },
   ];
 
-  // Mock payees/billers
   const savedPayees = [
     { id: "1", name: "Electric Company", accountNumber: "987654321" },
     { id: "2", name: "Water Utility", accountNumber: "123456789" },
@@ -26,7 +47,6 @@ const Transactions = () => {
     { id: "5", name: "Credit Card Company", accountNumber: "321654987" },
   ];
 
-  // Mock contacts for email money transfer
   const contacts = [
     { id: "1", name: "John Smith", email: "john.smith@example.com" },
     { id: "2", name: "Jane Doe", email: "jane.doe@example.com" },
@@ -39,7 +59,6 @@ const Transactions = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate transaction processing
     setTimeout(() => {
       setIsSubmitting(false);
       

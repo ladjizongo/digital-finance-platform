@@ -1,4 +1,3 @@
-
 import { Send, Repeat, Receipt, CreditCard, Mail } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
@@ -45,8 +44,19 @@ const TransactionTabs = ({
   isSubmitting,
   onSubmit
 }: TransactionTabsProps) => {
+  const handleTabChange = (value: string) => {
+    setTransactionType(value);
+    const searchParams = new URLSearchParams(window.location.search);
+    if (value === "transfer") {
+      searchParams.delete("tab");
+    } else {
+      searchParams.set("tab", value);
+    }
+    window.history.replaceState(null, "", `?${searchParams.toString()}`);
+  };
+
   return (
-    <Tabs value={transactionType} onValueChange={setTransactionType} className="w-full">
+    <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
       <TabsList className="grid grid-cols-5 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <Repeat className="mr-2 h-4 w-4" />
@@ -70,7 +80,6 @@ const TransactionTabs = ({
         </TabsTrigger>
       </TabsList>
       
-      {/* Transfer Between Accounts */}
       <TabsContent value="transfer">
         <TransferForm 
           accounts={accounts}
@@ -79,7 +88,6 @@ const TransactionTabs = ({
         />
       </TabsContent>
       
-      {/* EFT/ACH Transfer */}
       <TabsContent value="eft">
         <EFTForm 
           accounts={accounts}
@@ -88,7 +96,6 @@ const TransactionTabs = ({
         />
       </TabsContent>
       
-      {/* Wire Transfer */}
       <TabsContent value="wire">
         <WireTransferForm 
           accounts={accounts}
@@ -97,7 +104,6 @@ const TransactionTabs = ({
         />
       </TabsContent>
       
-      {/* Bill Payment */}
       <TabsContent value="bill">
         <BillPaymentForm 
           accounts={accounts}
@@ -107,7 +113,6 @@ const TransactionTabs = ({
         />
       </TabsContent>
       
-      {/* Email Money Transfer */}
       <TabsContent value="email">
         <EmailTransferForm 
           accounts={accounts}
