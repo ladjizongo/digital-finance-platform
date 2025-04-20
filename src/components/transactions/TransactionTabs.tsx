@@ -1,4 +1,4 @@
-import { Send, Repeat, Receipt, CreditCard, Mail } from "lucide-react";
+import { Send, Repeat, Receipt, CreditCard, Mail, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
 import EFTForm from "./EFTForm";
@@ -81,7 +81,7 @@ const TransactionTabs = ({
         </TabsTrigger>
       </TabsList>
       
-      <div className="mb-6">
+      <div className="flex items-center space-x-4 mb-6">
         <a
           href="https://www.irs.gov/payments"
           target="_blank"
@@ -90,6 +90,17 @@ const TransactionTabs = ({
         >
           <Receipt className="mr-2 h-4 w-4" />
           Pay Government Tax
+          <span className="sr-only">(opens in new tab)</span>
+        </a>
+        
+        <a
+          href="https://www.plaid.com/link/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+        >
+          <FileText className="mr-2 h-4 w-4" />
+          Link External Account History
           <span className="sr-only">(opens in new tab)</span>
         </a>
       </div>
