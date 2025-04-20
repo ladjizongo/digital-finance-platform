@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { DollarSign, CreditCard, Home, PieChart, ArrowRightLeft, LogOut, FileText, Receipt } from "lucide-react";
+import { DollarSign, CreditCard, Home, ArrowRightLeft, LogOut, FileText, Receipt, BarChart, ArrowRight, Mail } from "lucide-react";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 
 const Dashboard = () => {
@@ -144,7 +144,7 @@ const Dashboard = () => {
                           href="#"
                           onClick={() => navigate("/transactions?tab=eft")}
                         >
-                          <Send className="h-4 w-4" />
+                          <ArrowRight className="h-4 w-4" />
                           <span>EFT/Wire</span>
                         </a>
                       </NavigationMenuLink>

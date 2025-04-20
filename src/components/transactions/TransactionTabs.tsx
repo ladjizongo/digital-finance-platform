@@ -1,4 +1,4 @@
-import { Send, Repeat, Receipt, CreditCard, Mail, FileText } from "lucide-react";
+import { ArrowRight, Mail, Receipt, CreditCard, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
 import { EFTSection } from "./payment-forms/EFTSection";
@@ -60,7 +60,7 @@ const TransactionTabs = ({
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
       <TabsList className="grid grid-cols-5 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
-          <Repeat className="mr-2 h-4 w-4" />
+          <ArrowRight className="mr-2 h-4 w-4" />
           Transfers
         </TabsTrigger>
         <TabsTrigger value="eft" className="flex items-center">
@@ -68,7 +68,7 @@ const TransactionTabs = ({
           EFT
         </TabsTrigger>
         <TabsTrigger value="wire" className="flex items-center">
-          <Send className="mr-2 h-4 w-4" />
+          <ArrowRight className="mr-2 h-4 w-4" />
           Wire
         </TabsTrigger>
         <TabsTrigger value="bill" className="flex items-center">
