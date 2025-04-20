@@ -54,6 +54,16 @@ const Dashboard = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-indigo-600">Financial Dashboard</h1>
             <div className="flex items-center space-x-4">
+              <a
+                href="https://www.plaid.com/link/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Link External Account
+                <span className="sr-only">(opens in new tab)</span>
+              </a>
               <span className="text-gray-600">Welcome, User</span>
               <Button variant="outline" size="sm">
                 <LogOut className="h-4 w-4 mr-2" />

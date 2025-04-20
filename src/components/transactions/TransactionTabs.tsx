@@ -92,17 +92,6 @@ const TransactionTabs = ({
           Pay Government Tax
           <span className="sr-only">(opens in new tab)</span>
         </a>
-        
-        <a
-          href="https://www.plaid.com/link/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
-        >
-          <FileText className="mr-2 h-4 w-4" />
-          Link External Account History
-          <span className="sr-only">(opens in new tab)</span>
-        </a>
       </div>
       
       <TabsContent value="transfer">
