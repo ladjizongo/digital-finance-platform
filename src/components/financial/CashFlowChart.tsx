@@ -1,17 +1,16 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { CashFlowEntry } from "@/types/financial";
 
 interface CashFlowChartProps {
-  data: {
-    month: string;
-    income: number;
-    expenses: number;
-    balance: number;
-  }[];
+  data: CashFlowEntry[];
+  accountId: string;
 }
 
-export const CashFlowChart = ({ data }: CashFlowChartProps) => {
+export const CashFlowChart = ({ data, accountId }: CashFlowChartProps) => {
+  const filteredData = data.filter(flow => flow.accountId === accountId);
+
   return (
     <div>
       <h4 className="mb-2 text-sm font-medium">6-Month Cash Flow Trend</h4>
@@ -23,7 +22,7 @@ export const CashFlowChart = ({ data }: CashFlowChartProps) => {
             balance: { label: "Net Balance", color: "#3b82f6" },
           }}
         >
-          <LineChart data={data}>
+          <LineChart data={filteredData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />

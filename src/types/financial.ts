@@ -1,4 +1,3 @@
-
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -25,14 +24,17 @@ export interface YearlyMetrics {
   };
 }
 
+export interface CashFlowEntry {
+  month: string;
+  income: number;
+  expenses: number;
+  balance: number;
+  accountId: string;
+}
+
 export interface FinancialMetrics {
   monthlyAverageBalance: number;
-  cashFlow: {
-    month: string;
-    income: number;
-    expenses: number;
-    balance: number;
-  }[];
+  cashFlow: CashFlowEntry[];
   yearlyData: YearlyMetrics[];
   selectedYear?: string;
 }
@@ -46,4 +48,3 @@ export interface MetricCardProps {
   warningMessage?: string;
   successMessage?: string;
 }
-

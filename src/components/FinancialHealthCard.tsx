@@ -50,6 +50,7 @@ const FinancialHealthCard = () => {
   const [metrics, setMetrics] = useState<FinancialMetrics | null>(null);
   const [activeTab, setActiveTab] = useState<"upload" | "manual">("upload");
   const [selectedYear, setSelectedYear] = useState<string | undefined>(undefined);
+  const [activeAccount, setActiveAccount] = useState("1");
 
   const form = useForm<z.infer<typeof financialFormSchema>>({
     resolver: zodResolver(financialFormSchema),
@@ -77,12 +78,18 @@ const FinancialHealthCard = () => {
       setMetrics({
         monthlyAverageBalance: 12580.75,
         cashFlow: [
-          { month: "Jan", income: 24000, expenses: 18000, balance: 6000 },
-          { month: "Feb", income: 22000, expenses: 17500, balance: 4500 },
-          { month: "Mar", income: 26000, expenses: 19000, balance: 7000 },
-          { month: "Apr", income: 23000, expenses: 21000, balance: 2000 },
-          { month: "May", income: 28000, expenses: 20000, balance: 8000 },
-          { month: "Jun", income: 29000, expenses: 22000, balance: 7000 },
+          { month: "Jan", income: 24000, expenses: 18000, balance: 6000, accountId: "1" },
+          { month: "Feb", income: 22000, expenses: 17500, balance: 4500, accountId: "1" },
+          { month: "Mar", income: 26000, expenses: 19000, balance: 7000, accountId: "1" },
+          { month: "Apr", income: 23000, expenses: 21000, balance: 2000, accountId: "1" },
+          { month: "May", income: 28000, expenses: 20000, balance: 8000, accountId: "1" },
+          { month: "Jun", income: 29000, expenses: 22000, balance: 7000, accountId: "1" },
+          { month: "Jan", income: 12000, expenses: 8000, balance: 4000, accountId: "2" },
+          { month: "Feb", income: 13000, expenses: 9500, balance: 3500, accountId: "2" },
+          { month: "Mar", income: 15000, expenses: 10000, balance: 5000, accountId: "2" },
+          { month: "Apr", income: 14000, expenses: 11000, balance: 3000, accountId: "2" },
+          { month: "May", income: 16000, expenses: 12000, balance: 4000, accountId: "2" },
+          { month: "Jun", income: 17000, expenses: 12500, balance: 4500, accountId: "2" },
         ],
         yearlyData: [
           {
@@ -210,18 +217,19 @@ const FinancialHealthCard = () => {
           ...metrics,
           yearlyData: newYearlyData,
           selectedYear: values.year,
+          cashFlow: metrics.cashFlow
         });
         setSelectedYear(values.year);
       } else {
         setMetrics({
           monthlyAverageBalance: values.revenue / 12,
           cashFlow: [
-            { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-            { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-            { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-            { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-            { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
-            { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6 },
+            { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+            { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+            { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+            { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+            { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+            { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
           ],
           yearlyData: [
             {
@@ -367,8 +375,8 @@ const FinancialHealthCard = () => {
 
             {metrics && (
               <div className="space-y-4">
-                <CashFlowTable data={metrics.cashFlow} />
-                <CashFlowChart data={metrics.cashFlow} />
+                <CashFlowTable data={metrics.cashFlow} accountId={activeAccount} />
+                <CashFlowChart data={metrics.cashFlow} accountId={activeAccount} />
               </div>
             )}
           </div>
