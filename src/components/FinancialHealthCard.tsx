@@ -749,147 +749,86 @@ const FinancialHealthCard = () => {
               </div>
             )}
 
-            {currentYearData && (
+            {metrics && (
               <div className="space-y-4">
-                <h4 className="text-sm font-medium">Financial Statements Summary ({currentYearData.year})</h4>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div className="rounded-lg border p-4">
-                    <h5 className="font-medium mb-3">Balance Sheet</h5>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[50%]">Item</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Current Assets</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.assets.currentAssets.toLocaleString('en-US')}
+                <h4 className="text-sm font-medium">Monthly Cash Flow Summary</h4>
+                <div className="rounded-lg border p-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Month</TableHead>
+                        <TableHead className="text-right">Income</TableHead>
+                        <TableHead className="text-right">Expenses</TableHead>
+                        <TableHead className="text-right">Net Balance</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {metrics.cashFlow.map((flow) => (
+                        <TableRow key={flow.month}>
+                          <TableCell>{flow.month}</TableCell>
+                          <TableCell className="text-right text-green-600">
+                            ${flow.income.toLocaleString('en-US')}
+                          </TableCell>
+                          <TableCell className="text-right text-red-600">
+                            ${flow.expenses.toLocaleString('en-US')}
+                          </TableCell>
+                          <TableCell className={`text-right ${flow.balance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            ${flow.balance.toLocaleString('en-US')}
                           </TableCell>
                         </TableRow>
-                        <TableRow>
-                          <TableCell>Long-term Assets</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.assets.longTermAssets.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="font-medium">
-                          <TableCell>Total Assets</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.assets.totalAssets.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Current Liabilities</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.liabilities.currentLiabilities.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Long-term Liabilities</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.liabilities.longTermLiabilities.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="font-medium">
-                          <TableCell>Total Liabilities</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.liabilities.totalLiabilities.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="font-medium">
-                          <TableCell>Total Equity</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.equity.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </div>
-                  
-                  <div className="rounded-lg border p-4">
-                    <h5 className="font-medium mb-3">Income Statement</h5>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[50%]">Item</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>Revenue</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.income.revenue.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow>
-                          <TableCell>Expenses</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.income.expenses.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                        <TableRow className="font-medium">
-                          <TableCell>Net Income</TableCell>
-                          <TableCell className="text-right">
-                            ${currentYearData.income.netIncome.toLocaleString('en-US')}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <div>
+                  <h4 className="mb-2 text-sm font-medium">6-Month Cash Flow Trend</h4>
+                  <div className="h-72">
+                    <ChartContainer 
+                      config={{ 
+                        income: { label: "Income", color: "#4ade80" },
+                        expenses: { label: "Expenses", color: "#f87171" },
+                        balance: { label: "Net Balance", color: "#3b82f6" },
+                      }}
+                    >
+                      <LineChart data={metrics.cashFlow}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <ChartTooltip 
+                          content={
+                            <ChartTooltipContent 
+                              formatter={(value, name) => [`$${value.toLocaleString()}`, name]} 
+                            />
+                          } 
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="income" 
+                          stroke="var(--color-income)" 
+                          strokeWidth={2} 
+                          dot={{ r: 4 }} 
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="expenses" 
+                          stroke="var(--color-expenses)" 
+                          strokeWidth={2} 
+                          dot={{ r: 4 }} 
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="balance" 
+                          stroke="var(--color-balance)" 
+                          strokeWidth={2.5} 
+                          dot={{ r: 5 }} 
+                        />
+                      </LineChart>
+                    </ChartContainer>
                   </div>
                 </div>
               </div>
             )}
-            
-            <div>
-              <h4 className="mb-2 text-sm font-medium">6-Month Cash Flow</h4>
-              <div className="h-72">
-                <ChartContainer 
-                  config={{ 
-                    income: { label: "Income", color: "#4ade80" },
-                    expenses: { label: "Expenses", color: "#f87171" },
-                    balance: { label: "Net Balance", color: "#3b82f6" },
-                  }}
-                >
-                  <LineChart data={metrics.cashFlow}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <ChartTooltip 
-                      content={
-                        <ChartTooltipContent 
-                          formatter={(value, name) => [`$${value.toLocaleString()}`, name]} 
-                        />
-                      } 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="income" 
-                      stroke="var(--color-income)" 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="expenses" 
-                      stroke="var(--color-expenses)" 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="balance" 
-                      stroke="var(--color-balance)" 
-                      strokeWidth={2.5} 
-                      dot={{ r: 5 }} 
-                    />
-                  </LineChart>
-                </ChartContainer>
-              </div>
-            </div>
           </div>
         )}
       </CardContent>
