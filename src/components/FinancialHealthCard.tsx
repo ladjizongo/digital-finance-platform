@@ -50,12 +50,20 @@ const FinancialHealthCard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
   const queryClient = useQueryClient();
 
+  // Use React Query to fetch and cache the financial metrics data
   const { data: metrics, isLoading } = useQuery({
     queryKey: ['financialMetrics'],
-    queryFn: () => null as FinancialMetrics | null,
-    initialData: null,
+    // Since we're not actually fetching from a server, we'll return null as the initial data
+    queryFn: async () => {
+      // Try to get the data from localStorage first to ensure persistence
+      const storedData = localStorage.getItem('financialMetrics');
+      return storedData ? JSON.parse(storedData) : null;
+    },
+    staleTime: Infinity, // Keep the data fresh indefinitely
+    gcTime: Infinity, // Don't garbage collect the data
   });
 
+  // Process financials mutation
   const { mutate: processFinancials, isPending: isProcessing } = useMutation({
     mutationFn: async () => {
       // Simulating API call with the same mock data
@@ -132,7 +140,12 @@ const FinancialHealthCard = () => {
       } as FinancialMetrics;
     },
     onSuccess: (data) => {
+      // Store in React Query cache
       queryClient.setQueryData(['financialMetrics'], data);
+      
+      // Also save to localStorage for persistence across refreshes
+      localStorage.setItem('financialMetrics', JSON.stringify(data));
+      
       toast.success("Business health analysis complete!");
     },
   });
@@ -169,6 +182,8 @@ const FinancialHealthCard = () => {
     const totalLiabilities = values.currentLiabilities + values.longTermLiabilities;
     const calculatedEquity = totalAssets - totalLiabilities;
     const netIncome = values.revenue - values.expenses;
+    
+    let newData: FinancialMetrics;
     
     if (metrics) {
       const existingYearIndex = metrics.yearlyData.findIndex(
@@ -208,14 +223,14 @@ const FinancialHealthCard = () => {
         newYearlyData.push(newYearData);
       }
       
-      queryClient.setQueryData(['financialMetrics'], {
+      newData = {
         ...metrics,
         yearlyData: newYearlyData,
         selectedYear: values.year,
         cashFlow: metrics.cashFlow
-      });
+      };
     } else {
-      queryClient.setQueryData(['financialMetrics'], {
+      newData = {
         monthlyAverageBalance: values.revenue / 12,
         cashFlow: [
           { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
@@ -253,8 +268,14 @@ const FinancialHealthCard = () => {
           }
         ],
         selectedYear: values.year,
-      });
+      };
     }
+    
+    // Update React Query cache
+    queryClient.setQueryData(['financialMetrics'], newData);
+    
+    // Also save to localStorage for persistence
+    localStorage.setItem('financialMetrics', JSON.stringify(newData));
       
     form.reset();
     toast.success("Business health analysis updated!");
@@ -262,11 +283,29 @@ const FinancialHealthCard = () => {
   
   const handleYearChange = (year: string) => {
     if (metrics) {
-      queryClient.setQueryData(['financialMetrics'], {
+      const updatedMetrics = {
         ...metrics,
         selectedYear: year
-      });
+      };
+      
+      // Update React Query cache
+      queryClient.setQueryData(['financialMetrics'], updatedMetrics);
+      
+      // Also update localStorage
+      localStorage.setItem('financialMetrics', JSON.stringify(updatedMetrics));
     }
+  };
+  
+  const handleReset = () => {
+    // Clear React Query cache
+    queryClient.removeQueries({ queryKey: ['financialMetrics'] });
+    
+    // Clear localStorage
+    localStorage.removeItem('financialMetrics');
+    
+    setFile(null);
+    form.reset();
+    setActiveTab("upload");
   };
   
   const getCurrentYearData = () => {
@@ -381,12 +420,7 @@ const FinancialHealthCard = () => {
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => {
-              queryClient.setQueryData(['financialMetrics'], null);
-              setFile(null);
-              form.reset();
-              setActiveTab("upload");
-            }}
+            onClick={handleReset}
           >
             Reset
           </Button>
