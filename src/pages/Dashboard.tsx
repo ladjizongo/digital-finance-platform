@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { DollarSign, CreditCard, Home, ArrowRightLeft, LogOut, FileText, Receipt, BarChart, ArrowRight, Mail } from "lucide-react";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
@@ -351,6 +352,10 @@ const Dashboard = () => {
                 </TabsContent>
               ))}
             </Tabs>
+
+            <div className="mt-8">
+              <CreditDocumentUpload />
+            </div>
           </TabsContent>
           
           <TabsContent value="businessHealth" className="space-y-4">
