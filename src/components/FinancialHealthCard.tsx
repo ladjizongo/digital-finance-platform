@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UploadSection } from "./financial/UploadSection";
 import { MetricCard } from "./financial/MetricCard";
-import { CashFlowChart } from "./financial/CashFlowChart";
 import { CashFlowTable } from "./financial/CashFlowTable";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { ManualEntryForm } from "./financial/ManualEntryForm";
