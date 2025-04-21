@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import { MetricCard } from "./financial/MetricCard";
 import { CashFlowTable } from "./financial/CashFlowTable";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { ManualEntryForm } from "./financial/ManualEntryForm";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const financialFormSchema = z.object({
   // Year
@@ -46,36 +46,21 @@ type FinancialFormValues = z.infer<typeof financialFormSchema>;
 
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [metrics, setMetrics] = useState<FinancialMetrics | null>(null);
   const [activeTab, setActiveTab] = useState<"upload" | "manual">("upload");
-  const [selectedYear, setSelectedYear] = useState<string | undefined>(undefined);
   const [activeAccount, setActiveAccount] = useState("1");
+  const queryClient = useQueryClient();
 
-  const form = useForm<z.infer<typeof financialFormSchema>>({
-    resolver: zodResolver(financialFormSchema),
-    defaultValues: {
-      year: new Date().getFullYear().toString(),
-      currentAssets: 0,
-      longTermAssets: 0,
-      currentLiabilities: 0,
-      longTermLiabilities: 0,
-      revenue: 0,
-      expenses: 0,
-      payableDays: 0,
-      receivableDays: 0,
-      biWeeklyPayroll: 0,
-      notes: "",
-      monthlyPayables: 0,
-      monthlyReceivables: 0,
-    },
+  const { data: metrics, isLoading } = useQuery({
+    queryKey: ['financialMetrics'],
+    queryFn: () => null as FinancialMetrics | null,
+    initialData: null,
   });
 
-  const processFinancials = () => {
-    setIsLoading(true);
-    
-    setTimeout(() => {
-      setMetrics({
+  const { mutate: processFinancials, isPending: isProcessing } = useMutation({
+    mutationFn: async () => {
+      // Simulating API call with the same mock data
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return {
         monthlyAverageBalance: 12580.75,
         cashFlow: [
           { month: "Jan", income: 24000, expenses: 18000, balance: 6000, accountId: "1" },
@@ -144,19 +129,32 @@ const FinancialHealthCard = () => {
           }
         ],
         selectedYear: "2024"
-      });
-      
-      setSelectedYear("2024");
-      setIsLoading(false);
+      } as FinancialMetrics;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['financialMetrics'], data);
       toast.success("Business health analysis complete!");
-    }, 1500);
-  };
+    },
+  });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+  const form = useForm<z.infer<typeof financialFormSchema>>({
+    resolver: zodResolver(financialFormSchema),
+    defaultValues: {
+      year: new Date().getFullYear().toString(),
+      currentAssets: 0,
+      longTermAssets: 0,
+      currentLiabilities: 0,
+      longTermLiabilities: 0,
+      revenue: 0,
+      expenses: 0,
+      payableDays: 0,
+      receivableDays: 0,
+      biWeeklyPayroll: 0,
+      notes: "",
+      monthlyPayables: 0,
+      monthlyReceivables: 0,
+    },
+  });
 
   const handleUpload = () => {
     if (file) {
@@ -167,116 +165,113 @@ const FinancialHealthCard = () => {
   };
 
   const handleManualSubmit = (values: FinancialFormValues) => {
-    setIsLoading(true);
-    
     const totalAssets = values.currentAssets + values.longTermAssets;
     const totalLiabilities = values.currentLiabilities + values.longTermLiabilities;
     const calculatedEquity = totalAssets - totalLiabilities;
     const netIncome = values.revenue - values.expenses;
-
-    setTimeout(() => {
-      if (metrics) {
-        const existingYearIndex = metrics.yearlyData.findIndex(
-          data => data.year === values.year
-        );
-        
-        const newYearlyData = [...metrics.yearlyData];
-        const newYearData: YearlyMetrics = {
-          year: values.year,
-          payableDays: values.payableDays,
-          receivableDays: values.receivableDays,
-          biWeeklyPayroll: values.biWeeklyPayroll,
-          monthlyPayroll: values.biWeeklyPayroll * 2.17,
-          monthlyPayables: values.monthlyPayables,
-          monthlyReceivables: values.monthlyReceivables,
-          assets: {
-            currentAssets: values.currentAssets,
-            longTermAssets: values.longTermAssets,
-            totalAssets,
-          },
-          liabilities: {
-            currentLiabilities: values.currentLiabilities,
-            longTermLiabilities: values.longTermLiabilities,
-            totalLiabilities,
-          },
-          equity: calculatedEquity,
-          income: {
-            revenue: values.revenue,
-            expenses: values.expenses,
-            netIncome,
-          },
-        };
-        
-        if (existingYearIndex >= 0) {
-          newYearlyData[existingYearIndex] = newYearData;
-        } else {
-          newYearlyData.push(newYearData);
-        }
-        
-        setMetrics({
-          ...metrics,
-          yearlyData: newYearlyData,
-          selectedYear: values.year,
-          cashFlow: metrics.cashFlow
-        });
-        setSelectedYear(values.year);
+    
+    if (metrics) {
+      const existingYearIndex = metrics.yearlyData.findIndex(
+        data => data.year === values.year
+      );
+      
+      const newYearlyData = [...metrics.yearlyData];
+      const newYearData: YearlyMetrics = {
+        year: values.year,
+        payableDays: values.payableDays,
+        receivableDays: values.receivableDays,
+        biWeeklyPayroll: values.biWeeklyPayroll,
+        monthlyPayroll: values.biWeeklyPayroll * 2.17,
+        monthlyPayables: values.monthlyPayables,
+        monthlyReceivables: values.monthlyReceivables,
+        assets: {
+          currentAssets: values.currentAssets,
+          longTermAssets: values.longTermAssets,
+          totalAssets,
+        },
+        liabilities: {
+          currentLiabilities: values.currentLiabilities,
+          longTermLiabilities: values.longTermLiabilities,
+          totalLiabilities,
+        },
+        equity: calculatedEquity,
+        income: {
+          revenue: values.revenue,
+          expenses: values.expenses,
+          netIncome,
+        },
+      };
+      
+      if (existingYearIndex >= 0) {
+        newYearlyData[existingYearIndex] = newYearData;
       } else {
-        setMetrics({
-          monthlyAverageBalance: values.revenue / 12,
-          cashFlow: [
-            { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-            { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-            { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-            { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-            { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-            { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
-          ],
-          yearlyData: [
-            {
-              year: values.year,
-              payableDays: values.payableDays,
-              receivableDays: values.receivableDays,
-              biWeeklyPayroll: values.biWeeklyPayroll,
-              monthlyPayroll: values.biWeeklyPayroll * 2.17,
-              monthlyPayables: values.monthlyPayables,
-              monthlyReceivables: values.monthlyReceivables,
-              assets: {
-                currentAssets: values.currentAssets,
-                longTermAssets: values.longTermAssets,
-                totalAssets,
-              },
-              liabilities: {
-                currentLiabilities: values.currentLiabilities,
-                longTermLiabilities: values.longTermLiabilities,
-                totalLiabilities,
-              },
-              equity: calculatedEquity,
-              income: {
-                revenue: values.revenue,
-                expenses: values.expenses,
-                netIncome,
-              },
-            }
-          ],
-          selectedYear: values.year,
-        });
-        setSelectedYear(values.year);
+        newYearlyData.push(newYearData);
       }
       
-      form.reset();
-      setIsLoading(false);
-      toast.success("Business health analysis updated!");
-    }, 1500);
+      queryClient.setQueryData(['financialMetrics'], {
+        ...metrics,
+        yearlyData: newYearlyData,
+        selectedYear: values.year,
+        cashFlow: metrics.cashFlow
+      });
+    } else {
+      queryClient.setQueryData(['financialMetrics'], {
+        monthlyAverageBalance: values.revenue / 12,
+        cashFlow: [
+          { month: "Jan", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+          { month: "Feb", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+          { month: "Mar", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+          { month: "Apr", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+          { month: "May", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+          { month: "Jun", income: values.revenue / 6, expenses: values.expenses / 6, balance: (values.revenue - values.expenses) / 6, accountId: "1" },
+        ],
+        yearlyData: [
+          {
+            year: values.year,
+            payableDays: values.payableDays,
+            receivableDays: values.receivableDays,
+            biWeeklyPayroll: values.biWeeklyPayroll,
+            monthlyPayroll: values.biWeeklyPayroll * 2.17,
+            monthlyPayables: values.monthlyPayables,
+            monthlyReceivables: values.monthlyReceivables,
+            assets: {
+              currentAssets: values.currentAssets,
+              longTermAssets: values.longTermAssets,
+              totalAssets,
+            },
+            liabilities: {
+              currentLiabilities: values.currentLiabilities,
+              longTermLiabilities: values.longTermLiabilities,
+              totalLiabilities,
+            },
+            equity: calculatedEquity,
+            income: {
+              revenue: values.revenue,
+              expenses: values.expenses,
+              netIncome,
+            },
+          }
+        ],
+        selectedYear: values.year,
+      });
+    }
+      
+    form.reset();
+    toast.success("Business health analysis updated!");
   };
   
   const handleYearChange = (year: string) => {
     if (metrics) {
-      setSelectedYear(year);
+      queryClient.setQueryData(['financialMetrics'], {
+        ...metrics,
+        selectedYear: year
+      });
     }
   };
   
   const getCurrentYearData = () => {
-    if (!metrics || !selectedYear) return null;
+    if (!metrics || !metrics.yearlyData) return null;
+    const selectedYear = metrics.selectedYear || metrics.yearlyData[0]?.year;
     return metrics.yearlyData.find(data => data.year === selectedYear) || metrics.yearlyData[0];
   };
   
@@ -305,13 +300,13 @@ const FinancialHealthCard = () => {
                 <UploadSection 
                   file={file}
                   setFile={setFile}
-                  isLoading={isLoading}
+                  isLoading={isProcessing}
                   onUpload={handleUpload}
                 />
               </TabsContent>
               
               <TabsContent value="manual" className="space-y-4 mt-4">
-                <ManualEntryForm form={form} isLoading={isLoading} onSubmit={handleManualSubmit} />
+                <ManualEntryForm form={form} isLoading={isProcessing} onSubmit={handleManualSubmit} />
               </TabsContent>
             </Tabs>
           </div>
@@ -320,7 +315,7 @@ const FinancialHealthCard = () => {
             {metrics.yearlyData.length > 1 && (
               <div className="flex justify-end">
                 <Select 
-                  value={selectedYear} 
+                  value={metrics.selectedYear} 
                   onValueChange={handleYearChange}
                 >
                   <SelectTrigger className="w-[120px]">
@@ -387,11 +382,10 @@ const FinancialHealthCard = () => {
             variant="outline" 
             size="sm" 
             onClick={() => {
-              setMetrics(null);
+              queryClient.setQueryData(['financialMetrics'], null);
               setFile(null);
               form.reset();
               setActiveTab("upload");
-              setSelectedYear(undefined);
             }}
           >
             Reset
