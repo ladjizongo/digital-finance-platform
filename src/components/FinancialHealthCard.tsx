@@ -12,7 +12,7 @@ import { UploadSection } from "./financial/UploadSection";
 import { MetricCard } from "./financial/MetricCard";
 import { CashFlowChart } from "./financial/CashFlowChart";
 import { CashFlowTable } from "./financial/CashFlowTable";
-import { FinancialMetrics } from "@/types/financial";
+import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { ManualEntryForm } from "./financial/ManualEntryForm";
 
 const financialFormSchema = z.object({
