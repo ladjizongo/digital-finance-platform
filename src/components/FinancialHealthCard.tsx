@@ -376,7 +376,6 @@ const FinancialHealthCard = () => {
             {metrics && (
               <div className="space-y-4">
                 <CashFlowTable data={metrics.cashFlow} accountId={activeAccount} />
-                <CashFlowChart data={metrics.cashFlow} accountId={activeAccount} />
               </div>
             )}
           </div>
