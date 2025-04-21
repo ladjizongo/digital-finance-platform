@@ -15,44 +15,6 @@ import { CashFlowTable } from "./financial/CashFlowTable";
 import { FinancialMetrics } from "@/types/financial";
 import { ManualEntryForm } from "./financial/ManualEntryForm";
 
-interface YearlyMetrics {
-  year: string;
-  payableDays: number;
-  receivableDays: number;
-  biWeeklyPayroll: number;
-  monthlyPayroll: number;
-  monthlyPayables: number;
-  monthlyReceivables: number;
-  assets: {
-    currentAssets: number;
-    longTermAssets: number;
-    totalAssets: number;
-  };
-  liabilities: {
-    currentLiabilities: number;
-    longTermLiabilities: number;
-    totalLiabilities: number;
-  };
-  equity: number;
-  income: {
-    revenue: number;
-    expenses: number;
-    netIncome: number;
-  };
-}
-
-interface FinancialMetrics {
-  monthlyAverageBalance: number;
-  cashFlow: {
-    month: string;
-    income: number;
-    expenses: number;
-    balance: number;
-  }[];
-  yearlyData: YearlyMetrics[];
-  selectedYear?: string;
-}
-
 const financialFormSchema = z.object({
   // Year
   year: z.string().min(4, { message: "Please select a year" }),
