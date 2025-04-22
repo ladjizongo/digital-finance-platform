@@ -6,6 +6,7 @@ import AccountDetails from "@/components/dashboard/AccountDetails";
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { DownloadStatements } from "@/components/dashboard/DownloadStatements";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
@@ -156,6 +157,12 @@ const Dashboard = () => {
             
             <TabsContent value="accounts">
               <AccountOverviewCards financialData={financialData} />
+              
+              <DownloadStatements
+                accounts={financialData.accounts}
+                creditCards={financialData.creditCards}
+                loans={financialData.loans}
+              />
               
               <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
                 <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
