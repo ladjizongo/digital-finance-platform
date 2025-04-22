@@ -1,4 +1,3 @@
-
 import { DollarSign, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -75,6 +74,18 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
     (sum, card) => sum + card.availableCredit,
     0
   );
+
+  // Calculate weighted average purchase rate for credit cards
+  const weightedCreditCardRate = financialData.creditCards.reduce(
+    (sum, card) => sum + (card.purchaseRate * (card.balance / totalCreditCardBalance)),
+    0
+  );
+
+  // Calculate total minimum payment for credit cards
+  const totalCreditCardMinPayment = financialData.creditCards.reduce(
+    (sum, card) => sum + card.minimumPayment,
+    0
+  );
   
   // Calculate totals for all business loans
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
@@ -130,6 +141,14 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
             <span className="text-sm">Total Credit Limit:</span>
             <span className="text-sm font-medium">${totalCreditLimit.toLocaleString('en-US')}</span>
           </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-sm">Avg. Interest Rate:</span>
+            <span className="text-sm font-medium">{weightedCreditCardRate.toFixed(2)}%</span>
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-sm">Total Minimum Payment:</span>
+            <span className="text-sm font-medium">${totalCreditCardMinPayment.toLocaleString('en-US')}</span>
+          </div>
         </CardContent>
       </Card>
       
@@ -176,4 +195,3 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
 };
 
 export default AccountOverviewCards;
-
