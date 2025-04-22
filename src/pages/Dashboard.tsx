@@ -141,7 +141,16 @@ const Dashboard = () => {
       { id: 6, date: "Apr 5, 2025", description: "Transfer from Checking", amount: 500.00, account: "2" },
     ]
   };
-  
+
+  const bankLinks = [
+    { name: "RBC Royal Bank", url: "https://www.rbcroyalbank.com/onlinebanking/bankingusertips/other-useful-services/download-your-transactions.html" },
+    { name: "CIBC", url: "https://www.cibc.com/en/personal-banking/ways-to-bank/how-to/download-transactions.html" },
+    { name: "TD Canada Trust", url: "https://www.td.com/ca/en/personal-banking/how-to/digital-banking/banking-the-way-you-want-it/download-statements/" },
+    { name: "BMO", url: "https://www.bmo.com/main/personal/ways-to-bank/online-banking/" },
+    { name: "National Bank", url: "https://www.nbc.ca/personal/accounts/banking-services/online-banking.html" },
+    { name: "Desjardins", url: "https://www.desjardins.com/ca/personal/accounts-services/ways-to-bank/online/accesD/index.jsp" }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
@@ -149,11 +158,12 @@ const Dashboard = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
+            <TabsList className="grid grid-cols-5 w-full max-w-md mb-4">
               <TabsTrigger value="accounts">Accounts</TabsTrigger>
               <TabsTrigger value="creditCards">Credit Cards</TabsTrigger>
               <TabsTrigger value="loans">Loans</TabsTrigger>
               <TabsTrigger value="businessHealth">Business Health</TabsTrigger>
+              <TabsTrigger value="externalAccount">External Account</TabsTrigger>
             </TabsList>
             
             <TabsContent value="accounts">
@@ -365,6 +375,31 @@ const Dashboard = () => {
             
             <TabsContent value="businessHealth">
               <FinancialHealthCard />
+            </TabsContent>
+
+            <TabsContent value="externalAccount">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Link External Account</CardTitle>
+                  <CardDescription>Connect your account from another bank</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                    {bankLinks.map((bank) => (
+                      <a
+                        key={bank.name}
+                        href={bank.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors"
+                      >
+                        <FileText className="h-5 w-5 mr-3 text-blue-600" />
+                        <span className="text-sm font-medium">{bank.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
