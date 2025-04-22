@@ -11,7 +11,7 @@ export const bankData: Bank[] = [
   {
     name: "RBC Royal Bank",
     url: "https://www.rbcroyalbank.com/onlinebanking/bankingusertips/other-useful-services/download-your-transactions.html",
-    logo: "https://www.rbc.com/our-company/_assets-custom/images/RBC_logo.svg"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Royal_Bank_of_Canada_logo.svg"
   },
   {
     name: "CIBC",
@@ -21,22 +21,22 @@ export const bankData: Bank[] = [
   {
     name: "TD Canada Trust",
     url: "https://www.td.com/ca/en/personal-banking/how-to/digital-banking/banking-the-way-you-want-it/download-statements/",
-    logo: "https://www.td.com/content/dam/tdcom/images/logos/td-logo.svg"
+    logo: "https://upload.wikimedia.org/wikipedia/en/c/c0/TD_Bank_logo.svg"
   },
   {
     name: "BMO",
     url: "https://www.bmo.com/main/personal/ways-to-bank/online-banking/",
-    logo: "https://www.bmo.com/main/assets/images/bmo-logo-header-en.svg"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Bank_of_Montreal_Logo.svg"
   },
   {
     name: "National Bank",
     url: "https://www.nbc.ca/personal/accounts/banking-services/online-banking.html",
-    logo: "https://www.nbc.ca/content/dam/bnc/en/about-us/news/news-publications/images/nbc-logo.svg"
+    logo: "https://upload.wikimedia.org/wikipedia/en/0/02/National_Bank_of_Canada.svg"
   },
   {
     name: "Desjardins",
     url: "https://www.desjardins.com/ca/personal/accounts-services/ways-to-bank/online/accesD/index.jsp",
-    logo: "https://www.desjardins.com/content/dam/desjardins-logo.svg"
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Desjardins_logo.svg"
   }
 ];
 
