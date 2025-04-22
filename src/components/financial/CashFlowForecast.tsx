@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -217,6 +216,26 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
               </div>
             )}
           </div>
+        </div>
+        <div className="mt-8 rounded-lg border bg-white p-4 shadow-sm space-y-4">
+          <h3 className="text-lg font-semibold mb-2">Integrations</h3>
+          <p className="text-sm text-gray-700">
+            Quickly sync your data for more accurate forecasting by connecting to your Point-of-Sale (POS), E-Commerce, or Invoicing tools.
+          </p>
+          <div className="flex flex-wrap gap-4 mt-2">
+            <Button variant="outline" className="min-w-[150px]">
+              Connect POS
+            </Button>
+            <Button variant="outline" className="min-w-[150px]">
+              Connect E-Commerce
+            </Button>
+            <Button variant="outline" className="min-w-[150px]">
+              Connect Invoicing
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            (This is a demo section. Actual integrations require backend setup. Connect Supabase to enable real integrations.)
+          </p>
         </div>
       </CardContent>
     </Card>
