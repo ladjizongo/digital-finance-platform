@@ -1,7 +1,8 @@
 
-import { FileText, LogOut } from "lucide-react";
+import { FileText, LogOut, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 interface BankLink {
   name: string;
@@ -24,6 +25,10 @@ const DashboardHeader = () => {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-indigo-600">Financial Dashboard</h1>
           <div className="flex items-center space-x-4">
+            <Link to="/transactions" className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-500">
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Transactions & Payments
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500">
