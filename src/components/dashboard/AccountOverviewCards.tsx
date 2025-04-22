@@ -1,8 +1,15 @@
+
 import { DollarSign, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FinancialData {
   totalBalance: number;
+  accounts: {
+    id: string;
+    name: string;
+    balance: number;
+    accountNumber: string;
+  }[];
   creditCards: {
     id: string;
     name: string;
@@ -47,6 +54,12 @@ interface AccountOverviewCardsProps {
 const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
   const primaryCreditCard = financialData.creditCards[0];
   
+  // Calculate total balance from accounts only
+  const totalAccountsBalance = financialData.accounts.reduce(
+    (sum, account) => sum + account.balance, 
+    0
+  );
+  
   // Calculate totals for all business loans
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
@@ -73,10 +86,10 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${financialData.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${totalAccountsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Across all accounts
+            Total balance across all accounts
           </p>
         </CardContent>
       </Card>
