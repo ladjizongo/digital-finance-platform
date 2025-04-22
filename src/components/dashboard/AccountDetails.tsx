@@ -1,7 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Link } from "react-router-dom";
 
 interface Transaction {
   id: number;
@@ -70,7 +70,9 @@ const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline">View All Transactions</Button>
-        <Button>Make a Transfer</Button>
+        <Button asChild>
+          <Link to="/transactions">Make Transaction</Link>
+        </Button>
       </CardFooter>
     </Card>
   );
