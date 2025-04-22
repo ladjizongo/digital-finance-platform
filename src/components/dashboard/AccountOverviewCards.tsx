@@ -14,6 +14,7 @@ interface FinancialData {
     purchaseRate: number;
     cashAdvanceRate: number;
     dueDate: string;
+    statementDate: string;
     transactions: Array<{
       date: string;
       description: string;
@@ -33,7 +34,6 @@ interface AccountOverviewCardsProps {
 }
 
 const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
-  // Use the first credit card for the overview display
   const primaryCreditCard = financialData.creditCards[0];
   
   return (
@@ -68,6 +68,10 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
           <div className="flex justify-between mt-4">
             <span className="text-sm">Available Credit:</span>
             <span className="text-sm font-medium">${primaryCreditCard.availableCredit.toLocaleString('en-US')}</span>
+          </div>
+          <div className="flex justify-between mt-1">
+            <span className="text-sm">Statement Date:</span>
+            <span className="text-sm font-medium">{primaryCreditCard.statementDate}</span>
           </div>
         </CardContent>
       </Card>

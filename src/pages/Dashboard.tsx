@@ -31,6 +31,7 @@ const Dashboard = () => {
         purchaseRate: 19.99,
         cashAdvanceRate: 22.99,
         dueDate: "May 15, 2025",
+        statementDate: "Apr 30, 2025",
         transactions: [
           { date: "Apr 20, 2025", description: "Restaurant", amount: -125.30 },
           { date: "Apr 18, 2025", description: "Gas Station", amount: -45.00 },
@@ -47,6 +48,7 @@ const Dashboard = () => {
         purchaseRate: 18.99,
         cashAdvanceRate: 21.99,
         dueDate: "May 20, 2025",
+        statementDate: "Apr 30, 2025",
         transactions: [
           { date: "Apr 19, 2025", description: "Grocery Store", amount: -180.50 },
           { date: "Apr 17, 2025", description: "Pharmacy", amount: -65.00 },
@@ -63,6 +65,7 @@ const Dashboard = () => {
         purchaseRate: 20.99,
         cashAdvanceRate: 23.99,
         dueDate: "May 18, 2025",
+        statementDate: "Apr 30, 2025",
         transactions: [
           { date: "Apr 21, 2025", description: "Airline Tickets", amount: -850.80 },
           { date: "Apr 16, 2025", description: "Hotel", amount: -450.00 },
