@@ -71,7 +71,7 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
               className={cn("p-3 pointer-events-auto border rounded-md")}
               classNames={{
                 day_selected: "bg-primary",
-                day: (date) => cn(getDateClassName(date)),
+                day: cn(""), // Fix: Use a string instead of a function
               }}
               components={{
                 DayContent: (props) => {
@@ -82,7 +82,10 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
                   );
                   
                   return (
-                    <div className="relative flex h-9 w-9 items-center justify-center p-0">
+                    <div className={cn(
+                      "relative flex h-9 w-9 items-center justify-center p-0",
+                      getDateClassName(props.date) // Add the class directly here instead
+                    )}>
                       {props.date.getDate()}
                       {isWarning && (
                         <div className="absolute bottom-0 right-0">
