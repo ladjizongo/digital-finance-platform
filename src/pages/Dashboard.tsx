@@ -79,19 +79,53 @@ const Dashboard = () => {
     loans: [
       {
         id: "loan1",
-        name: "Personal Loan",
-        balance: 15000.00,
-        limit: 25000.00,
-        availableCredit: 10000.00,
+        name: "Business Line of Credit",
+        balance: 75000.00,
+        limit: 100000.00,
+        availableCredit: 25000.00,
         interestRate: 8.99,
-        monthlyPayment: 458.33,
+        monthlyPayment: 2291.67,
         nextPaymentDate: "May 1, 2025",
         statementDate: "Apr 30, 2025",
-        minimumPayment: 458.33,
+        minimumPayment: 2291.67,
         transactions: [
-          { date: "Apr 20, 2025", description: "Home Renovation", amount: -5000.00 },
-          { date: "Apr 15, 2025", description: "Loan Payment", amount: -458.33 },
-          { date: "Mar 15, 2025", description: "Loan Payment", amount: -458.33 },
+          { date: "Apr 20, 2025", description: "Equipment Purchase", amount: -25000.00 },
+          { date: "Apr 15, 2025", description: "Loan Payment", amount: -2291.67 },
+          { date: "Mar 15, 2025", description: "Loan Payment", amount: -2291.67 },
+        ]
+      },
+      {
+        id: "loan2",
+        name: "Equipment Financing",
+        balance: 45000.00,
+        limit: 50000.00,
+        availableCredit: 5000.00,
+        interestRate: 7.50,
+        monthlyPayment: 1458.33,
+        nextPaymentDate: "May 5, 2025",
+        statementDate: "Apr 30, 2025",
+        minimumPayment: 1458.33,
+        transactions: [
+          { date: "Apr 18, 2025", description: "Manufacturing Equipment", amount: -15000.00 },
+          { date: "Apr 15, 2025", description: "Loan Payment", amount: -1458.33 },
+          { date: "Mar 15, 2025", description: "Loan Payment", amount: -1458.33 },
+        ]
+      },
+      {
+        id: "loan3",
+        name: "Working Capital Loan",
+        balance: 30000.00,
+        limit: 35000.00,
+        availableCredit: 5000.00,
+        interestRate: 9.99,
+        monthlyPayment: 1041.67,
+        nextPaymentDate: "May 10, 2025",
+        statementDate: "Apr 30, 2025",
+        minimumPayment: 1041.67,
+        transactions: [
+          { date: "Apr 17, 2025", description: "Inventory Purchase", amount: -10000.00 },
+          { date: "Apr 15, 2025", description: "Loan Payment", amount: -1041.67 },
+          { date: "Mar 15, 2025", description: "Loan Payment", amount: -1041.67 },
         ]
       }
     ],
