@@ -1,10 +1,10 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 
 interface UploadedFile {
   id: string;
@@ -28,6 +28,19 @@ const CreditDocumentUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedDocType, setSelectedDocType] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
+
+  // Load files from localStorage on component mount
+  useEffect(() => {
+    const savedFiles = localStorage.getItem('uploadedCreditDocs');
+    if (savedFiles) {
+      setFiles(JSON.parse(savedFiles));
+    }
+  }, []);
+
+  // Save files to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('uploadedCreditDocs', JSON.stringify(files));
+  }, [files]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.length || !selectedDocType || !selectedYear) {
@@ -59,7 +72,11 @@ const CreditDocumentUpload = () => {
   };
 
   const removeFile = (fileId: string) => {
-    setFiles(prev => prev.filter(file => file.id !== fileId));
+    setFiles(prev => {
+      const updatedFiles = prev.filter(file => file.id !== fileId);
+      localStorage.setItem('uploadedCreditDocs', JSON.stringify(updatedFiles));
+      return updatedFiles;
+    });
     toast.success("Document removed");
   };
 
