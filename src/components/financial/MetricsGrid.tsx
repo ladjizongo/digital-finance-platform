@@ -53,4 +53,3 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
     </div>
   );
 };
-

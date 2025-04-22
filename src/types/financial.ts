@@ -1,3 +1,4 @@
+
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -45,7 +46,7 @@ export interface MetricCardProps {
   unit?: string;
   description?: string;
   warningThreshold?: number;
-  warningMessage?: string;
+  warningMessage?: React.ReactNode;
   successMessage?: string;
   isCircleDisplay?: boolean;
   compareValue?: number;
