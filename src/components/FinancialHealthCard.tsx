@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart } from "lucide-react";
+import { BarChart, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -388,8 +388,15 @@ const FinancialHealthCard = () => {
                   value={currentYearData.receivableDays}
                   unit="days"
                   warningThreshold={45}
-                  warningMessage="Collection period is too long"
-                  successMessage="Healthy collection period"
+                  warningMessage={
+                    <>
+                      <div className="flex items-center justify-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-red-500" />
+                        <span>Receivables are greater than payables</span>
+                      </div>
+                    </>
+                  }
+                  successMessage="Healthy cash flow"
                   isCircleDisplay
                   compareValue={currentYearData.payableDays}
                 />
