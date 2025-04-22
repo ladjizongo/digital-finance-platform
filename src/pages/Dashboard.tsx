@@ -1,7 +1,5 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import AccountOverviewCards from "@/components/dashboard/AccountOverviewCards";
 import AccountDetails from "@/components/dashboard/AccountDetails";
@@ -9,6 +7,7 @@ import FinancialHealthCard from "@/components/FinancialHealthCard";
 import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { DownloadStatements } from "@/components/dashboard/DownloadStatements";
+import BankLogos from "@/components/dashboard/BankLogos";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
@@ -386,20 +385,7 @@ const Dashboard = () => {
                   <CardDescription>Connect your account from another bank</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4">
-                    {bankLinks.map((bank) => (
-                      <a
-                        key={bank.name}
-                        href={bank.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center p-3 rounded-lg border hover:bg-gray-50 transition-colors"
-                      >
-                        <FileText className="h-5 w-5 mr-3 text-blue-600" />
-                        <span className="text-sm font-medium">{bank.name}</span>
-                      </a>
-                    ))}
-                  </div>
+                  <BankLogos />
                 </CardContent>
               </Card>
             </TabsContent>
