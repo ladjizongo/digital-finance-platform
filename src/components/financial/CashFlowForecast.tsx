@@ -5,10 +5,11 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, TrendingDown, Circle, CircleAlert } from "lucide-react";
+import { CalendarDays, TrendingDown, Circle, CircleAlert, Link, Store, CreditCard, FileInvoice } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FinancialEvent, FinancialMetrics } from "@/types/financial";
 import { useForecastData } from "@/hooks/useForecastData";
+import { toast } from "sonner";
 
 interface CashFlowForecastProps {
   metrics: FinancialMetrics;
@@ -50,6 +51,10 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
     : [];
 
   const selectedDateCashFlow = date ? cashFlowOnDate(date) : null;
+
+  const handleConnectService = (service: string) => {
+    toast.success(`Integration with ${service} initiated. This is a demo feature.`);
+  };
 
   return (
     <Card className="w-full">
@@ -217,25 +222,63 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
             )}
           </div>
         </div>
-        <div className="mt-8 rounded-lg border bg-white p-4 shadow-sm space-y-4">
-          <h3 className="text-lg font-semibold mb-2">Integrations</h3>
+
+        <div className="mt-8 rounded-lg border bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-md space-y-4">
+          <h3 className="text-xl font-semibold mb-2 text-indigo-700">Data Integrations</h3>
           <p className="text-sm text-gray-700">
-            Quickly sync your data for more accurate forecasting by connecting to your Point-of-Sale (POS), E-Commerce, or Invoicing tools.
+            Sync your financial data automatically for more accurate forecasting by connecting to your business tools.
           </p>
-          <div className="flex flex-wrap gap-4 mt-2">
-            <Button variant="outline" className="min-w-[150px]">
-              Connect POS
-            </Button>
-            <Button variant="outline" className="min-w-[150px]">
-              Connect E-Commerce
-            </Button>
-            <Button variant="outline" className="min-w-[150px]">
-              Connect Invoicing
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm hover:shadow-md transition-all">
+              <Store className="h-6 w-6 text-indigo-600 mb-2" />
+              <h4 className="font-medium mb-1">Point-of-Sale Systems</h4>
+              <p className="text-xs text-gray-600 mb-3">Import daily sales and inventory data from your POS system.</p>
+              <Button 
+                variant="outline" 
+                className="w-full border-indigo-200 hover:bg-indigo-50"
+                onClick={() => handleConnectService('POS')}
+              >
+                Connect POS
+              </Button>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm hover:shadow-md transition-all">
+              <CreditCard className="h-6 w-6 text-indigo-600 mb-2" />
+              <h4 className="font-medium mb-1">E-Commerce Platforms</h4>
+              <p className="text-xs text-gray-600 mb-3">Sync online store transactions and customer data automatically.</p>
+              <Button 
+                variant="outline" 
+                className="w-full border-indigo-200 hover:bg-indigo-50"
+                onClick={() => handleConnectService('E-Commerce')}
+              >
+                Connect E-Commerce
+              </Button>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm hover:shadow-md transition-all">
+              <FileInvoice className="h-6 w-6 text-indigo-600 mb-2" />
+              <h4 className="font-medium mb-1">Invoicing Software</h4>
+              <p className="text-xs text-gray-600 mb-3">Track pending payments and invoice status from your billing system.</p>
+              <Button 
+                variant="outline" 
+                className="w-full border-indigo-200 hover:bg-indigo-50"
+                onClick={() => handleConnectService('Invoicing')}
+              >
+                Connect Invoicing
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between mt-4 pt-2 border-t border-indigo-100">
+            <p className="text-xs text-gray-500">
+              Demo feature. Connect Supabase to enable real integrations with your business tools.
+            </p>
+            <Button variant="link" size="sm" className="text-indigo-600 p-0 h-auto" onClick={() => toast.info("API documentation would appear here in a production environment.")}>
+              <Link className="h-4 w-4 mr-1" />
+              API Docs
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            (This is a demo section. Actual integrations require backend setup. Connect Supabase to enable real integrations.)
-          </p>
         </div>
       </CardContent>
     </Card>

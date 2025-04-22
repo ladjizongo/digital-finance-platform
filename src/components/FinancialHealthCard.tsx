@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +15,7 @@ import { CashFlowForecast } from "./financial/CashFlowForecast";
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
   const [activeAccount, setActiveAccount] = useState("1");
-  const [activeTab, setActiveTab] = useState("current");
+  const [activeTab, setActiveTab] = useState("forecast");
   
   const {
     metrics,
@@ -69,7 +68,6 @@ const FinancialHealthCard = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Business health score section */}
             <BusinessHealthScore metrics={metrics} />
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
