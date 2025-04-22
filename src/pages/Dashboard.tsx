@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileText } from "lucide-react";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import AccountOverviewCards from "@/components/dashboard/AccountOverviewCards";
 import AccountDetails from "@/components/dashboard/AccountDetails";
