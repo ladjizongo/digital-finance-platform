@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,8 +17,6 @@ interface UploadedFile {
 const DOCUMENT_TYPES = {
   FINANCIAL_STATEMENT: "Financial Statement",
   NOTICE_OF_ASSESSMENT: "Notice of Assessment",
-  T4: "T4 Slip",
-  PAY_STUB: "Pay Stub",
   BANK_STATEMENT: "Bank Statement",
   INVESTMENT_STATEMENT: "Investment Statement"
 };
