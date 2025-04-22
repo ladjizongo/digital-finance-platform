@@ -1,3 +1,4 @@
+
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -49,4 +50,29 @@ export interface MetricCardProps {
   successMessage?: string;
   isCircleDisplay?: boolean;
   compareValue?: number;
+}
+
+export interface FinancialEvent {
+  date: string;
+  title: string;
+  type: 'payroll' | 'rent' | 'invoice' | 'tax' | 'other';
+  amount: number;
+  recurring?: boolean;
+  recurrencePattern?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
+}
+
+export interface DailyCashFlow {
+  date: string;
+  projectedBalance: number;
+  safeThreshold: number;
+  income: number;
+  expenses: number;
+  netFlow: number;
+  events: FinancialEvent[];
+}
+
+export interface ForecastData {
+  dailyCashFlow: DailyCashFlow[];
+  events: FinancialEvent[];
+  warningDates: string[];
 }
