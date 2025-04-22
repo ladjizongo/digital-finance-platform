@@ -10,6 +10,7 @@ import { YearSelector } from "./financial/YearSelector";
 import { MetricsGrid } from "./financial/MetricsGrid";
 import { CashFlowTable } from "./financial/CashFlowTable";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
+import { BusinessHealthScore } from "./financial/BusinessHealthScore";
 
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -66,6 +67,9 @@ const FinancialHealthCard = () => {
           </div>
         ) : (
           <div className="space-y-6">
+            {/* Business health score section */}
+            <BusinessHealthScore metrics={metrics} />
+
             <YearSelector
               yearlyData={metrics.yearlyData}
               selectedYear={metrics.selectedYear}
