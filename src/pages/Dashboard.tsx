@@ -194,10 +194,6 @@ const Dashboard = () => {
                   </TabsContent>
                 ))}
               </Tabs>
-
-              <div className="mt-8">
-                <CreditDocumentUpload />
-              </div>
             </TabsContent>
 
             <TabsContent value="creditCards">
@@ -376,6 +372,9 @@ const Dashboard = () => {
             
             <TabsContent value="businessHealth">
               <FinancialHealthCard />
+              <div className="mt-8">
+                <CreditDocumentUpload />
+              </div>
             </TabsContent>
 
             <TabsContent value="externalAccount">
