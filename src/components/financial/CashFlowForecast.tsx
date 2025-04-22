@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -5,7 +6,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, TrendingDown, Circle, CircleAlert, Link, Store, CreditCard, FileInvoice } from "lucide-react";
+import { CalendarDays, TrendingDown, Circle, CircleAlert, Link, Store, CreditCard, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FinancialEvent, FinancialMetrics } from "@/types/financial";
 import { useForecastData } from "@/hooks/useForecastData";
@@ -257,7 +258,7 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
             </div>
             
             <div className="bg-white p-4 rounded-lg border border-indigo-100 shadow-sm hover:shadow-md transition-all">
-              <FileInvoice className="h-6 w-6 text-indigo-600 mb-2" />
+              <FileText className="h-6 w-6 text-indigo-600 mb-2" />
               <h4 className="font-medium mb-1">Invoicing Software</h4>
               <p className="text-xs text-gray-600 mb-3">Track pending payments and invoice status from your billing system.</p>
               <Button 
