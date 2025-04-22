@@ -1,5 +1,5 @@
 
-import { FileText, LogOut, ArrowRight } from "lucide-react";
+import { LogOut, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -20,7 +20,6 @@ const DashboardHeader = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
             >
-              <FileText className="mr-2 h-4 w-4" />
               Pay Government Tax
               <span className="sr-only">(opens in new tab)</span>
             </a>

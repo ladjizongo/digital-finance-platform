@@ -160,12 +160,12 @@ const Dashboard = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-5 w-full max-w-md mb-4">
-              <TabsTrigger value="accounts">Accounts</TabsTrigger>
-              <TabsTrigger value="creditCards">Credit Cards</TabsTrigger>
-              <TabsTrigger value="loans">Loans</TabsTrigger>
-              <TabsTrigger value="businessHealth">Business Health</TabsTrigger>
-              <TabsTrigger value="externalAccount">External Account</TabsTrigger>
+            <TabsList className="grid w-full max-w-3xl mb-4 grid-cols-5">
+              <TabsTrigger value="accounts" className="px-2 text-sm">Accounts</TabsTrigger>
+              <TabsTrigger value="creditCards" className="px-2 text-sm">Credit Cards</TabsTrigger>
+              <TabsTrigger value="loans" className="px-2 text-sm">Loans</TabsTrigger>
+              <TabsTrigger value="businessHealth" className="px-2 text-sm">Business Health</TabsTrigger>
+              <TabsTrigger value="externalAccount" className="px-2 text-sm">External Account</TabsTrigger>
             </TabsList>
             
             <TabsContent value="accounts">
