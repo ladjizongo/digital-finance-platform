@@ -1,4 +1,3 @@
-
 import { DollarSign, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -52,11 +51,27 @@ interface AccountOverviewCardsProps {
 }
 
 const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
-  const primaryCreditCard = financialData.creditCards[0];
-  
   // Calculate total balance from accounts only
   const totalAccountsBalance = financialData.accounts.reduce(
     (sum, account) => sum + account.balance, 
+    0
+  );
+  
+  // Calculate total balance for all credit cards
+  const totalCreditCardBalance = financialData.creditCards.reduce(
+    (sum, card) => sum + card.balance,
+    0
+  );
+  
+  // Calculate total credit limit for all credit cards
+  const totalCreditLimit = financialData.creditCards.reduce(
+    (sum, card) => sum + card.creditLimit,
+    0
+  );
+
+  // Calculate total available credit for all credit cards
+  const totalAvailableCredit = financialData.creditCards.reduce(
+    (sum, card) => sum + card.availableCredit,
     0
   );
   
@@ -96,23 +111,23 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
       
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Credit Card</CardTitle>
+          <CardTitle className="text-sm font-medium">Credit Cards</CardTitle>
           <CreditCard className="h-4 w-4 text-indigo-600" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${primaryCreditCard.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${totalCreditCardBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Current balance (Due: {primaryCreditCard.dueDate})
+            Total balance across {financialData.creditCards.length} credit cards
           </p>
           <div className="flex justify-between mt-4">
             <span className="text-sm">Available Credit:</span>
-            <span className="text-sm font-medium">${primaryCreditCard.availableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm font-medium">${totalAvailableCredit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm">Statement Date:</span>
-            <span className="text-sm font-medium">{primaryCreditCard.statementDate}</span>
+            <span className="text-sm">Total Credit Limit:</span>
+            <span className="text-sm font-medium">${totalCreditLimit.toLocaleString('en-US')}</span>
           </div>
         </CardContent>
       </Card>
