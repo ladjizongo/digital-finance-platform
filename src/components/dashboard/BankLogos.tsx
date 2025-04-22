@@ -3,12 +3,16 @@ import { FC, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Link } from "lucide-react";
 
 interface Bank {
   name: string;
   url: string;
   logo: string;
 }
+
+// Special business login URL for RBC
+const RBC_BUSINESS_LOGIN = "https://secure.royalbank.com/statics/login-service-ui/index#/full/signin?_gl=1*crzvlo*_gcl_aw*R0NMLjE3NDUzNDYzODAuQ2owS0NRandfSnpBQmhDMkFSSXNBUGUzeW5wRzNwSVAzNG04U3hJcEUwSnVNVUs5Q1NFTzFTVTJqbjJfei0yVWhWOXMyTFFzYUJKVU1ld2FBcHBNRUFMd193Y0I.*_gcl_au*MTg1OTAxNDYwMC4xNzQ1MjcwMTI4*_ga*NTkzMjM3MzUzLjE3NDUyNzAxMjY.*_ga_89NPCTDXQR*MTc0NTM0NTkwMC4zLjEuMTc0NTM0NjM4MC41Ni4wLjA.&_ot=1745346386012-1:1,2:1,3:1,4:1&LANGUAGE=ENGLISH";
 
 export const bankData: Bank[] = [
   {
@@ -80,15 +84,29 @@ const externalBankTransactions: Record<string, { date: string; description: stri
 const BankLogos: FC = () => {
   const [selectedBank, setSelectedBank] = useState<Bank | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  // Simulate downloaded state for RBC
+  const [rbcTransactionsLoaded, setRbcTransactionsLoaded] = useState(false);
 
   const openModal = (bank: Bank) => {
     setSelectedBank(bank);
     setIsOpen(true);
+    // Only reset state for RBC when selected
+    if (bank.name === "RBC Royal Bank") {
+      setRbcTransactionsLoaded(false);
+    }
   };
 
   const closeModal = () => {
     setSelectedBank(null);
     setIsOpen(false);
+    setRbcTransactionsLoaded(false);
+  };
+
+  // Handle "Download" for RBC: simulate a fetch
+  const handleDownloadRbcTransactions = () => {
+    setTimeout(() => {
+      setRbcTransactionsLoaded(true);
+    }, 600); // small delay to simulate action
   };
 
   return (
@@ -106,16 +124,14 @@ const BankLogos: FC = () => {
               <img
                 src={bank.logo}
                 alt={`${bank.name} logo`}
-                className="h-10 w-auto object-contain"
-                style={{ display: "block" }}
+                className="h-10 w-auto object-contain bg-white"
+                style={{ display: "block", maxHeight: "2.5rem", background: "white" }}
                 onError={e => {
                   const target = e.target as HTMLImageElement;
                   target.onerror = null;
                   target.style.display = 'none';
-                  // fallback text rendered below if logo fails
                 }}
               />
-              {/* fallback text if there's no logo */}
             </div>
             <span className="text-sm font-medium text-gray-600 text-center">{bank.name}</span>
           </button>
@@ -132,39 +148,71 @@ const BankLogos: FC = () => {
               External Account Transactions
             </DialogDescription>
           </DialogHeader>
-          {selectedBank && (
-            <div className="mb-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(externalBankTransactions[selectedBank.name] || []).map((txn, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>{txn.date}</TableCell>
-                      <TableCell>{txn.description}</TableCell>
-                      <TableCell className={`text-right ${txn.amount < 0 ? "text-red-600" : "text-green-600"}`}>
-                        {txn.amount < 0 ? '-' : '+'}${Math.abs(txn.amount).toFixed(2)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+
+          {/* RBC-specific login and download simulation */}
+          {selectedBank && selectedBank.name === "RBC Royal Bank" && (
+            <div className="mb-4 space-y-3">
+              <Button asChild variant="outline" className="w-full">
+                <a
+                  href={RBC_BUSINESS_LOGIN}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <Link className="w-4 h-4" /> Visit RBC Business Banking
+                </a>
+              </Button>
+              {!rbcTransactionsLoaded ? (
+                <Button
+                  className="w-full"
+                  onClick={handleDownloadRbcTransactions}
+                  variant="default"
+                >
+                  Download Transactions
+                </Button>
+              ) : (
+                <div className="text-sm text-green-600 w-full text-center pb-1">
+                  Transactions downloaded for RBC account.
+                </div>
+              )}
             </div>
           )}
-          <div className="flex justify-end">
+
+          {/* Show transactions: always for non-RBC, only after "download" for RBC */}
+          {selectedBank && (
+            (selectedBank.name !== "RBC Royal Bank" || rbcTransactionsLoaded) &&
+              <div className="mb-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(externalBankTransactions[selectedBank.name] || []).map((txn, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{txn.date}</TableCell>
+                        <TableCell>{txn.description}</TableCell>
+                        <TableCell className={`text-right ${txn.amount < 0 ? "text-red-600" : "text-green-600"}`}>
+                          {txn.amount < 0 ? '-' : '+'}${Math.abs(txn.amount).toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+          )}
+
+          <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={closeModal}>Close</Button>
-            {selectedBank && (
+            {selectedBank && selectedBank.name !== "RBC Royal Bank" && (
               <Button asChild>
                 <a
                   href={selectedBank.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2"
                 >
                   Visit Bank Website
                 </a>
@@ -178,4 +226,3 @@ const BankLogos: FC = () => {
 };
 
 export default BankLogos;
-
