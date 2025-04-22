@@ -1,14 +1,19 @@
+
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UploadSection } from "./financial/UploadSection";
+import { YearSelector } from "./financial/YearSelector";
+import { MetricsGrid } from "./financial/MetricsGrid";
+import { CashFlowTable } from "./financial/CashFlowTable";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [activeAccount, setActiveAccount] = useState("1");
   
   const {
     metrics,
