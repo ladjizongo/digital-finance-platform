@@ -11,7 +11,7 @@ export const bankData: Bank[] = [
   {
     name: "RBC Royal Bank",
     url: "https://www.rbcroyalbank.com/onlinebanking/bankingusertips/other-useful-services/download-your-transactions.html",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Royal_Bank_of_Canada_logo.svg"
+    logo: "https://www.rbc.com/our-company/_assets-custom/images/RBC_logo.svg"
   },
   {
     name: "CIBC",
@@ -21,22 +21,22 @@ export const bankData: Bank[] = [
   {
     name: "TD Canada Trust",
     url: "https://www.td.com/ca/en/personal-banking/how-to/digital-banking/banking-the-way-you-want-it/download-statements/",
-    logo: "https://upload.wikimedia.org/wikipedia/en/9/9a/TD_Canada_Trust.svg"
+    logo: "https://www.td.com/content/dam/tdcom/images/logos/td-logo.svg"
   },
   {
     name: "BMO",
     url: "https://www.bmo.com/main/personal/ways-to-bank/online-banking/",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/c/c6/Bank_of_Montreal_Logo.svg"
+    logo: "https://www.bmo.com/main/assets/images/bmo-logo-header-en.svg"
   },
   {
     name: "National Bank",
     url: "https://www.nbc.ca/personal/accounts/banking-services/online-banking.html",
-    logo: "https://upload.wikimedia.org/wikipedia/en/0/02/National_Bank_of_Canada.svg"
+    logo: "https://www.nbc.ca/content/dam/bnc/en/about-us/news/news-publications/images/nbc-logo.svg"
   },
   {
     name: "Desjardins",
     url: "https://www.desjardins.com/ca/personal/accounts-services/ways-to-bank/online/accesD/index.jsp",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Desjardins_logo.svg"
+    logo: "https://www.desjardins.com/content/dam/desjardins-logo.svg"
   }
 ];
 
@@ -51,12 +51,27 @@ const BankLogos: FC = () => {
           rel="noopener noreferrer"
           className="flex flex-col items-center p-4 rounded-lg border hover:bg-gray-50 transition-colors"
         >
-          <img
-            src={bank.logo}
-            alt={`${bank.name} logo`}
-            className="h-12 w-auto mb-2 object-contain"
-          />
-          <span className="text-sm font-medium text-gray-600">{bank.name}</span>
+          <div className="h-12 w-full flex items-center justify-center mb-2">
+            <img
+              src={bank.logo}
+              alt={`${bank.name} logo`}
+              className="h-10 w-auto object-contain"
+              onError={(e) => {
+                // Fallback if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.onerror = null;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  const fallback = document.createElement('span');
+                  fallback.className = 'font-bold text-blue-600 text-lg';
+                  fallback.textContent = bank.name.split(' ').map(word => word[0]).join('');
+                  parent.appendChild(fallback);
+                }
+              }}
+            />
+          </div>
+          <span className="text-sm font-medium text-gray-600 text-center">{bank.name}</span>
         </a>
       ))}
     </div>
