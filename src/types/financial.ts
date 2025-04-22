@@ -1,4 +1,3 @@
-
 export interface YearlyMetrics {
   year: string;
   payableDays: number;

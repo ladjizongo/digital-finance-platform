@@ -107,6 +107,7 @@ const Dashboard = () => {
         nextPaymentDate: "May 5, 2025",
         statementDate: "Apr 30, 2025",
         minimumPayment: 1458.33,
+        term: 60,
         transactions: [
           { date: "Apr 18, 2025", description: "Manufacturing Equipment", amount: -15000.00 },
           { date: "Apr 15, 2025", description: "Loan Payment", amount: -1458.33 },
@@ -320,6 +321,10 @@ const Dashboard = () => {
                         <div className="flex justify-between">
                           <span className="text-sm text-muted-foreground">Minimum Payment:</span>
                           <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Term:</span>
+                          <span className="font-medium">{loan.term} months</span>
                         </div>
                       </div>
                     </CardContent>
