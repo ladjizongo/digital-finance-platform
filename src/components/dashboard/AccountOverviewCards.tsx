@@ -1,3 +1,4 @@
+
 import { DollarSign, CreditCard, Banknote } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -69,8 +70,8 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
     0
   );
 
-  // Calculate total available credit for all credit cards
-  const totalAvailableCredit = financialData.creditCards.reduce(
+  // Calculate total available credit for credit cards
+  const totalCreditCardAvailableCredit = financialData.creditCards.reduce(
     (sum, card) => sum + card.availableCredit,
     0
   );
@@ -78,7 +79,7 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
   // Calculate totals for all business loans
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
-  const totalAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
+  const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
   const totalMonthlyPayment = financialData.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
   const totalMinimumPayment = financialData.loans.reduce((sum, loan) => sum + loan.minimumPayment, 0);
   
@@ -123,7 +124,7 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
           </p>
           <div className="flex justify-between mt-4">
             <span className="text-sm">Available Credit:</span>
-            <span className="text-sm font-medium">${totalAvailableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm font-medium">${totalCreditCardAvailableCredit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
             <span className="text-sm">Total Credit Limit:</span>
@@ -146,7 +147,7 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
           </p>
           <div className="flex justify-between mt-4">
             <span className="text-sm">Available Credit:</span>
-            <span className="text-sm font-medium">${totalAvailableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm font-medium">${totalLoanAvailableCredit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
             <span className="text-sm">Total Credit Limit:</span>
@@ -175,3 +176,4 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
 };
 
 export default AccountOverviewCards;
+
