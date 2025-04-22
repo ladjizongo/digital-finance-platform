@@ -76,12 +76,25 @@ const Dashboard = () => {
         ]
       }
     ],
-    mortgage: {
-      balance: 285000.00,
-      monthlyPayment: 1450.00,
-      nextPaymentDate: "May 1, 2025",
-      interestRate: "3.25%",
-    },
+    loans: [
+      {
+        id: "loan1",
+        name: "Personal Loan",
+        balance: 15000.00,
+        limit: 25000.00,
+        availableCredit: 10000.00,
+        interestRate: 8.99,
+        monthlyPayment: 458.33,
+        nextPaymentDate: "May 1, 2025",
+        statementDate: "Apr 30, 2025",
+        minimumPayment: 458.33,
+        transactions: [
+          { date: "Apr 20, 2025", description: "Home Renovation", amount: -5000.00 },
+          { date: "Apr 15, 2025", description: "Loan Payment", amount: -458.33 },
+          { date: "Mar 15, 2025", description: "Loan Payment", amount: -458.33 },
+        ]
+      }
+    ],
     recentTransactions: [
       { id: 1, date: "Apr 15, 2025", description: "Grocery Store", amount: -120.53, account: "1" },
       { id: 2, date: "Apr 14, 2025", description: "Salary Deposit", amount: 2800.00, account: "1" },
