@@ -1,4 +1,3 @@
-
 import { FileUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -48,9 +47,6 @@ export const UploadSection = ({ file, setFile, isLoading, onUpload }: UploadSect
       <div className="text-sm text-muted-foreground mt-2">
         <p>Supported statement types:</p>
         <ul className="list-disc pl-5 mt-1">
-          <li>Balance Sheet</li>
-          <li>Income Statement</li>
-          <li>Cash Flow Statement</li>
           <li>Accounts Payable Aging</li>
           <li>Accounts Receivable Aging</li>
           <li>Payroll Reports</li>
