@@ -4,15 +4,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FinancialData {
   totalBalance: number;
-  creditCard: {
+  creditCards: {
+    id: string;
+    name: string;
+    number: string;
     balance: number;
+    creditLimit: number;
     availableCredit: number;
+    purchaseRate: number;
+    cashAdvanceRate: number;
     dueDate: string;
-  };
+    transactions: Array<{
+      date: string;
+      description: string;
+      amount: number;
+    }>;
+  }[];
   mortgage: {
     balance: number;
     monthlyPayment: number;
     nextPaymentDate: string;
+    interestRate: string;
   };
 }
 
@@ -21,6 +33,9 @@ interface AccountOverviewCardsProps {
 }
 
 const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
+  // Use the first credit card for the overview display
+  const primaryCreditCard = financialData.creditCards[0];
+  
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
       <Card>
@@ -45,14 +60,14 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${financialData.creditCard.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${primaryCreditCard.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Current balance (Due: {financialData.creditCard.dueDate})
+            Current balance (Due: {primaryCreditCard.dueDate})
           </p>
           <div className="flex justify-between mt-4">
             <span className="text-sm">Available Credit:</span>
-            <span className="text-sm font-medium">${financialData.creditCard.availableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm font-medium">${primaryCreditCard.availableCredit.toLocaleString('en-US')}</span>
           </div>
         </CardContent>
       </Card>
