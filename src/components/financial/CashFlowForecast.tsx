@@ -83,7 +83,7 @@ export const CashFlowForecast = ({ metrics }: CashFlowForecastProps) => {
                   
                   return (
                     <div className="relative flex h-9 w-9 items-center justify-center p-0">
-                      {props.day}
+                      {props.date.getDate()}
                       {isWarning && (
                         <div className="absolute bottom-0 right-0">
                           <CircleAlert className="h-3 w-3 text-red-600" />
