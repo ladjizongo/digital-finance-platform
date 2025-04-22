@@ -47,4 +47,6 @@ export interface MetricCardProps {
   warningThreshold?: number;
   warningMessage?: string;
   successMessage?: string;
+  isCircleDisplay?: boolean;
+  compareValue?: number;
 }

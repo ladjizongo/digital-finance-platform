@@ -380,6 +380,8 @@ const FinancialHealthCard = () => {
                   warningThreshold={30}
                   warningMessage="Above recommended 30 days"
                   successMessage="Within healthy range"
+                  isCircleDisplay
+                  compareValue={currentYearData.receivableDays}
                 />
                 <MetricCard
                   title="Receivable Days"
@@ -388,6 +390,8 @@ const FinancialHealthCard = () => {
                   warningThreshold={45}
                   warningMessage="Collection period is too long"
                   successMessage="Healthy collection period"
+                  isCircleDisplay
+                  compareValue={currentYearData.payableDays}
                 />
                 <MetricCard
                   title="Monthly Average Payables"
