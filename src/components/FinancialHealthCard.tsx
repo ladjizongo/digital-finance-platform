@@ -1,24 +1,14 @@
-
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { UploadSection } from "./financial/UploadSection";
-import { ManualEntryForm } from "./financial/ManualEntryForm";
-import { CashFlowTable } from "./financial/CashFlowTable";
-import { YearSelector } from "./financial/YearSelector";
-import { MetricsGrid } from "./financial/MetricsGrid";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
-import { financialFormSchema, type FinancialFormValues } from "@/schemas/financialFormSchema";
 
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [activeTab, setActiveTab] = useState<"upload" | "manual">("upload");
-  const [activeAccount, setActiveAccount] = useState("1");
   
   const {
     metrics,
@@ -26,27 +16,7 @@ const FinancialHealthCard = () => {
     isProcessing,
     processFinancials,
     handleYearChange,
-    handleManualSubmit
   } = useFinancialMetrics();
-
-  const form = useForm<FinancialFormValues>({
-    resolver: zodResolver(financialFormSchema),
-    defaultValues: {
-      year: new Date().getFullYear().toString(),
-      currentAssets: 0,
-      longTermAssets: 0,
-      currentLiabilities: 0,
-      longTermLiabilities: 0,
-      revenue: 0,
-      expenses: 0,
-      payableDays: 0,
-      receivableDays: 0,
-      biWeeklyPayroll: 0,
-      notes: "",
-      monthlyPayables: 0,
-      monthlyReceivables: 0,
-    },
-  });
 
   const handleUpload = () => {
     if (file) {
@@ -79,28 +49,15 @@ const FinancialHealthCard = () => {
         {!metrics ? (
           <div className="space-y-4">
             <CardDescription>
-              Analyze your business health by uploading statements or entering data manually
+              Analyze your business health by uploading financial statements
             </CardDescription>
             
-            <Tabs defaultValue="upload" value={activeTab} onValueChange={(value) => setActiveTab(value as "upload" | "manual")}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="upload">Upload Statements</TabsTrigger>
-                <TabsTrigger value="manual">Enter Manually</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="upload" className="space-y-4 mt-4">
-                <UploadSection 
-                  file={file}
-                  setFile={setFile}
-                  isLoading={isProcessing}
-                  onUpload={handleUpload}
-                />
-              </TabsContent>
-              
-              <TabsContent value="manual" className="space-y-4 mt-4">
-                <ManualEntryForm form={form} isLoading={isProcessing} onSubmit={handleManualSubmit} />
-              </TabsContent>
-            </Tabs>
+            <UploadSection 
+              file={file}
+              setFile={setFile}
+              isLoading={isProcessing}
+              onUpload={handleUpload}
+            />
           </div>
         ) : (
           <div className="space-y-6">
@@ -138,4 +95,3 @@ const FinancialHealthCard = () => {
 };
 
 export default FinancialHealthCard;
-
