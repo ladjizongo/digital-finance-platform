@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
   const [activeTab, setActiveTab] = useState("accounts");
   const [activeCreditCard, setActiveCreditCard] = useState("cc1");
+  const [activeLoan, setActiveLoan] = useState("loan1");
   
   const financialData = {
     totalBalance: 24850.75,
@@ -146,13 +147,14 @@ const Dashboard = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 w-full max-w-md mb-4">
+            <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
               <TabsTrigger value="accounts">Accounts</TabsTrigger>
               <TabsTrigger value="creditCards">Credit Cards</TabsTrigger>
+              <TabsTrigger value="loans">Loans</TabsTrigger>
               <TabsTrigger value="businessHealth">Business Health</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="accounts" className="space-y-4">
+            <TabsContent value="accounts">
               <AccountOverviewCards financialData={financialData} />
               
               <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
@@ -179,7 +181,7 @@ const Dashboard = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="creditCards" className="space-y-4">
+            <TabsContent value="creditCards">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {financialData.creditCards.map(card => (
                   <Card 
@@ -264,7 +266,92 @@ const Dashboard = () => {
               )}
             </TabsContent>
             
-            <TabsContent value="businessHealth" className="space-y-4">
+            <TabsContent value="loans" className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {financialData.loans.map(loan => (
+                  <Card 
+                    key={loan.id}
+                    className={`cursor-pointer transition-all ${
+                      activeLoan === loan.id ? 'ring-2 ring-primary' : ''
+                    }`}
+                    onClick={() => setActiveLoan(loan.id)}
+                  >
+                    <CardHeader>
+                      <CardTitle className="text-lg">{loan.name}</CardTitle>
+                      <CardDescription>Loan ID: {loan.id}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Balance:</span>
+                          <span className="font-medium">${loan.balance.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Credit Limit:</span>
+                          <span className="font-medium">${loan.limit.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Available Credit:</span>
+                          <span className="font-medium">${loan.availableCredit.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Interest Rate:</span>
+                          <span className="font-medium">{loan.interestRate}%</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Monthly Payment:</span>
+                          <span className="font-medium">${loan.monthlyPayment.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Statement Date:</span>
+                          <span className="font-medium">{loan.statementDate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Next Payment:</span>
+                          <span className="font-medium">{loan.nextPaymentDate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Minimum Payment:</span>
+                          <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {activeLoan && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Recent Transactions</CardTitle>
+                    <CardDescription>
+                      {financialData.loans.find(loan => loan.id === activeLoan)?.name}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {financialData.loans
+                        .find(loan => loan.id === activeLoan)
+                        ?.transactions.map((transaction, idx) => (
+                          <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                            <div>
+                              <p className="font-medium">{transaction.description}</p>
+                              <p className="text-sm text-muted-foreground">{transaction.date}</p>
+                            </div>
+                            <span className={`font-medium ${
+                              transaction.amount < 0 ? 'text-red-600' : 'text-green-600'
+                            }`}>
+                              ${Math.abs(transaction.amount).toLocaleString()}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="businessHealth">
               <FinancialHealthCard />
             </TabsContent>
           </Tabs>
