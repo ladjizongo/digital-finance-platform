@@ -165,6 +165,14 @@ const Dashboard = () => {
                           <span className="text-sm text-muted-foreground">Cash Advance Rate:</span>
                           <span className="font-medium">{card.cashAdvanceRate}%</span>
                         </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Statement Date:</span>
+                          <span className="font-medium">{card.statementDate}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Due Date:</span>
+                          <span className="font-medium">{card.dueDate}</span>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
