@@ -8,6 +8,8 @@ import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { DownloadStatements } from "@/components/dashboard/DownloadStatements";
 import BankLogos from "@/components/dashboard/BankLogos";
+import AITipsPanel from "@/components/dashboard/AITipsPanel";
+import AIAnalysisPanel from "@/components/dashboard/AIAnalysisPanel";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
