@@ -391,6 +391,10 @@ const Dashboard = () => {
               </Card>
             </TabsContent>
           </Tabs>
+          <div className="flex flex-col gap-2 max-w-3xl mx-auto mt-6">
+            <AITipsPanel activeTab={activeTab} />
+            <AIAnalysisPanel activeTab={activeTab} financialData={financialData} />
+          </div>
         </div>
       </main>
     </div>
