@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
 import PaymentFileUpload from "@/components/transactions/PaymentFileUpload";
+import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
 
 const Transactions = () => {
   const { toast } = useToast();
@@ -80,6 +81,7 @@ const Transactions = () => {
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
         <PaymentFileUpload />
+        <DataIntegrationsSection />
         
         <TransactionTabs
           transactionType={transactionType}
