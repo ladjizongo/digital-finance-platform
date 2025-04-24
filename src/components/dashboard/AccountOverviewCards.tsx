@@ -96,47 +96,6 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
     .sort((a, b) => a.getTime() - b.getTime())[0]
     .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   
-  const accountColors = {
-    "1": {
-      gradient: "linear-gradient(135deg, #4FC3F7 0%, #1565C0 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-blue-400 to-blue-700"
-    },
-    "2": {
-      gradient: "linear-gradient(135deg, #81C784 0%, #2E7D32 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-green-400 to-green-700"
-    },
-    "3": {
-      gradient: "linear-gradient(135deg, #FFB74D 0%, #F57C00 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-orange-400 to-orange-700"
-    },
-    "4": {
-      gradient: "linear-gradient(135deg, #E57373 0%, #D32F2F 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-red-400 to-red-700"
-    }
-  };
-
-  const loanColors = {
-    "loan1": {
-      gradient: "linear-gradient(135deg, #9575CD 0%, #512DA8 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-purple-400 to-purple-800"
-    },
-    "loan2": {
-      gradient: "linear-gradient(135deg, #4DB6AC 0%, #00796B 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-teal-400 to-teal-700"
-    },
-    "loan3": {
-      gradient: "linear-gradient(135deg, #FF8A65 0%, #D84315 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-orange-400 to-orange-800"
-    }
-  };
-
   const handleCardClick = (tab: string) => {
     if (onTabChange) {
       onTabChange(tab);
@@ -146,104 +105,95 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
       <Card 
-        className="cursor-pointer transition-all hover:shadow-md overflow-hidden backdrop-blur-sm"
+        className="cursor-pointer transition-all hover:shadow-md"
         onClick={() => handleCardClick('accounts')}
-        style={{
-          background: "linear-gradient(135deg, #43A6E3 0%, #2563EB 100%)"
-        }}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-white">Total Balance</CardTitle>
-          <DollarSign className="h-4 w-4 text-white" />
+          <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
+          <DollarSign className="h-4 w-4" />
         </CardHeader>
-        <CardContent className="bg-white/10 backdrop-blur-sm">
-          <div className="text-2xl font-bold text-white">
+        <CardContent>
+          <div className="text-2xl font-bold">
             ${totalAccountsBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <p className="text-xs text-white/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Total balance across all accounts
           </p>
         </CardContent>
       </Card>
       
       <Card 
-        className="cursor-pointer transition-all hover:shadow-md overflow-hidden backdrop-blur-sm"
+        className="cursor-pointer transition-all hover:shadow-md"
         onClick={() => handleCardClick('creditCards')}
-        style={{
-          background: "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)"
-        }}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-white">Credit Cards</CardTitle>
-          <CreditCard className="h-4 w-4 text-white" />
+          <CardTitle className="text-sm font-medium">Credit Cards</CardTitle>
+          <CreditCard className="h-4 w-4" />
         </CardHeader>
-        <CardContent className="bg-white/10 backdrop-blur-sm">
-          <div className="text-2xl font-bold text-white">
+        <CardContent>
+          <div className="text-2xl font-bold">
             ${totalCreditCardBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <p className="text-xs text-white/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Total balance across {financialData.creditCards.length} credit cards
           </p>
           <div className="flex justify-between mt-4">
-            <span className="text-sm text-white/70">Available Credit:</span>
-            <span className="text-sm font-medium text-white">${totalCreditCardAvailableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Available Credit:</span>
+            <span className="text-sm font-medium">${totalCreditCardAvailableCredit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Total Credit Limit:</span>
-            <span className="text-sm font-medium text-white">${totalCreditLimit.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Total Credit Limit:</span>
+            <span className="text-sm font-medium">${totalCreditLimit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Avg. Interest Rate:</span>
-            <span className="text-sm font-medium text-white">{weightedCreditCardRate.toFixed(2)}%</span>
+            <span className="text-sm text-muted-foreground">Avg. Interest Rate:</span>
+            <span className="text-sm font-medium">{weightedCreditCardRate.toFixed(2)}%</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Total Minimum Payment:</span>
-            <span className="text-sm font-medium text-white">${totalCreditCardMinPayment.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Total Minimum Payment:</span>
+            <span className="text-sm font-medium">${totalCreditCardMinPayment.toLocaleString('en-US')}</span>
           </div>
         </CardContent>
       </Card>
       
       <Card 
-        className="cursor-pointer transition-all hover:shadow-md overflow-hidden backdrop-blur-sm"
+        className="cursor-pointer transition-all hover:shadow-md"
         onClick={() => handleCardClick('loans')}
-        style={{
-          background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)"
-        }}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-white">Business Loans</CardTitle>
-          <Banknote className="h-4 w-4 text-white" />
+          <CardTitle className="text-sm font-medium">Business Loans</CardTitle>
+          <Banknote className="h-4 w-4" />
         </CardHeader>
-        <CardContent className="bg-white/10 backdrop-blur-sm">
-          <div className="text-2xl font-bold text-white">
+        <CardContent>
+          <div className="text-2xl font-bold">
             ${totalLoanBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <p className="text-xs text-white/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Total balance across {financialData.loans.length} business loans
           </p>
           <div className="flex justify-between mt-4">
-            <span className="text-sm text-white/70">Available Credit:</span>
-            <span className="text-sm font-medium text-white">${totalLoanAvailableCredit.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Available Credit:</span>
+            <span className="text-sm font-medium">${totalLoanAvailableCredit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Total Credit Limit:</span>
-            <span className="text-sm font-medium text-white">${totalLoanLimit.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Total Credit Limit:</span>
+            <span className="text-sm font-medium">${totalLoanLimit.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Avg. Interest Rate:</span>
-            <span className="text-sm font-medium text-white">{weightedInterestRate.toFixed(2)}%</span>
+            <span className="text-sm text-muted-foreground">Avg. Interest Rate:</span>
+            <span className="text-sm font-medium">{weightedInterestRate.toFixed(2)}%</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Total Monthly Payment:</span>
-            <span className="text-sm font-medium text-white">${totalMonthlyPayment.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Total Monthly Payment:</span>
+            <span className="text-sm font-medium">${totalMonthlyPayment.toLocaleString('en-US')}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Next Payment:</span>
-            <span className="text-sm font-medium text-white">{nextPaymentDate}</span>
+            <span className="text-sm text-muted-foreground">Next Payment:</span>
+            <span className="text-sm font-medium">{nextPaymentDate}</span>
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-sm text-white/70">Total Minimum Payment:</span>
-            <span className="text-sm font-medium text-white">${totalMinimumPayment.toLocaleString('en-US')}</span>
+            <span className="text-sm text-muted-foreground">Total Minimum Payment:</span>
+            <span className="text-sm font-medium">${totalMinimumPayment.toLocaleString('en-US')}</span>
           </div>
         </CardContent>
       </Card>
