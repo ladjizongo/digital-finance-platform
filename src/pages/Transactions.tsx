@@ -1,9 +1,10 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
+import PaymentFileUpload from "@/components/transactions/PaymentFileUpload";
 
 const Transactions = () => {
   const { toast } = useToast();
@@ -77,7 +78,9 @@ const Transactions = () => {
     <div className="min-h-screen bg-gray-50">
       <TransactionHeader />
       
-      <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
+        <PaymentFileUpload />
+        
         <TransactionTabs
           transactionType={transactionType}
           setTransactionType={setTransactionType}
