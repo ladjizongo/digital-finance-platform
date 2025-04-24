@@ -158,6 +158,24 @@ const Dashboard = () => {
     setActiveTab(tab);
   };
 
+  const creditCardColors = {
+    "cc1": {
+      gradient: "linear-gradient(135deg, #8E5BA3 0%, #5D3B76 100%)",
+      textColor: "text-white",
+      background: "bg-gradient-to-br from-purple-600 to-purple-900"
+    },
+    "cc2": {
+      gradient: "linear-gradient(135deg, #4FC3F7 0%, #1565C0 100%)",
+      textColor: "text-white",
+      background: "bg-gradient-to-br from-blue-500 to-blue-900"
+    },
+    "cc3": {
+      gradient: "linear-gradient(135deg, #FFD54F 0%, #FF6F00 100%)",
+      textColor: "text-white",
+      background: "bg-gradient-to-br from-yellow-500 to-orange-600"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
@@ -210,47 +228,51 @@ const Dashboard = () => {
                 {financialData.creditCards.map(card => (
                   <Card 
                     key={card.id}
-                    className={`cursor-pointer transition-all ${
+                    className={`cursor-pointer transition-all overflow-hidden ${
                       activeCreditCard === card.id ? 'ring-2 ring-primary' : ''
                     }`}
                     onClick={() => setActiveCreditCard(card.id)}
+                    style={{
+                      background: creditCardColors[card.id]?.gradient || 'white',
+                      color: creditCardColors[card.id]?.textColor || 'black'
+                    }}
                   >
-                    <CardHeader>
+                    <CardHeader className={`text-white ${creditCardColors[card.id]?.background}`}>
                       <CardTitle className="text-lg">{card.name}</CardTitle>
-                      <CardDescription>{card.number}</CardDescription>
+                      <CardDescription className="text-white/80">{card.number}</CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="bg-white/10 backdrop-blur-sm">
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Balance:</span>
+                          <span className="text-sm text-white/70">Balance:</span>
                           <span className="font-medium">${card.balance.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Credit Limit:</span>
+                          <span className="text-sm text-white/70">Credit Limit:</span>
                           <span className="font-medium">${card.creditLimit.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Available Credit:</span>
+                          <span className="text-sm text-white/70">Available Credit:</span>
                           <span className="font-medium">${card.availableCredit.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Purchase Rate:</span>
+                          <span className="text-sm text-white/70">Purchase Rate:</span>
                           <span className="font-medium">{card.purchaseRate}%</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Cash Advance Rate:</span>
+                          <span className="text-sm text-white/70">Cash Advance Rate:</span>
                           <span className="font-medium">{card.cashAdvanceRate}%</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Minimum Payment:</span>
+                          <span className="text-sm text-white/70">Minimum Payment:</span>
                           <span className="font-medium">${card.minimumPayment.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Statement Date:</span>
+                          <span className="text-sm text-white/70">Statement Date:</span>
                           <span className="font-medium">{card.statementDate}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Due Date:</span>
+                          <span className="text-sm text-white/70">Due Date:</span>
                           <span className="font-medium">{card.dueDate}</span>
                         </div>
                       </div>
