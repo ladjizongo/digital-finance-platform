@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const PaymentFileUpload = () => {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -27,13 +29,33 @@ const PaymentFileUpload = () => {
 
     setIsUploading(true);
     try {
-      // Simulate file upload
+      // Simulate file processing and extracting payment data
       await new Promise(resolve => setTimeout(resolve, 1500));
       
+      // Mock payment data extracted from file
+      const mockPaymentData = [
+        {
+          name: "John Doe",
+          transitNumber: "12345",
+          accountNumber: "987654321",
+          institutionNumber: "001",
+          amount: 1500.00
+        },
+        {
+          name: "Jane Smith",
+          transitNumber: "54321",
+          accountNumber: "123456789",
+          institutionNumber: "002",
+          amount: 2500.50
+        }
+      ];
+      
       toast({
-        title: "File uploaded successfully",
-        description: `${selectedFile.name} has been processed`,
+        title: "File processed successfully",
+        description: "Proceeding to payment confirmation",
       });
+      
+      navigate('/payment-confirmation', { state: { paymentData: mockPaymentData } });
       
       setSelectedFile(null);
       if (document.getElementById('payment-file-upload') instanceof HTMLInputElement) {
@@ -42,7 +64,7 @@ const PaymentFileUpload = () => {
     } catch (error) {
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your file",
+        description: "There was an error processing your file",
         variant: "destructive",
       });
     } finally {
