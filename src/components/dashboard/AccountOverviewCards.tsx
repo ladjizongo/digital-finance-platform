@@ -48,65 +48,66 @@ interface FinancialData {
 
 interface AccountOverviewCardsProps {
   financialData: FinancialData;
+  onTabChange?: (tab: string) => void;
 }
 
-const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
-  // Calculate total balance from accounts only
+const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCardsProps) => {
   const totalAccountsBalance = financialData.accounts.reduce(
     (sum, account) => sum + account.balance, 
     0
   );
   
-  // Calculate total balance for all credit cards
   const totalCreditCardBalance = financialData.creditCards.reduce(
     (sum, card) => sum + card.balance,
     0
   );
   
-  // Calculate total credit limit for all credit cards
   const totalCreditLimit = financialData.creditCards.reduce(
     (sum, card) => sum + card.creditLimit,
     0
   );
 
-  // Calculate total available credit for credit cards
   const totalCreditCardAvailableCredit = financialData.creditCards.reduce(
     (sum, card) => sum + card.availableCredit,
     0
   );
 
-  // Calculate weighted average purchase rate for credit cards
   const weightedCreditCardRate = financialData.creditCards.reduce(
     (sum, card) => sum + (card.purchaseRate * (card.balance / totalCreditCardBalance)),
     0
   );
 
-  // Calculate total minimum payment for credit cards
   const totalCreditCardMinPayment = financialData.creditCards.reduce(
     (sum, card) => sum + card.minimumPayment,
     0
   );
   
-  // Calculate totals for all business loans
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
   const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
   const totalMonthlyPayment = financialData.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
   const totalMinimumPayment = financialData.loans.reduce((sum, loan) => sum + loan.minimumPayment, 0);
   
-  // Calculate weighted average interest rate
   const weightedInterestRate = financialData.loans.reduce((sum, loan) => 
     sum + (loan.interestRate * (loan.balance / totalLoanBalance)), 0);
 
-  // Get the earliest next payment date
   const nextPaymentDate = financialData.loans
     .map(loan => new Date(loan.nextPaymentDate))
     .sort((a, b) => a.getTime() - b.getTime())[0]
     .toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   
+  const handleCardClick = (tab: string) => {
+    if (onTabChange) {
+      onTabChange(tab);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-      <Card>
+      <Card 
+        className="cursor-pointer transition-all hover:shadow-md"
+        onClick={() => handleCardClick('accounts')}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Balance</CardTitle>
           <DollarSign className="h-4 w-4 text-indigo-600" />
@@ -121,7 +122,10 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card 
+        className="cursor-pointer transition-all hover:shadow-md"
+        onClick={() => handleCardClick('creditCards')}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Credit Cards</CardTitle>
           <CreditCard className="h-4 w-4 text-indigo-600" />
@@ -152,7 +156,10 @@ const AccountOverviewCards = ({ financialData }: AccountOverviewCardsProps) => {
         </CardContent>
       </Card>
       
-      <Card>
+      <Card 
+        className="cursor-pointer transition-all hover:shadow-md"
+        onClick={() => handleCardClick('loans')}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Business Loans</CardTitle>
           <Banknote className="h-4 w-4 text-indigo-600" />

@@ -154,6 +154,10 @@ const Dashboard = () => {
     { name: "Desjardins", url: "https://www.desjardins.com/ca/personal/accounts-services/ways-to-bank/online/accesD/index.jsp" }
   ];
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardHeader />
@@ -170,7 +174,10 @@ const Dashboard = () => {
             </TabsList>
             
             <TabsContent value="accounts">
-              <AccountOverviewCards financialData={financialData} />
+              <AccountOverviewCards 
+                financialData={financialData} 
+                onTabChange={handleTabChange}
+              />
               
               <DownloadStatements
                 accounts={financialData.accounts}
