@@ -1,10 +1,12 @@
-
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { WireTemplateDialog } from "./WireTemplateDialog";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface Account {
   id: string;
@@ -20,6 +22,38 @@ interface WireSectionProps {
 }
 
 export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionProps) => {
+  const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    recipientName: "",
+    recipientBank: "",
+    swiftCode: "",
+    accountNumber: "",
+    recipientAddress: "",
+    transferType: "domestic"
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveTemplate = (template: any) => {
+    const templates = JSON.parse(localStorage.getItem("wireTemplates") || "[]");
+    const newTemplate = {
+      ...template,
+      id: Date.now().toString()
+    };
+    
+    localStorage.setItem("wireTemplates", JSON.stringify([...templates, newTemplate]));
+    
+    toast({
+      title: "Template Saved",
+      description: "Your wire transfer template has been saved successfully."
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -48,7 +82,10 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
           
           <div className="space-y-2">
             <Label htmlFor="wireTransferType">Transfer Type</Label>
-            <Select defaultValue="domestic">
+            <Select 
+              defaultValue="domestic"
+              onValueChange={(value) => handleInputChange("transferType", value)}
+            >
               <SelectTrigger id="wireTransferType">
                 <SelectValue placeholder="Select transfer type" />
               </SelectTrigger>
@@ -61,29 +98,54 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
           
           <div className="space-y-2">
             <Label htmlFor="wireRecipientBank">Recipient Bank Name</Label>
-            <Input id="wireRecipientBank" placeholder="Bank name" />
+            <Input 
+              id="wireRecipientBank" 
+              placeholder="Bank name"
+              value={formData.recipientBank}
+              onChange={(e) => handleInputChange("recipientBank", e.target.value)}
+            />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="wireSwiftCode">SWIFT/BIC Code</Label>
-              <Input id="wireSwiftCode" placeholder="Enter SWIFT/BIC code" />
+              <Input 
+                id="wireSwiftCode" 
+                placeholder="Enter SWIFT/BIC code"
+                value={formData.swiftCode}
+                onChange={(e) => handleInputChange("swiftCode", e.target.value)}
+              />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="wireAccountNumber">Account Number / IBAN</Label>
-              <Input id="wireAccountNumber" placeholder="Account number or IBAN" />
+              <Input 
+                id="wireAccountNumber" 
+                placeholder="Account number or IBAN"
+                value={formData.accountNumber}
+                onChange={(e) => handleInputChange("accountNumber", e.target.value)}
+              />
             </div>
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="wireRecipientName">Recipient Name</Label>
-            <Input id="wireRecipientName" placeholder="Full name of recipient" />
+            <Input 
+              id="wireRecipientName" 
+              placeholder="Full name of recipient"
+              value={formData.recipientName}
+              onChange={(e) => handleInputChange("recipientName", e.target.value)}
+            />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="wireRecipientAddress">Recipient Address</Label>
-            <Textarea id="wireRecipientAddress" placeholder="Enter full address" />
+            <Textarea 
+              id="wireRecipientAddress" 
+              placeholder="Enter full address"
+              value={formData.recipientAddress}
+              onChange={(e) => handleInputChange("recipientAddress", e.target.value)}
+            />
           </div>
           
           <div className="space-y-2">
@@ -102,10 +164,15 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
           </div>
         </CardContent>
         
-        <CardFooter>
-          <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
+        <CardFooter className="flex gap-4">
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Processing..." : "Send Wire Transfer"}
           </Button>
+          
+          <WireTemplateDialog
+            currentData={formData}
+            onSaveTemplate={handleSaveTemplate}
+          />
         </CardFooter>
       </form>
     </Card>
