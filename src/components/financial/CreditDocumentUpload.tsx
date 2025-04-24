@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +28,6 @@ const CreditDocumentUpload = () => {
   const [selectedDocType, setSelectedDocType] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
 
-  // Load files from localStorage on component mount
   useEffect(() => {
     const savedFiles = localStorage.getItem('uploadedCreditDocs');
     if (savedFiles) {
@@ -37,7 +35,6 @@ const CreditDocumentUpload = () => {
     }
   }, []);
 
-  // Save files to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('uploadedCreditDocs', JSON.stringify(files));
   }, [files]);
@@ -63,7 +60,6 @@ const CreditDocumentUpload = () => {
       });
     }
     
-    // Simulate upload delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     setFiles(prev => [...prev, ...newFiles]);
@@ -84,6 +80,26 @@ const CreditDocumentUpload = () => {
     return files.some(file => file.documentType === docType && file.year === year);
   };
 
+  const isSubmitReady = () => {
+    return Object.values(DOCUMENT_TYPES).every(docType =>
+      YEARS.some(year => files.some(file => 
+        file.documentType === docType && file.year === year
+      ))
+    );
+  };
+
+  const handleSubmit = () => {
+    if (!isSubmitReady()) {
+      toast.error("Please upload at least one document for each type and year before submitting");
+      return;
+    }
+
+    toast.success("Documents submitted successfully!");
+    
+    setFiles([]);
+    localStorage.removeItem('uploadedCreditDocs');
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -94,7 +110,6 @@ const CreditDocumentUpload = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-6">
-          {/* Document Type Selection */}
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-gray-700">Required Documents:</h4>
             <div className="grid gap-4 md:grid-cols-2">
@@ -127,7 +142,6 @@ const CreditDocumentUpload = () => {
             </div>
           </div>
 
-          {/* Upload Section */}
           <div className="space-y-4">
             <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium text-gray-700">
@@ -176,7 +190,6 @@ const CreditDocumentUpload = () => {
             </div>
           </div>
 
-          {/* Uploaded Files List */}
           {files.length > 0 && (
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-700">Uploaded Documents:</h4>
@@ -208,6 +221,17 @@ const CreditDocumentUpload = () => {
               </div>
             </div>
           )}
+
+          <div className="flex justify-end pt-4">
+            <Button
+              onClick={handleSubmit}
+              disabled={!files.length || !isSubmitReady()}
+              className="w-full sm:w-auto"
+            >
+              Submit Documents
+              <FileUp className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
