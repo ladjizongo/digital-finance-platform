@@ -1,9 +1,15 @@
 
+import { ArrowDown, ArrowUp, FileText, FilePlus } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useState } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Account {
   id: string;
@@ -19,16 +25,99 @@ interface EFTSectionProps {
 }
 
 export const EFTSection = ({ accounts, isSubmitting, onSubmit }: EFTSectionProps) => {
+  const { toast } = useToast();
+  const [transactionType, setTransactionType] = useState<"debit" | "credit">("debit");
+  const [templateName, setTemplateName] = useState("");
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  
+  const handleSaveTemplate = () => {
+    if (!templateName.trim()) {
+      toast({
+        title: "Template name required",
+        description: "Please enter a name for your template",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Here you would save the template data
+    toast({
+      title: "Template saved",
+      description: "Your payment template has been saved successfully",
+    });
+    setShowTemplateDialog(false);
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Electronic Funds Transfer (EFT/ACH)</CardTitle>
+        <CardTitle className="flex items-center justify-between">
+          <span>Electronic Funds Transfer (EFT/ACH)</span>
+          <div className="flex gap-2">
+            <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <FilePlus className="h-4 w-4 mr-2" />
+                  Save as Template
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Save as Payment Template</DialogTitle>
+                  <DialogDescription>
+                    Create a reusable template for future payments
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Label htmlFor="templateName">Template Name</Label>
+                  <Input
+                    id="templateName"
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="Enter template name"
+                  />
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowTemplateDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSaveTemplate}>
+                    Save Template
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button variant="outline" size="sm">
+              <FileText className="h-4 w-4 mr-2" />
+              Load Template
+            </Button>
+          </div>
+        </CardTitle>
         <CardDescription>
           Send money electronically within the US banking system
         </CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Transaction Type</Label>
+            <ToggleGroup
+              type="single"
+              value={transactionType}
+              onValueChange={(value: "debit" | "credit") => setTransactionType(value)}
+              className="justify-start"
+            >
+              <ToggleGroupItem value="debit" className="flex items-center gap-1">
+                <ArrowDown className="h-4 w-4" />
+                Debit
+              </ToggleGroupItem>
+              <ToggleGroupItem value="credit" className="flex items-center gap-1">
+                <ArrowUp className="h-4 w-4" />
+                Credit
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="eftFromAccount">From Account</Label>
             <Select defaultValue="1">
@@ -93,7 +182,7 @@ export const EFTSection = ({ accounts, isSubmitting, onSubmit }: EFTSectionProps
         
         <CardFooter>
           <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-            {isSubmitting ? "Processing..." : "Send EFT/ACH Transfer"}
+            {isSubmitting ? "Processing..." : `Send ${transactionType === "debit" ? "Debit" : "Credit"} Transfer`}
           </Button>
         </CardFooter>
       </form>
