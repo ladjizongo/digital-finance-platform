@@ -1,7 +1,7 @@
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FinancialFormValues } from "@/schemas/financialFormSchema";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
+import { toast } from "sonner";
 
 export const useFinancialMetrics = () => {
   const queryClient = useQueryClient();
@@ -95,6 +95,12 @@ export const useFinancialMetrics = () => {
       localStorage.setItem('financialMetrics', JSON.stringify(data));
     },
   });
+
+  const resetMetrics = () => {
+    queryClient.setQueryData(['financialMetrics'], null);
+    localStorage.removeItem('financialMetrics');
+    toast({ title: "Reset successful", description: "Financial data has been reset" });
+  };
 
   const handleYearChange = (year: string) => {
     if (metrics) {
@@ -211,7 +217,7 @@ export const useFinancialMetrics = () => {
     isProcessing,
     processFinancials,
     handleYearChange,
-    handleManualSubmit
+    handleManualSubmit,
+    resetMetrics
   };
 };
-

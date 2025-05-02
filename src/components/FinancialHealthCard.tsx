@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { BarChart } from "lucide-react";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UploadSection } from "./financial/UploadSection";
 import { YearSelector } from "./financial/YearSelector";
 import { MetricsGrid } from "./financial/MetricsGrid";
@@ -22,6 +21,7 @@ const FinancialHealthCard = () => {
     isProcessing,
     processFinancials,
     handleYearChange,
+    resetMetrics,
   } = useFinancialMetrics();
 
   const handleUpload = () => {
@@ -33,8 +33,7 @@ const FinancialHealthCard = () => {
   };
 
   const handleReset = () => {
-    localStorage.removeItem('financialMetrics');
-    window.location.reload();
+    resetMetrics();
   };
   
   const getCurrentYearData = () => {
