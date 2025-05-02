@@ -31,34 +31,56 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
                   <span className="text-sm text-muted-foreground">Balance:</span>
                   <span className="font-medium">${loan.balance.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Credit Limit:</span>
-                  <span className="font-medium">${loan.limit.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Available Credit:</span>
-                  <span className="font-medium">${loan.availableCredit.toLocaleString()}</span>
-                </div>
+                
+                {/* Special case for Equipment Financing */}
+                {loan.name === "Equipment Financing" ? (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Loan Amount:</span>
+                    <span className="font-medium">${loan.limit.toLocaleString()}</span>
+                  </div>
+                ) : (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Credit Limit:</span>
+                    <span className="font-medium">${loan.limit.toLocaleString()}</span>
+                  </div>
+                )}
+                
+                {/* Only show Available Credit for loans other than Equipment Financing */}
+                {loan.name !== "Equipment Financing" && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Available Credit:</span>
+                    <span className="font-medium">${loan.availableCredit.toLocaleString()}</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Interest Rate:</span>
                   <span className="font-medium">{loan.interestRate}%</span>
                 </div>
+                
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Monthly Payment:</span>
                   <span className="font-medium">${loan.monthlyPayment.toLocaleString()}</span>
                 </div>
+                
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Statement Date:</span>
                   <span className="font-medium">{loan.statementDate}</span>
                 </div>
+                
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Next Payment:</span>
                   <span className="font-medium">{loan.nextPaymentDate}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Minimum Payment:</span>
-                  <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
-                </div>
+                
+                {/* Only show Minimum Payment for loans other than Equipment Financing */}
+                {loan.name !== "Equipment Financing" && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Minimum Payment:</span>
+                    <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
+                  </div>
+                )}
+                
                 {loan.remainingTerm && loan.term && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Term:</span>
