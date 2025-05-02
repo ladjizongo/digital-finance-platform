@@ -2,8 +2,8 @@
 import * as z from "zod";
 
 export const financialFormSchema = z.object({
-  // Year
-  year: z.string().min(4, { message: "Please select a year" }),
+  // Year range (e.g., "2024-2025")
+  year: z.string().min(9, { message: "Please select a year range" }),
   
   // Assets
   currentAssets: z.coerce.number().min(0, { message: "Current assets must be 0 or greater" }),
@@ -29,4 +29,3 @@ export const financialFormSchema = z.object({
 });
 
 export type FinancialFormValues = z.infer<typeof financialFormSchema>;
-

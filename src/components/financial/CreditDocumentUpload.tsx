@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +21,8 @@ const DOCUMENT_TYPES = {
   INVESTMENT_STATEMENT: "Investment Statement"
 };
 
-const YEARS = ["2025", "2024", "2023"];
+// Updated to show consecutive years in format YYYY-YYYY
+const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
 
 const CreditDocumentUpload = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -82,7 +84,7 @@ const CreditDocumentUpload = () => {
 
   const isSubmitReady = () => {
     return Object.values(DOCUMENT_TYPES).every(docType =>
-      YEARS.some(year => files.some(file => 
+      YEAR_RANGES.some(year => files.some(file => 
         file.documentType === docType && file.year === year
       ))
     );
@@ -117,7 +119,7 @@ const CreditDocumentUpload = () => {
                 <div key={key} className="space-y-2">
                   <div className="font-medium text-sm text-gray-700">{label}</div>
                   <div className="grid gap-2">
-                    {YEARS.map((year) => {
+                    {YEAR_RANGES.map((year) => {
                       const isUploaded = isDocumentUploaded(label, year);
                       return (
                         <div key={`${key}-${year}`} className="flex items-center space-x-2">
@@ -165,8 +167,8 @@ const CreditDocumentUpload = () => {
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                  <option value="">Select Year</option>
-                  {YEARS.map((year) => (
+                  <option value="">Select Year Range</option>
+                  {YEAR_RANGES.map((year) => (
                     <option key={year} value={year}>
                       {year}
                     </option>
