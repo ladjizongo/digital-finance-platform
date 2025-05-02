@@ -15,7 +15,7 @@ const DashboardHeader = () => {
               Transactions & Payments
             </Link>
             <a
-              href="https://www.irs.gov/payments"
+              href="https://www.canada.ca/en/revenue-agency/services/payments/payments-cra/individual-payments/make-payment.html"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
