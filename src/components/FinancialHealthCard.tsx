@@ -11,12 +11,10 @@ import { MetricsGrid } from "./financial/MetricsGrid";
 import { CashFlowTable } from "./financial/CashFlowTable";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import { BusinessHealthScore } from "./financial/BusinessHealthScore";
-import { CashFlowForecast } from "./financial/CashFlowForecast";
 
 const FinancialHealthCard = () => {
   const [file, setFile] = useState<File | null>(null);
   const [activeAccount, setActiveAccount] = useState("1");
-  const [activeTab, setActiveTab] = useState("forecast");
   
   const {
     metrics,
@@ -71,34 +69,23 @@ const FinancialHealthCard = () => {
           <div className="space-y-6">
             <BusinessHealthScore metrics={metrics} />
 
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="current">Current Metrics</TabsTrigger>
-                <TabsTrigger value="forecast">Cash Flow Forecast</TabsTrigger>
-              </TabsList>
+            <div className="space-y-4">
+              <YearSelector
+                yearlyData={metrics.yearlyData}
+                selectedYear={metrics.selectedYear}
+                onYearChange={handleYearChange}
+              />
               
-              <TabsContent value="current" className="space-y-4">
-                <YearSelector
-                  yearlyData={metrics.yearlyData}
-                  selectedYear={metrics.selectedYear}
-                  onYearChange={handleYearChange}
-                />
-                
-                {currentYearData && (
-                  <MetricsGrid data={currentYearData} />
-                )}
+              {currentYearData && (
+                <MetricsGrid data={currentYearData} />
+              )}
 
-                {metrics && (
-                  <div className="space-y-4">
-                    <CashFlowTable data={metrics.cashFlow} accountId={activeAccount} />
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="forecast">
-                <CashFlowForecast metrics={metrics} />
-              </TabsContent>
-            </Tabs>
+              {metrics && (
+                <div className="space-y-4">
+                  <CashFlowTable data={metrics.cashFlow} accountId={activeAccount} />
+                </div>
+              )}
+            </div>
           </div>
         )}
       </CardContent>
