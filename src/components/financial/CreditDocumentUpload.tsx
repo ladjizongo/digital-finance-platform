@@ -17,8 +17,7 @@ interface UploadedFile {
 const DOCUMENT_TYPES = {
   FINANCIAL_STATEMENT: "Financial Statement",
   PERSONAL_NOTICE_OF_ASSESSMENT: "Personal Notice of Assessment",
-  BUSINESS_PLAN: "Business Plan",
-  CASHFLOW_PROJECTION: "Cashflow Projection"
+  BUSINESS_PLAN: "Business Plan"
 };
 
 // Updated to show consecutive years in format YYYY-YYYY for Financial Statement
@@ -28,7 +27,7 @@ const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
 const ASSESSMENT_YEARS = ["2024", "2023", "2022"];
 
 // Document types that don't require years
-const YEAR_INDEPENDENT_DOCUMENTS = [DOCUMENT_TYPES.BUSINESS_PLAN, DOCUMENT_TYPES.CASHFLOW_PROJECTION];
+const YEAR_INDEPENDENT_DOCUMENTS = [DOCUMENT_TYPES.BUSINESS_PLAN];
 
 const CreditDocumentUpload = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -208,7 +207,7 @@ const CreditDocumentUpload = () => {
               </div>
             </div>
             
-            {/* Additional Document Types - Business Plan and Cashflow Projection */}
+            {/* Additional Document Types - Business Plan */}
             <div className="grid gap-4 md:grid-cols-2">
               {/* Business Plan Section */}
               <div className="space-y-2">
@@ -225,25 +224,6 @@ const CreditDocumentUpload = () => {
                   >
                     Business Plan
                     {isYearIndependentDocumentUploaded(DOCUMENT_TYPES.BUSINESS_PLAN) && " ✓"}
-                  </label>
-                </div>
-              </div>
-              
-              {/* Cashflow Projection Section */}
-              <div className="space-y-2">
-                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.CASHFLOW_PROJECTION}</div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="CASHFLOW_PROJECTION"
-                    checked={isYearIndependentDocumentUploaded(DOCUMENT_TYPES.CASHFLOW_PROJECTION)}
-                    disabled={true}
-                  />
-                  <label
-                    htmlFor="CASHFLOW_PROJECTION"
-                    className="text-sm text-gray-600"
-                  >
-                    Cashflow Projection
-                    {isYearIndependentDocumentUploaded(DOCUMENT_TYPES.CASHFLOW_PROJECTION) && " ✓"}
                   </label>
                 </div>
               </div>
