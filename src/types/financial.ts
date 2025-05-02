@@ -1,4 +1,5 @@
 
+
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -79,3 +80,4 @@ export interface ForecastData {
   events: FinancialEvent[];
   warningDates: string[];
 }
+

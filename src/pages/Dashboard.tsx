@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -112,6 +113,7 @@ const Dashboard = () => {
         statementDate: "Apr 30, 2025",
         minimumPayment: 1458.33,
         term: 60,
+        remainingTerm: 58,
         transactions: [
           { date: "Apr 18, 2025", description: "Manufacturing Equipment", amount: -15000.00 },
           { date: "Apr 15, 2025", description: "Loan Payment", amount: -1458.33 },
@@ -120,7 +122,7 @@ const Dashboard = () => {
       },
       {
         id: "loan3",
-        name: "Working Capital Loan",
+        name: "Overdraft",
         balance: 30000.00,
         limit: 35000.00,
         availableCredit: 5000.00,
@@ -378,10 +380,12 @@ const Dashboard = () => {
                           <span className="text-sm text-muted-foreground">Minimum Payment:</span>
                           <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Term:</span>
-                          <span className="font-medium">{loan.term} months</span>
-                        </div>
+                        {loan.remainingTerm && loan.term && (
+                          <div className="flex justify-between">
+                            <span className="text-sm text-muted-foreground">Term:</span>
+                            <span className="font-medium">{loan.remainingTerm}/{loan.term} months</span>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
