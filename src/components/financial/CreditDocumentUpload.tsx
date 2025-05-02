@@ -16,7 +16,9 @@ interface UploadedFile {
 
 const DOCUMENT_TYPES = {
   FINANCIAL_STATEMENT: "Financial Statement",
-  PERSONAL_NOTICE_OF_ASSESSMENT: "Personal Notice of Assessment"
+  PERSONAL_NOTICE_OF_ASSESSMENT: "Personal Notice of Assessment",
+  BUSINESS_PLAN: "Business Plan",
+  CASHFLOW_PROJECTION: "Cashflow Projection"
 };
 
 // Updated to show consecutive years in format YYYY-YYYY for Financial Statement
@@ -24,6 +26,9 @@ const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
 
 // Years in YYYY format for Personal Notice of Assessment
 const ASSESSMENT_YEARS = ["2024", "2023", "2022"];
+
+// Document types that don't require years
+const YEAR_INDEPENDENT_DOCUMENTS = [DOCUMENT_TYPES.BUSINESS_PLAN, DOCUMENT_TYPES.CASHFLOW_PROJECTION];
 
 const CreditDocumentUpload = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -43,8 +48,14 @@ const CreditDocumentUpload = () => {
   }, [files]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length || !selectedDocType || !selectedYear) {
-      toast.error("Please select document type and year before uploading");
+    if (!event.target.files?.length || !selectedDocType) {
+      toast.error("Please select document type before uploading");
+      return;
+    }
+    
+    // For documents that require a year, validate year is selected
+    if (!YEAR_INDEPENDENT_DOCUMENTS.includes(selectedDocType) && !selectedYear) {
+      toast.error("Please select a year for this document type");
       return;
     }
     
@@ -58,7 +69,7 @@ const CreditDocumentUpload = () => {
         id: fileId,
         name: file.name,
         type: file.type,
-        year: selectedYear,
+        year: YEAR_INDEPENDENT_DOCUMENTS.includes(selectedDocType) ? "N/A" : selectedYear,
         documentType: selectedDocType
       });
     }
@@ -81,6 +92,10 @@ const CreditDocumentUpload = () => {
 
   const isDocumentUploaded = (docType: string, year: string) => {
     return files.some(file => file.documentType === docType && file.year === year);
+  };
+
+  const isYearIndependentDocumentUploaded = (docType: string) => {
+    return files.some(file => file.documentType === docType);
   };
 
   const isSubmitReady = () => {
@@ -121,6 +136,10 @@ const CreditDocumentUpload = () => {
       return "Select Year";
     }
     return "Select Year Range";
+  };
+
+  const requiresYear = (docType: string) => {
+    return !YEAR_INDEPENDENT_DOCUMENTS.includes(docType);
   };
 
   return (
@@ -188,6 +207,47 @@ const CreditDocumentUpload = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Additional Document Types - Business Plan and Cashflow Projection */}
+            <div className="grid gap-4 md:grid-cols-2">
+              {/* Business Plan Section */}
+              <div className="space-y-2">
+                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.BUSINESS_PLAN}</div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="BUSINESS_PLAN"
+                    checked={isYearIndependentDocumentUploaded(DOCUMENT_TYPES.BUSINESS_PLAN)}
+                    disabled={true}
+                  />
+                  <label
+                    htmlFor="BUSINESS_PLAN"
+                    className="text-sm text-gray-600"
+                  >
+                    Business Plan
+                    {isYearIndependentDocumentUploaded(DOCUMENT_TYPES.BUSINESS_PLAN) && " ✓"}
+                  </label>
+                </div>
+              </div>
+              
+              {/* Cashflow Projection Section */}
+              <div className="space-y-2">
+                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.CASHFLOW_PROJECTION}</div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="CASHFLOW_PROJECTION"
+                    checked={isYearIndependentDocumentUploaded(DOCUMENT_TYPES.CASHFLOW_PROJECTION)}
+                    disabled={true}
+                  />
+                  <label
+                    htmlFor="CASHFLOW_PROJECTION"
+                    className="text-sm text-gray-600"
+                  >
+                    Cashflow Projection
+                    {isYearIndependentDocumentUploaded(DOCUMENT_TYPES.CASHFLOW_PROJECTION) && " ✓"}
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -211,18 +271,20 @@ const CreditDocumentUpload = () => {
                     </option>
                   ))}
                 </select>
-                <select
-                  className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value)}
-                >
-                  <option value="">{getYearLabel()}</option>
-                  {getYearOptions().map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
+                {selectedDocType && requiresYear(selectedDocType) && (
+                  <select
+                    className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                  >
+                    <option value="">{getYearLabel()}</option>
+                    {getYearOptions().map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                )}
                 <div className="flex items-center gap-4">
                   <input
                     id="documentUpload"
@@ -231,7 +293,7 @@ const CreditDocumentUpload = () => {
                     accept=".pdf,.doc,.docx,.xls,.xlsx"
                     onChange={handleFileUpload}
                     className="text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-700"
-                    disabled={isUploading || !selectedDocType || !selectedYear}
+                    disabled={isUploading || !selectedDocType || (requiresYear(selectedDocType) && !selectedYear)}
                   />
                   {isUploading && (
                     <div className="text-sm text-gray-500">Uploading...</div>
@@ -255,7 +317,7 @@ const CreditDocumentUpload = () => {
                       <div>
                         <p className="text-sm font-medium text-gray-700">{file.name}</p>
                         <p className="text-xs text-gray-500">
-                          {file.documentType} - {file.year}
+                          {file.documentType}{file.year !== "N/A" ? ` - ${file.year}` : ""}
                         </p>
                       </div>
                     </div>
