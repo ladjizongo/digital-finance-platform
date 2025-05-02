@@ -16,13 +16,14 @@ interface UploadedFile {
 
 const DOCUMENT_TYPES = {
   FINANCIAL_STATEMENT: "Financial Statement",
-  NOTICE_OF_ASSESSMENT: "Notice of Assessment",
-  BANK_STATEMENT: "Bank Statement",
-  INVESTMENT_STATEMENT: "Investment Statement"
+  PERSONAL_NOTICE_OF_ASSESSMENT: "Personal Notice of Assessment"
 };
 
-// Updated to show consecutive years in format YYYY-YYYY
+// Updated to show consecutive years in format YYYY-YYYY for Financial Statement
 const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
+
+// Years in YYYY format for Personal Notice of Assessment
+const ASSESSMENT_YEARS = ["2024", "2023", "2022"];
 
 const CreditDocumentUpload = () => {
   const [files, setFiles] = useState<UploadedFile[]>([]);
@@ -83,16 +84,22 @@ const CreditDocumentUpload = () => {
   };
 
   const isSubmitReady = () => {
-    return Object.values(DOCUMENT_TYPES).every(docType =>
-      YEAR_RANGES.some(year => files.some(file => 
-        file.documentType === docType && file.year === year
-      ))
+    // For Financial Statements, we need at least one for any YEAR_RANGES
+    const hasFinancialStatement = YEAR_RANGES.some(year => 
+      files.some(file => file.documentType === DOCUMENT_TYPES.FINANCIAL_STATEMENT && file.year === year)
     );
+    
+    // For Personal Notice of Assessment, we need at least one for any ASSESSMENT_YEARS
+    const hasNoticeOfAssessment = ASSESSMENT_YEARS.some(year => 
+      files.some(file => file.documentType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT && file.year === year)
+    );
+    
+    return hasFinancialStatement && hasNoticeOfAssessment;
   };
 
   const handleSubmit = () => {
     if (!isSubmitReady()) {
-      toast.error("Please upload at least one document for each type and year before submitting");
+      toast.error("Please upload at least one document for each type before submitting");
       return;
     }
 
@@ -102,12 +109,26 @@ const CreditDocumentUpload = () => {
     localStorage.removeItem('uploadedCreditDocs');
   };
 
+  const getYearOptions = () => {
+    if (selectedDocType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT) {
+      return ASSESSMENT_YEARS;
+    }
+    return YEAR_RANGES;
+  };
+
+  const getYearLabel = () => {
+    if (selectedDocType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT) {
+      return "Select Year";
+    }
+    return "Select Year Range";
+  };
+
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>Credit Application Documents</CardTitle>
         <CardDescription>
-          Upload your financial documents and tax assessments for the past 3 years
+          Upload your financial documents and tax assessments
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -115,32 +136,57 @@ const CreditDocumentUpload = () => {
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-gray-700">Required Documents:</h4>
             <div className="grid gap-4 md:grid-cols-2">
-              {Object.entries(DOCUMENT_TYPES).map(([key, label]) => (
-                <div key={key} className="space-y-2">
-                  <div className="font-medium text-sm text-gray-700">{label}</div>
-                  <div className="grid gap-2">
-                    {YEAR_RANGES.map((year) => {
-                      const isUploaded = isDocumentUploaded(label, year);
-                      return (
-                        <div key={`${key}-${year}`} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`${key}-${year}`}
-                            checked={isUploaded}
-                            disabled={true}
-                          />
-                          <label
-                            htmlFor={`${key}-${year}`}
-                            className="text-sm text-gray-600"
-                          >
-                            {year}
-                            {isUploaded && " ✓"}
-                          </label>
-                        </div>
-                      );
-                    })}
-                  </div>
+              {/* Financial Statement Section */}
+              <div className="space-y-2">
+                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.FINANCIAL_STATEMENT}</div>
+                <div className="grid gap-2">
+                  {YEAR_RANGES.map((year) => {
+                    const isUploaded = isDocumentUploaded(DOCUMENT_TYPES.FINANCIAL_STATEMENT, year);
+                    return (
+                      <div key={`FINANCIAL_STATEMENT-${year}`} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`FINANCIAL_STATEMENT-${year}`}
+                          checked={isUploaded}
+                          disabled={true}
+                        />
+                        <label
+                          htmlFor={`FINANCIAL_STATEMENT-${year}`}
+                          className="text-sm text-gray-600"
+                        >
+                          {year}
+                          {isUploaded && " ✓"}
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              </div>
+              
+              {/* Personal Notice of Assessment Section */}
+              <div className="space-y-2">
+                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT}</div>
+                <div className="grid gap-2">
+                  {ASSESSMENT_YEARS.map((year) => {
+                    const isUploaded = isDocumentUploaded(DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT, year);
+                    return (
+                      <div key={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`}
+                          checked={isUploaded}
+                          disabled={true}
+                        />
+                        <label
+                          htmlFor={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`}
+                          className="text-sm text-gray-600"
+                        >
+                          {year}
+                          {isUploaded && " ✓"}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -153,7 +199,10 @@ const CreditDocumentUpload = () => {
                 <select
                   className="rounded-md border border-gray-300 px-3 py-2 text-sm"
                   value={selectedDocType}
-                  onChange={(e) => setSelectedDocType(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedDocType(e.target.value);
+                    setSelectedYear("");
+                  }}
                 >
                   <option value="">Select Document Type</option>
                   {Object.values(DOCUMENT_TYPES).map((type) => (
@@ -167,8 +216,8 @@ const CreditDocumentUpload = () => {
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(e.target.value)}
                 >
-                  <option value="">Select Year Range</option>
-                  {YEAR_RANGES.map((year) => (
+                  <option value="">{getYearLabel()}</option>
+                  {getYearOptions().map((year) => (
                     <option key={year} value={year}>
                       {year}
                     </option>
