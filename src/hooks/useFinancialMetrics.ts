@@ -1,3 +1,4 @@
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FinancialFormValues } from "@/schemas/financialFormSchema";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
@@ -99,7 +100,7 @@ export const useFinancialMetrics = () => {
   const resetMetrics = () => {
     queryClient.setQueryData(['financialMetrics'], null);
     localStorage.removeItem('financialMetrics');
-    toast({ title: "Reset successful", description: "Financial data has been reset" });
+    toast("Reset successful", { description: "Financial data has been reset" });
   };
 
   const handleYearChange = (year: string) => {
