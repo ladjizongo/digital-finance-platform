@@ -1,5 +1,8 @@
-import { DollarSign, CreditCard, Banknote } from "lucide-react";
+
+import { DollarSign, CreditCard, Banknote, Percent } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface FinancialData {
   totalBalance: number;
@@ -82,6 +85,9 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
     0
   );
   
+  // Calculate overall credit utilization
+  const overallCreditUtilization = Math.round((totalCreditCardBalance / totalCreditLimit) * 100);
+  
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
   const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
@@ -137,6 +143,35 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
           <p className="text-xs text-muted-foreground mt-1">
             Total balance across {financialData.creditCards.length} credit cards
           </p>
+          
+          <div className="mt-4 space-y-1">
+            <div className="flex justify-between items-center text-xs">
+              <span className="flex items-center">
+                <Percent className="h-3 w-3 mr-1" />
+                Credit Utilization
+              </span>
+              <span className={cn(
+                "font-medium",
+                overallCreditUtilization > 75 ? "text-red-600" : 
+                overallCreditUtilization > 50 ? "text-amber-600" : "text-green-600"
+              )}>
+                {overallCreditUtilization}%
+              </span>
+            </div>
+            <Progress 
+              value={overallCreditUtilization} 
+              className={cn(
+                "h-1.5",
+                overallCreditUtilization > 75 ? "bg-red-200" : 
+                overallCreditUtilization > 50 ? "bg-amber-200" : "bg-green-200"
+              )}
+              indicatorClassName={cn(
+                overallCreditUtilization > 75 ? "bg-red-600" : 
+                overallCreditUtilization > 50 ? "bg-amber-600" : "bg-green-600"
+              )}
+            />
+          </div>
+          
           <div className="flex justify-between mt-4">
             <span className="text-sm text-muted-foreground">Available Credit:</span>
             <span className="text-sm font-medium">${totalCreditCardAvailableCredit.toLocaleString('en-US')}</span>

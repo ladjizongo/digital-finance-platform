@@ -1,6 +1,8 @@
 
 import { MetricCardProps } from "@/types/financial";
 import { CircleMetric } from "./CircleMetric";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 export const MetricCard = ({ 
   title, 
@@ -11,7 +13,10 @@ export const MetricCard = ({
   warningMessage,
   successMessage,
   isCircleDisplay = false,
-  compareValue
+  compareValue,
+  showUtilization = false,
+  utilizationValue,
+  utilizationLabel
 }: MetricCardProps) => {
   const isWarning = warningThreshold !== undefined && value > warningThreshold;
 
@@ -43,7 +48,33 @@ export const MetricCard = ({
       {description && (
         <div className="mt-1 text-xs text-muted-foreground">{description}</div>
       )}
-      {(warningMessage || successMessage) && (
+      {showUtilization && utilizationValue !== undefined && (
+        <div className="mt-3 space-y-1">
+          <div className="flex justify-between items-center text-xs">
+            <span>{utilizationLabel || "Utilization"}</span>
+            <span className={cn(
+              "font-medium",
+              utilizationValue > 75 ? "text-red-600" : 
+              utilizationValue > 50 ? "text-amber-600" : "text-green-600"
+            )}>
+              {utilizationValue}%
+            </span>
+          </div>
+          <Progress 
+            value={utilizationValue} 
+            className={cn(
+              "h-1.5",
+              utilizationValue > 75 ? "bg-red-200" : 
+              utilizationValue > 50 ? "bg-amber-200" : "bg-green-200"
+            )}
+            indicatorClassName={cn(
+              utilizationValue > 75 ? "bg-red-600" : 
+              utilizationValue > 50 ? "bg-amber-600" : "bg-green-600"
+            )}
+          />
+        </div>
+      )}
+      {(warningMessage || successMessage) && !showUtilization && (
         <div className={`mt-1 text-xs ${isWarning ? 'text-red-600' : 'text-green-600'}`}>
           {isWarning ? warningMessage : successMessage}
         </div>

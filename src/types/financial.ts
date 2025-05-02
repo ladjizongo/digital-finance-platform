@@ -50,6 +50,9 @@ export interface MetricCardProps {
   successMessage?: string;
   isCircleDisplay?: boolean;
   compareValue?: number;
+  showUtilization?: boolean;
+  utilizationValue?: number;
+  utilizationLabel?: string;
 }
 
 export interface FinancialEvent {

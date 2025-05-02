@@ -10,6 +10,7 @@ import { DownloadStatements } from "@/components/dashboard/DownloadStatements";
 import BankLogos from "@/components/dashboard/BankLogos";
 import AITipsPanel from "@/components/dashboard/AITipsPanel";
 import AIAnalysisPanel from "@/components/dashboard/AIAnalysisPanel";
+import { MetricCard } from "@/components/financial/MetricCard";
 
 const Dashboard = () => {
   const [activeAccount, setActiveAccount] = useState("1");
@@ -224,7 +225,28 @@ const Dashboard = () => {
             </TabsContent>
 
             <TabsContent value="creditCards">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {financialData.creditCards.map(card => {
+                  const utilizationPercent = Math.round((card.balance / card.creditLimit) * 100);
+                  return (
+                    <MetricCard
+                      key={card.id}
+                      title={card.name}
+                      value={card.balance}
+                      unit="$"
+                      description={card.number}
+                      showUtilization={true}
+                      utilizationValue={utilizationPercent}
+                      utilizationLabel="Credit Utilization"
+                      warningThreshold={card.creditLimit * 0.75}
+                      warningMessage="High utilization may impact credit score"
+                      successMessage="Good utilization ratio"
+                    />
+                  );
+                })}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {financialData.creditCards.map(card => (
                   <Card 
                     key={card.id}
