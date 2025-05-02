@@ -1,22 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-
-interface Transaction {
-  id: number;
-  date: string;
-  description: string;
-  amount: number;
-  account: string;
-}
-
-interface Account {
-  id: string;
-  name: string;
-  accountNumber: string;
-  balance: number;
-}
+import type { Account, Transaction } from "@/types/dashboardTypes";
 
 interface AccountDetailsProps {
   account: Account;
@@ -50,8 +37,8 @@ const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
             </TableHeader>
             <TableBody>
               {filteredTransactions.length > 0 ? (
-                filteredTransactions.map(transaction => (
-                  <TableRow key={transaction.id}>
+                filteredTransactions.map((transaction, idx) => (
+                  <TableRow key={transaction.id || idx}>
                     <TableCell>{transaction.date}</TableCell>
                     <TableCell>{transaction.description}</TableCell>
                     <TableCell className={`text-right ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
