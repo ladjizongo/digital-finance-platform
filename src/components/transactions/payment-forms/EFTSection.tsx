@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface Account {
@@ -86,7 +85,7 @@ export const EFTSection = ({
           <CardHeader>
             <CardTitle className="text-xl">Transfer Details</CardTitle>
             <CardDescription>
-              Enter the amount, transaction type and frequency
+              Enter the amount and transaction type
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -124,20 +123,6 @@ export const EFTSection = ({
                   min="0"
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Transfer Frequency</Label>
-              <ToggleGroup type="single" defaultValue="one-time" className="grid grid-cols-2 gap-2">
-                <ToggleGroupItem value="one-time" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                  <ArrowUp className="mr-2 h-4 w-4" />
-                  One-time
-                </ToggleGroupItem>
-                <ToggleGroupItem value="recurring" className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                  <ArrowDown className="mr-2 h-4 w-4" />
-                  Recurring
-                </ToggleGroupItem>
-              </ToggleGroup>
             </div>
           </CardContent>
         </Card>
