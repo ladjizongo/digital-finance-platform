@@ -1,5 +1,5 @@
 
-import { ArrowDown, ArrowUp, FileText, FilePlus } from "lucide-react";
+import { ArrowDown, ArrowUp, FileText, FilePlus, CreditCard } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ export const EFTSection = ({
   const { toast } = useToast();
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
   const [templateName, setTemplateName] = useState("");
+  const [transactionType, setTransactionType] = useState("debit");
 
   const saveTemplate = () => {
     if (!templateName.trim()) {
@@ -85,10 +86,29 @@ export const EFTSection = ({
           <CardHeader>
             <CardTitle className="text-xl">Transfer Details</CardTitle>
             <CardDescription>
-              Enter the amount and choose frequency
+              Enter the amount, transaction type and frequency
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>Transaction Type</Label>
+              <RadioGroup 
+                defaultValue="debit" 
+                className="flex space-x-4"
+                value={transactionType}
+                onValueChange={setTransactionType}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="debit" id="debit" />
+                  <Label htmlFor="debit" className="cursor-pointer">Debit (withdraw money)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="credit" id="credit" />
+                  <Label htmlFor="credit" className="cursor-pointer">Credit (deposit money)</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="amount">Amount</Label>
               <div className="relative">
@@ -216,7 +236,7 @@ export const EFTSection = ({
           </div>
           
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : "Send EFT Payment"}
+            {isSubmitting ? "Processing..." : `Send EFT ${transactionType === 'credit' ? 'Credit' : 'Debit'}`}
           </Button>
         </div>
       </div>
