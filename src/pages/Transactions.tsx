@@ -80,9 +80,6 @@ const Transactions = () => {
       <TransactionHeader />
       
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
-        <PaymentFileUpload />
-        <DataIntegrationsSection />
-        
         <TransactionTabs
           transactionType={transactionType}
           setTransactionType={setTransactionType}
@@ -92,6 +89,9 @@ const Transactions = () => {
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
         />
+        
+        <PaymentFileUpload />
+        <DataIntegrationsSection />
       </main>
     </div>
   );
