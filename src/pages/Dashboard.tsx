@@ -2,24 +2,19 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import AccountOverviewCards from "@/components/dashboard/AccountOverviewCards";
-import AccountDetails from "@/components/dashboard/AccountDetails";
-import FinancialHealthCard from "@/components/FinancialHealthCard";
-import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { DownloadStatements } from "@/components/dashboard/DownloadStatements";
-import BankLogos from "@/components/dashboard/BankLogos";
 import AITipsPanel from "@/components/dashboard/AITipsPanel";
 import AIAnalysisPanel from "@/components/dashboard/AIAnalysisPanel";
-import { MetricCard } from "@/components/financial/MetricCard";
+import AccountsTab from "@/components/dashboard/tabs/AccountsTab";
+import CreditCardsTab from "@/components/dashboard/tabs/CreditCardsTab";
+import LoansTab from "@/components/dashboard/tabs/LoansTab";
+import BusinessHealthTab from "@/components/dashboard/tabs/BusinessHealthTab";
+import ExternalAccountTab from "@/components/dashboard/tabs/ExternalAccountTab";
+import type { FinancialData } from "@/types/dashboardTypes";
 
 const Dashboard = () => {
-  const [activeAccount, setActiveAccount] = useState("1");
   const [activeTab, setActiveTab] = useState("accounts");
-  const [activeCreditCard, setActiveCreditCard] = useState("cc1");
-  const [activeLoan, setActiveLoan] = useState("loan1");
   
-  const financialData = {
+  const financialData: FinancialData = {
     totalBalance: 24850.75,
     accounts: [
       { id: "1", name: "Checking Account", balance: 3250.75, accountNumber: "****1234" },
@@ -148,35 +143,8 @@ const Dashboard = () => {
     ]
   };
 
-  const bankLinks = [
-    { name: "RBC Royal Bank", url: "https://www.rbcroyalbank.com/onlinebanking/bankingusertips/other-useful-services/download-your-transactions.html" },
-    { name: "CIBC", url: "https://www.cibc.com/en/personal-banking/ways-to-bank/how-to/download-transactions.html" },
-    { name: "TD Canada Trust", url: "https://www.td.com/ca/en/personal-banking/how-to/digital-banking/banking-the-way-you-want-it/download-statements/" },
-    { name: "BMO", url: "https://www.bmo.com/main/personal/ways-to-bank/online-banking/" },
-    { name: "National Bank", url: "https://www.nbc.ca/personal/accounts/banking-services/online-banking.html" },
-    { name: "Desjardins", url: "https://www.desjardins.com/ca/personal/accounts-services/ways-to-bank/online/accesD/index.jsp" }
-  ];
-
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-  };
-
-  const creditCardColors = {
-    "cc1": {
-      gradient: "linear-gradient(135deg, #8E5BA3 0%, #5D3B76 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-purple-600 to-purple-900"
-    },
-    "cc2": {
-      gradient: "linear-gradient(135deg, #4FC3F7 0%, #1565C0 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-blue-500 to-blue-900"
-    },
-    "cc3": {
-      gradient: "linear-gradient(135deg, #FFD54F 0%, #FF6F00 100%)",
-      textColor: "text-white",
-      background: "bg-gradient-to-br from-yellow-500 to-orange-600"
-    }
   };
 
   return (
@@ -195,251 +163,26 @@ const Dashboard = () => {
             </TabsList>
             
             <TabsContent value="accounts">
-              <AccountOverviewCards 
-                financialData={financialData} 
-                onTabChange={handleTabChange}
+              <AccountsTab 
+                financialData={financialData}
+                onTabChange={handleTabChange} 
               />
-              
-              <DownloadStatements
-                accounts={financialData.accounts}
-                creditCards={financialData.creditCards}
-                loans={financialData.loans}
-              />
-              
-              <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
-                <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
-                  {financialData.accounts.map(account => (
-                    <TabsTrigger key={account.id} value={account.id}>
-                      Account {account.id}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                
-                {financialData.accounts.map(account => (
-                  <TabsContent key={account.id} value={account.id} className="space-y-4">
-                    <AccountDetails
-                      account={account}
-                      transactions={financialData.recentTransactions}
-                    />
-                  </TabsContent>
-                ))}
-              </Tabs>
             </TabsContent>
 
             <TabsContent value="creditCards">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {financialData.creditCards.map(card => {
-                  const utilizationPercent = Math.round((card.balance / card.creditLimit) * 100);
-                  return (
-                    <MetricCard
-                      key={card.id}
-                      title={card.name}
-                      value={card.balance}
-                      unit="$"
-                      description={card.number}
-                      showUtilization={true}
-                      utilizationValue={utilizationPercent}
-                      utilizationLabel="Credit Utilization"
-                      warningThreshold={card.creditLimit * 0.75}
-                      warningMessage="High utilization may impact credit score"
-                      successMessage="Good utilization ratio"
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                {financialData.creditCards.map(card => (
-                  <Card 
-                    key={card.id}
-                    className={`cursor-pointer transition-all hover:shadow-md ${
-                      activeCreditCard === card.id ? 'ring-2 ring-primary' : ''
-                    }`}
-                    onClick={() => setActiveCreditCard(card.id)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-lg">{card.name}</CardTitle>
-                      <CardDescription>{card.number}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Balance:</span>
-                          <span className="font-medium">${card.balance.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Credit Limit:</span>
-                          <span className="font-medium">${card.creditLimit.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Available Credit:</span>
-                          <span className="font-medium">${card.availableCredit.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Purchase Rate:</span>
-                          <span className="font-medium">{card.purchaseRate}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Cash Advance Rate:</span>
-                          <span className="font-medium">{card.cashAdvanceRate}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Minimum Payment:</span>
-                          <span className="font-medium">${card.minimumPayment.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Statement Date:</span>
-                          <span className="font-medium">{card.statementDate}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Due Date:</span>
-                          <span className="font-medium">{card.dueDate}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {activeCreditCard && (
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle>Recent Transactions</CardTitle>
-                    <CardDescription>
-                      {financialData.creditCards.find(card => card.id === activeCreditCard)?.name}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {financialData.creditCards
-                        .find(card => card.id === activeCreditCard)
-                        ?.transactions.map((transaction, idx) => (
-                          <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
-                            <div>
-                              <p className="font-medium">{transaction.description}</p>
-                              <p className="text-sm text-muted-foreground">{transaction.date}</p>
-                            </div>
-                            <span className={`font-medium ${
-                              transaction.amount < 0 ? 'text-red-600' : 'text-green-600'
-                            }`}>
-                              ${Math.abs(transaction.amount).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              <CreditCardsTab financialData={financialData} />
             </TabsContent>
             
-            <TabsContent value="loans" className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {financialData.loans.map(loan => (
-                  <Card 
-                    key={loan.id}
-                    className={`cursor-pointer transition-all ${
-                      activeLoan === loan.id ? 'ring-2 ring-primary' : ''
-                    }`}
-                    onClick={() => setActiveLoan(loan.id)}
-                  >
-                    <CardHeader>
-                      <CardTitle className="text-lg">{loan.name}</CardTitle>
-                      <CardDescription>Loan ID: {loan.id}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Balance:</span>
-                          <span className="font-medium">${loan.balance.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Credit Limit:</span>
-                          <span className="font-medium">${loan.limit.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Available Credit:</span>
-                          <span className="font-medium">${loan.availableCredit.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Interest Rate:</span>
-                          <span className="font-medium">{loan.interestRate}%</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Monthly Payment:</span>
-                          <span className="font-medium">${loan.monthlyPayment.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Statement Date:</span>
-                          <span className="font-medium">{loan.statementDate}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Next Payment:</span>
-                          <span className="font-medium">{loan.nextPaymentDate}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Minimum Payment:</span>
-                          <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
-                        </div>
-                        {loan.remainingTerm && loan.term && (
-                          <div className="flex justify-between">
-                            <span className="text-sm text-muted-foreground">Term:</span>
-                            <span className="font-medium">{loan.remainingTerm}/{loan.term} months</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {activeLoan && (
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle>Recent Transactions</CardTitle>
-                    <CardDescription>
-                      {financialData.loans.find(loan => loan.id === activeLoan)?.name}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {financialData.loans
-                        .find(loan => loan.id === activeLoan)
-                        ?.transactions.map((transaction, idx) => (
-                          <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
-                            <div>
-                              <p className="font-medium">{transaction.description}</p>
-                              <p className="text-sm text-muted-foreground">{transaction.date}</p>
-                            </div>
-                            <span className={`font-medium ${
-                              transaction.amount < 0 ? 'text-red-600' : 'text-green-600'
-                            }`}>
-                              ${Math.abs(transaction.amount).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+            <TabsContent value="loans">
+              <LoansTab financialData={financialData} />
             </TabsContent>
             
             <TabsContent value="businessHealth">
-              <FinancialHealthCard />
-              <div className="mt-8">
-                <CreditDocumentUpload />
-              </div>
+              <BusinessHealthTab />
             </TabsContent>
 
             <TabsContent value="externalAccount">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Link External Account</CardTitle>
-                  <CardDescription>Connect your account from another bank</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <BankLogos />
-                </CardContent>
-              </Card>
+              <ExternalAccountTab />
             </TabsContent>
           </Tabs>
           <div className="flex flex-col gap-2 max-w-3xl mx-auto mt-6">
