@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Lock, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { User, Lock, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -13,32 +13,15 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const [isLocked, setIsLocked] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-
-  const validatePassword = (password: string) => {
-    const minLength = password.length >= 8;
-    return minLength;
-  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if account is locked due to too many failed attempts
-    if (isLocked) {
-      toast({
-        title: "Account temporarily locked",
-        description: "Too many failed login attempts. Please try again later.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setIsLoading(true);
     
-    // Basic validation
+    // Basic validation - just check if fields are not empty
     if (!userId || !password) {
       setIsLoading(false);
       toast({
@@ -49,55 +32,23 @@ const LoginForm = () => {
       return;
     }
 
-    // Simulate login process
+    // Simulate login process with a short delay
     setTimeout(() => {
       setIsLoading(false);
       
-      // For demo purposes - implement proper authentication in production
-      if (userId === "demo" && password === "password123") {
-        // Success message
-        toast({
-          title: "Login successful",
-          description: "Welcome back!",
-        });
-        
-        // Reset login attempts on success
-        setLoginAttempts(0);
-        
-        // In a real app, you would handle authentication here
-        console.log("Login successful for:", { userId });
-        
-        // Redirect to dashboard
-        navigate("/dashboard");
-      } else {
-        // Increment failed login attempts
-        const newAttempts = loginAttempts + 1;
-        setLoginAttempts(newAttempts);
-        
-        // Lock account after 5 failed attempts
-        if (newAttempts >= 5) {
-          setIsLocked(true);
-          
-          // Automatically unlock after 15 minutes (in real app this would be longer)
-          setTimeout(() => {
-            setIsLocked(false);
-            setLoginAttempts(0);
-          }, 15 * 60 * 1000);
-          
-          toast({
-            title: "Account temporarily locked",
-            description: "Too many failed login attempts. Please try again in 15 minutes.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Login failed",
-            description: "Invalid user ID or password. Please try again.",
-            variant: "destructive",
-          });
-        }
-      }
-    }, 1500);
+      // Accept any user ID and password combination
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
+      
+      // Log the login attempt
+      console.log("Login successful for:", { userId });
+      
+      // Redirect to dashboard
+      navigate("/dashboard");
+      
+    }, 1000);
   };
 
   const toggleShowPassword = () => {
@@ -127,7 +78,6 @@ const LoginForm = () => {
                 onChange={(e) => setUserId(e.target.value)}
                 className="pl-10"
                 autoComplete="username"
-                disabled={isLocked}
               />
             </div>
           </div>
@@ -146,7 +96,6 @@ const LoginForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-10 pr-10"
                 autoComplete="current-password"
-                disabled={isLocked}
               />
               <button
                 type="button"
@@ -161,22 +110,15 @@ const LoginForm = () => {
           <Button 
             type="submit" 
             className="w-full fade-in delay-300" 
-            disabled={isLoading || isLocked}
+            disabled={isLoading}
           >
-            {isLoading ? "Signing in..." : isLocked ? "Account Locked" : "Sign In"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-          
-          {isLocked && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md flex items-center text-sm text-red-700 mt-2">
-              <AlertCircle size={16} className="mr-2 flex-shrink-0" />
-              <span>Account temporarily locked due to too many failed attempts. Please try again later.</span>
-            </div>
-          )}
           
           <div className="text-sm text-gray-500 mt-4">
             <p className="flex items-center">
               <CheckCircle2 size={14} className="mr-1 text-green-600" />
-              <span>Password must be at least 8 characters</span>
+              <span>Any username and password can be used to login</span>
             </p>
           </div>
         </form>
