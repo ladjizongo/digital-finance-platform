@@ -1,5 +1,4 @@
 
-
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -54,6 +53,7 @@ export interface MetricCardProps {
   showUtilization?: boolean;
   utilizationValue?: number;
   utilizationLabel?: string;
+  customValueClass?: string;
 }
 
 export interface FinancialEvent {
@@ -80,4 +80,3 @@ export interface ForecastData {
   events: FinancialEvent[];
   warningDates: string[];
 }
-

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import type { FinancialData, Loan } from "@/types/dashboardTypes";
+import { cn } from "@/lib/utils";
 
 interface LoansTabProps {
   financialData: FinancialData;
@@ -9,6 +10,12 @@ interface LoansTabProps {
 
 const LoansTab = ({ financialData }: LoansTabProps) => {
   const [activeLoan, setActiveLoan] = useState("loan1");
+
+  const getPayableDaysColorClass = (days: number) => {
+    if (days >= 30) return "text-red-600";
+    if (days >= 20 && days <= 29) return "text-amber-600";
+    return "text-green-600";
+  };
 
   return (
     <div className="space-y-4">

@@ -16,7 +16,8 @@ export const MetricCard = ({
   compareValue,
   showUtilization = false,
   utilizationValue,
-  utilizationLabel
+  utilizationLabel,
+  customValueClass
 }: MetricCardProps) => {
   const isWarning = warningThreshold !== undefined && value > warningThreshold;
 
@@ -28,9 +29,10 @@ export const MetricCard = ({
           title={title}
           warningThreshold={warningThreshold}
           compareValue={compareValue}
+          customValueClass={customValueClass}
         />
         {(warningMessage || successMessage) && (
-          <div className={`mt-3 text-xs text-center ${isWarning ? 'text-red-600' : 'text-green-600'}`}>
+          <div className={`mt-3 text-xs text-center ${isWarning ? '' : 'text-green-600'}`}>
             {isWarning ? warningMessage : successMessage}
           </div>
         )}
@@ -42,7 +44,7 @@ export const MetricCard = ({
     <div className="rounded-lg border p-3">
       <div className="text-sm font-medium text-muted-foreground">{title}</div>
       <div className="mt-1 flex items-baseline">
-        <div className="text-2xl font-semibold">{value}</div>
+        <div className={cn("text-2xl font-semibold", customValueClass)}>{value}</div>
         {unit && <div className="ml-1 text-xs text-muted-foreground">{unit}</div>}
       </div>
       {description && (
@@ -75,7 +77,7 @@ export const MetricCard = ({
         </div>
       )}
       {(warningMessage || successMessage) && !showUtilization && (
-        <div className={`mt-1 text-xs ${isWarning ? 'text-red-600' : 'text-green-600'}`}>
+        <div className={`mt-1 text-xs ${isWarning ? '' : 'text-green-600'}`}>
           {isWarning ? warningMessage : successMessage}
         </div>
       )}
