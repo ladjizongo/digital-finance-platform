@@ -19,7 +19,7 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
       return (
         <div className="flex items-center justify-center gap-2 text-red-600">
           <AlertCircle className="h-5 w-5" />
-          <span>High risk of cash flow issues (receivables > payables)</span>
+          <span>High risk of cash flow issues (receivables &gt; payables)</span>
         </div>
       );
     } else {
