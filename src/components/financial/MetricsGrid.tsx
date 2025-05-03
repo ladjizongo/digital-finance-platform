@@ -15,6 +15,39 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
     return "text-green-600";
   };
 
+  const getReceivableDaysRiskMessage = (receivableDays: number, payableDays: number) => {
+    const difference = receivableDays - payableDays;
+    
+    if (difference >= 11) {
+      return (
+        <div className="flex items-center justify-center gap-2 text-red-600">
+          <AlertCircle className="h-5 w-5" />
+          <span>High risk of cash flow issues (11+ days over payable)</span>
+        </div>
+      );
+    } else if (difference >= 1 && difference <= 10) {
+      return (
+        <div className="flex items-center justify-center gap-2 text-amber-600">
+          <AlertCircle className="h-5 w-5" />
+          <span>Medium risk of cash flow issues (1-10 days over payable)</span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flex items-center justify-center gap-2 text-green-600">
+          <span>Healthy cash flow</span>
+        </div>
+      );
+    }
+  };
+
+  const getReceivableDaysColorClass = (receivableDays: number, payableDays: number) => {
+    const difference = receivableDays - payableDays;
+    if (difference >= 11) return "text-red-600";
+    if (difference >= 1 && difference <= 10) return "text-amber-600";
+    return "text-green-600";
+  };
+
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
       <MetricCard
@@ -47,15 +80,11 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
         value={data.receivableDays}
         unit="days"
         warningThreshold={45}
-        warningMessage={
-          <div className="flex items-center justify-center gap-2">
-            <AlertCircle className="h-5 w-5 text-red-500" />
-            <span>Receivables are greater than payables</span>
-          </div>
-        }
+        warningMessage={getReceivableDaysRiskMessage(data.receivableDays, data.payableDays)}
         successMessage="Healthy cash flow"
         isCircleDisplay
         compareValue={data.payableDays}
+        customValueClass={getReceivableDaysColorClass(data.receivableDays, data.payableDays)}
       />
       <MetricCard
         title="Monthly Average Payables"

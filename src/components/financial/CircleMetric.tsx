@@ -16,17 +16,37 @@ export const CircleMetric = ({
   compareValue,
   customValueClass
 }: CircleMetricProps) => {
-  const isWarning = compareValue !== undefined && value > compareValue;
+  // For receivable days, check difference with payable days
+  const isReceivableDays = title === "Receivable Days";
+  const daysDifference = isReceivableDays && compareValue ? value - compareValue : 0;
+  const isHighRisk = isReceivableDays && daysDifference >= 11;
+  const isMediumRisk = isReceivableDays && daysDifference >= 1 && daysDifference <= 10;
+  
+  // For payable days, check against its own thresholds
+  const isPayableDays = title === "Payable Days";
+  const isWarning = 
+    (isPayableDays && compareValue !== undefined && value > compareValue) || 
+    (isPayableDays && warningThreshold !== undefined && value > warningThreshold);
   
   // Calculate circle color based on value
   const getCircleColorClasses = () => {
-    if (customValueClass?.includes('text-red-600')) {
+    if (customValueClass?.includes('text-red-600') || isHighRisk) {
       return "border-red-500 bg-red-50";
-    } else if (customValueClass?.includes('text-amber-600')) {
+    } else if (customValueClass?.includes('text-amber-600') || isMediumRisk) {
       return "border-amber-500 bg-amber-50";
     } else {
       return "border-green-500 bg-green-50";
     }
+  };
+  
+  // Get the text color class for the value
+  const getValueColorClass = () => {
+    if (isReceivableDays) {
+      if (isHighRisk) return "text-red-600";
+      if (isMediumRisk) return "text-amber-600";
+      return "text-green-600";
+    }
+    return customValueClass;
   };
   
   return (
@@ -34,11 +54,11 @@ export const CircleMetric = ({
       <div 
         className={cn(
           "w-24 h-24 rounded-full flex items-center justify-center border-4",
-          customValueClass ? getCircleColorClasses() : (isWarning ? "border-red-500 bg-red-50" : "border-green-500 bg-green-50"),
+          getCircleColorClasses(),
           "transition-colors duration-200"
         )}
       >
-        <span className={cn("text-2xl font-bold", customValueClass)}>
+        <span className={cn("text-2xl font-bold", getValueColorClass())}>
           {value}
         </span>
       </div>
