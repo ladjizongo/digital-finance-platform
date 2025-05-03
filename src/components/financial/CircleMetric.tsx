@@ -16,10 +16,13 @@ export const CircleMetric = ({
   compareValue,
   customValueClass
 }: CircleMetricProps) => {
-  // For receivable days, check difference with payable days
+  // For receivable days, check if greater than payable days
   const isReceivableDays = title === "Receivable Days";
+  const isGreaterThanPayableDays = isReceivableDays && compareValue !== undefined && value > compareValue;
+  
+  // Calculate the difference for risk levels
   const daysDifference = isReceivableDays && compareValue ? value - compareValue : 0;
-  const isHighRisk = isReceivableDays && daysDifference >= 11;
+  const isHighRisk = isReceivableDays && isGreaterThanPayableDays;
   const isMediumRisk = isReceivableDays && daysDifference >= 1 && daysDifference <= 10;
   
   // For payable days, check against its own thresholds

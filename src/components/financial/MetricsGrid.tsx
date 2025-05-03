@@ -1,4 +1,3 @@
-
 import { MetricCard } from "./MetricCard";
 import { YearlyMetrics } from "@/types/financial";
 import { AlertCircle } from "lucide-react";
@@ -16,20 +15,11 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
   };
 
   const getReceivableDaysRiskMessage = (receivableDays: number, payableDays: number) => {
-    const difference = receivableDays - payableDays;
-    
-    if (difference >= 11) {
+    if (receivableDays > payableDays) {
       return (
         <div className="flex items-center justify-center gap-2 text-red-600">
           <AlertCircle className="h-5 w-5" />
-          <span>High risk of cash flow issues (11+ days over payable)</span>
-        </div>
-      );
-    } else if (difference >= 1 && difference <= 10) {
-      return (
-        <div className="flex items-center justify-center gap-2 text-amber-600">
-          <AlertCircle className="h-5 w-5" />
-          <span>Medium risk of cash flow issues (1-10 days over payable)</span>
+          <span>High risk of cash flow issues (receivables > payables)</span>
         </div>
       );
     } else {
@@ -42,9 +32,7 @@ export const MetricsGrid = ({ data }: MetricsGridProps) => {
   };
 
   const getReceivableDaysColorClass = (receivableDays: number, payableDays: number) => {
-    const difference = receivableDays - payableDays;
-    if (difference >= 11) return "text-red-600";
-    if (difference >= 1 && difference <= 10) return "text-amber-600";
+    if (receivableDays > payableDays) return "text-red-600";
     return "text-green-600";
   };
 
