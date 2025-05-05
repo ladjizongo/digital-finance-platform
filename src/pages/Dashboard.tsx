@@ -1,9 +1,6 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
-import AITipsPanel from "@/components/dashboard/AITipsPanel";
-import AIAnalysisPanel from "@/components/dashboard/AIAnalysisPanel";
 import AccountsTab from "@/components/dashboard/tabs/AccountsTab";
 import CreditCardsTab from "@/components/dashboard/tabs/CreditCardsTab";
 import LoansTab from "@/components/dashboard/tabs/LoansTab";
@@ -185,10 +182,6 @@ const Dashboard = () => {
               <ExternalAccountTab />
             </TabsContent>
           </Tabs>
-          <div className="flex flex-col gap-2 max-w-3xl mx-auto mt-6">
-            <AITipsPanel activeTab={activeTab} />
-            <AIAnalysisPanel activeTab={activeTab} financialData={financialData} />
-          </div>
         </div>
       </main>
     </div>
