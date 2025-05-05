@@ -1,4 +1,3 @@
-
 import { DollarSign, CreditCard, Banknote, Percent } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -91,8 +90,11 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
   const totalLoanBalance = financialData.loans.reduce((sum, loan) => sum + loan.balance, 0);
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
   const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
-  const totalMonthlyPayment = financialData.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
-  const totalMinimumPayment = financialData.loans.reduce((sum, loan) => sum + loan.minimumPayment, 0);
+  
+  // Calculate total minimum payment excluding Overdraft
+  const totalMinimumPayment = financialData.loans
+    .filter(loan => loan.name !== "Overdraft")
+    .reduce((sum, loan) => sum + loan.minimumPayment, 0);
   
   const weightedInterestRate = financialData.loans.reduce((sum, loan) => 
     sum + (loan.interestRate * (loan.balance / totalLoanBalance)), 0);

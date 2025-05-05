@@ -80,8 +80,8 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
                   <span className="font-medium">{loan.nextPaymentDate}</span>
                 </div>
                 
-                {/* Only show Minimum Payment for loans other than Equipment Financing */}
-                {loan.name !== "Equipment Financing" && (
+                {/* Only show Minimum Payment for loans other than Equipment Financing and Overdraft */}
+                {loan.name !== "Equipment Financing" && loan.name !== "Overdraft" && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Minimum Payment:</span>
                     <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
