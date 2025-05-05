@@ -91,6 +91,9 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
   const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
   
+  // Calculate total monthly payment from all loans
+  const totalMonthlyPayment = financialData.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
+  
   // Calculate total minimum payment excluding Overdraft
   const totalMinimumPayment = financialData.loans
     .filter(loan => loan.name !== "Overdraft")
