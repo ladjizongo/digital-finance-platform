@@ -191,7 +191,7 @@ export const EFTSection = ({
               allowedFileTypes={['.txt', '.csv']}
               onFileSelected={handleFileSelected}
               uploadTitle="Upload EFT File"
-              uploadDescription="Upload an EFT payment file (TXT, CSV format)"
+              uploadDescription="Upload a payment file (CPA 1464 and CPA 005 formats)"
             />
           </CardContent>
         </Card>
