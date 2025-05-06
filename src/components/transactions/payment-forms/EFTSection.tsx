@@ -188,7 +188,7 @@ export const EFTSection = ({
           
           <CardContent>
             <FileUploadComponent
-              allowedFileTypes={['.txt', '.csv']}
+              allowedFileTypes={['.txt']}
               onFileSelected={handleFileSelected}
               uploadTitle="Upload EFT File"
               uploadDescription="Upload a payment file (CPA 1464 and CPA 005 formats)"
