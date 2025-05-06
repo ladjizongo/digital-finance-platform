@@ -91,12 +91,14 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
   const totalLoanLimit = financialData.loans.reduce((sum, loan) => sum + loan.limit, 0);
   const totalLoanAvailableCredit = financialData.loans.reduce((sum, loan) => sum + loan.availableCredit, 0);
   
-  // Calculate total monthly payment from all loans
-  const totalMonthlyPayment = financialData.loans.reduce((sum, loan) => sum + loan.monthlyPayment, 0);
-  
-  // Calculate total minimum payment excluding Overdraft
-  const totalMinimumPayment = financialData.loans
+  // Calculate total monthly payment from all loans excluding Overdraft
+  const totalMonthlyPayment = financialData.loans
     .filter(loan => loan.name !== "Overdraft")
+    .reduce((sum, loan) => sum + loan.monthlyPayment, 0);
+  
+  // Calculate total minimum payment excluding Overdraft and Business Line of Credit
+  const totalMinimumPayment = financialData.loans
+    .filter(loan => loan.name !== "Overdraft" && loan.name !== "Business Line of Credit")
     .reduce((sum, loan) => sum + loan.minimumPayment, 0);
   
   const weightedInterestRate = financialData.loans.reduce((sum, loan) => 
@@ -231,10 +233,12 @@ const AccountOverviewCards = ({ financialData, onTabChange }: AccountOverviewCar
             <span className="text-sm text-muted-foreground">Next Payment:</span>
             <span className="text-sm font-medium">{nextPaymentDate}</span>
           </div>
-          <div className="flex justify-between mt-1">
-            <span className="text-sm text-muted-foreground">Total Minimum Payment:</span>
-            <span className="text-sm font-medium">${totalMinimumPayment.toLocaleString('en-US')}</span>
-          </div>
+          {totalMinimumPayment > 0 && (
+            <div className="flex justify-between mt-1">
+              <span className="text-sm text-muted-foreground">Total Minimum Payment:</span>
+              <span className="text-sm font-medium">${totalMinimumPayment.toLocaleString('en-US')}</span>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

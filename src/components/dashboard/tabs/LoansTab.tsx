@@ -65,10 +65,13 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
                   <span className="font-medium">{loan.interestRate}%</span>
                 </div>
                 
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Monthly Payment:</span>
-                  <span className="font-medium">${loan.monthlyPayment.toLocaleString()}</span>
-                </div>
+                {/* Don't show Monthly Payment for Overdraft */}
+                {loan.name !== "Overdraft" && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Monthly Payment:</span>
+                    <span className="font-medium">${loan.monthlyPayment.toLocaleString()}</span>
+                  </div>
+                )}
                 
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Statement Date:</span>
@@ -80,8 +83,11 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
                   <span className="font-medium">{loan.nextPaymentDate}</span>
                 </div>
                 
-                {/* Only show Minimum Payment for loans other than Equipment Financing and Overdraft */}
-                {loan.name !== "Equipment Financing" && loan.name !== "Overdraft" && (
+                {/* Only show Minimum Payment for loans other than Equipment Financing, Overdraft,
+                    and Business Line of Credit */}
+                {loan.name !== "Equipment Financing" && 
+                  loan.name !== "Overdraft" && 
+                  loan.name !== "Business Line of Credit" && (
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Minimum Payment:</span>
                     <span className="font-medium">${loan.minimumPayment.toLocaleString()}</span>
