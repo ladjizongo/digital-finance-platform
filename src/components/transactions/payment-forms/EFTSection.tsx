@@ -1,4 +1,3 @@
-
 import { ArrowDown, ArrowUp, FileText, FilePlus, CreditCard } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,6 +8,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import FileUploadComponent from "../FileUploadComponent";
 
 interface Account {
   id: string;
@@ -32,6 +32,7 @@ export const EFTSection = ({
   const [openTemplateDialog, setOpenTemplateDialog] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [transactionType, setTransactionType] = useState("debit");
+  const [eftFile, setEftFile] = useState<File | null>(null);
 
   const saveTemplate = () => {
     if (!templateName.trim()) {
@@ -49,6 +50,12 @@ export const EFTSection = ({
     });
     
     setOpenTemplateDialog(false);
+  };
+
+  const handleFileSelected = (file: File) => {
+    setEftFile(file);
+    console.log("EFT file selected:", file.name);
+    // In a real app, you might want to parse the file here
   };
   
   return (
@@ -177,6 +184,15 @@ export const EFTSection = ({
                 <p className="text-xs text-muted-foreground">Maximum 11 digits</p>
               </div>
             </div>
+          </CardContent>
+          
+          <CardContent>
+            <FileUploadComponent
+              allowedFileTypes={['.txt', '.csv']}
+              onFileSelected={handleFileSelected}
+              uploadTitle="Upload EFT File"
+              uploadDescription="Upload an EFT payment file (TXT, CSV format)"
+            />
           </CardContent>
         </Card>
         

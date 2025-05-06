@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { WireTemplateDialog } from "./WireTemplateDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import FileUploadComponent from "../FileUploadComponent";
 
 interface Account {
   id: string;
@@ -31,6 +33,7 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
     recipientAddress: "",
     transferType: "domestic"
   });
+  const [wireFile, setWireFile] = useState<File | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -52,6 +55,19 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
       title: "Template Saved",
       description: "Your wire transfer template has been saved successfully."
     });
+  };
+
+  const handleFileSelected = (file: File) => {
+    setWireFile(file);
+    console.log("Wire file selected:", file.name);
+    
+    if (file.name.endsWith('.xml')) {
+      // In a real app, you might want to parse the XML file here
+      toast({
+        title: "XML File Selected",
+        description: "XML file will be processed for wire transfer details"
+      });
+    }
   };
 
   return (
@@ -94,6 +110,17 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
                 <SelectItem value="international">International Wire</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          
+          <FileUploadComponent
+            allowedFileTypes={['.xml', '.txt', '.csv']}
+            onFileSelected={handleFileSelected}
+            uploadTitle="Upload Wire Transfer File"
+            uploadDescription="Upload a wire transfer file in XML, TXT, or CSV format"
+          />
+          
+          <div className="space-y-2 mt-4 pt-4 border-t">
+            <h3 className="text-lg font-medium">Or Enter Wire Details Manually</h3>
           </div>
           
           <div className="space-y-2">
