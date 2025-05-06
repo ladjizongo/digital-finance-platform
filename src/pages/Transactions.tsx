@@ -4,7 +4,6 @@ import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
-import PaymentFileUpload from "@/components/transactions/PaymentFileUpload";
 import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
 
 const Transactions = () => {
@@ -90,7 +89,6 @@ const Transactions = () => {
           onSubmit={handleSubmit}
         />
         
-        <PaymentFileUpload />
         <DataIntegrationsSection />
       </main>
     </div>
