@@ -13,25 +13,9 @@ interface AccountsTabProps {
 
 const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
   const [activeAccount, setActiveAccount] = useState("1");
-  
-  // Calculate average balance across all accounts
-  const averageBalance = financialData.accounts.length 
-    ? financialData.accounts.reduce((sum, account) => sum + account.balance, 0) / financialData.accounts.length 
-    : 0;
 
   return (
     <>
-      <div className="mb-4 bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Total Balance</h2>
-          <span className="text-lg">${financialData.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-        </div>
-        <div className="mt-2 text-sm text-muted-foreground flex justify-between">
-          <span>Across {financialData.accounts.length} accounts</span>
-          <span>Average Balance: ${averageBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-        </div>
-      </div>
-
       <AccountOverviewCards 
         financialData={financialData} 
         onTabChange={onTabChange}
