@@ -20,19 +20,9 @@ interface WireAccountSelectionProps {
 }
 
 export const WireAccountSelection = ({ accounts }: WireAccountSelectionProps) => {
-  // Calculate average balance across all accounts
-  const averageBalance = accounts.length 
-    ? accounts.reduce((sum, account) => sum + account.balance, 0) / accounts.length 
-    : 0;
-    
   return (
     <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <Label htmlFor="wireFromAccount">From Account</Label>
-        <span className="text-sm text-muted-foreground">
-          Average Balance: ${averageBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-        </span>
-      </div>
+      <Label htmlFor="wireFromAccount">From Account</Label>
       <Select defaultValue="1">
         <SelectTrigger id="wireFromAccount">
           <SelectValue placeholder="Select account" />

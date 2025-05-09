@@ -40,12 +40,7 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) =
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="fromAccount">From Account</Label>
-                <span className="text-sm text-muted-foreground">
-                  Average Balance: ${averageBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </span>
-              </div>
+              <Label htmlFor="fromAccount">From Account</Label>
               <Select defaultValue="1">
                 <SelectTrigger id="fromAccount">
                   <SelectValue placeholder="Select account" />
