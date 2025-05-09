@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import RecurringOptions from "./RecurringOptions";
 
 interface Account {
   id: string;
@@ -21,6 +21,9 @@ interface TransferFormProps {
 }
 
 const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) => {
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
+
   return (
     <Card>
       <CardHeader>
@@ -85,15 +88,15 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) =
             <Input id="transferMemo" placeholder="Add a memo for this transfer" />
           </div>
           
-          <div className="flex items-center space-x-2 pt-2">
-            <Checkbox id="makeRecurring" />
-            <Label htmlFor="makeRecurring" className="text-sm font-normal">Make this a recurring transfer</Label>
-          </div>
+          <RecurringOptions
+            onRecurringChange={setIsRecurring}
+            onFrequencyChange={setFrequency}
+          />
         </CardContent>
         
         <CardFooter>
           <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-            {isSubmitting ? "Processing..." : "Submit Transfer"}
+            {isSubmitting ? "Processing..." : `Submit ${isRecurring ? "Recurring " : ""}Transfer`}
           </Button>
         </CardFooter>
       </form>

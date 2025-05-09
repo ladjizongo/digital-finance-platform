@@ -9,6 +9,7 @@ import { WireTemplateDialog } from "./WireTemplateDialog";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import FileUploadComponent from "../FileUploadComponent";
+import RecurringOptions from "../RecurringOptions";
 
 interface Account {
   id: string;
@@ -34,6 +35,8 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
     transferType: "domestic"
   });
   const [wireFile, setWireFile] = useState<File | null>(null);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -189,11 +192,16 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
             <Label htmlFor="wireDescription">Purpose of Payment</Label>
             <Textarea id="wireDescription" placeholder="Describe the purpose of this wire transfer" />
           </div>
+          
+          <RecurringOptions
+            onRecurringChange={setIsRecurring}
+            onFrequencyChange={setFrequency}
+          />
         </CardContent>
         
         <CardFooter className="flex gap-4">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : "Send Wire Transfer"}
+            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}Wire Transfer`}
           </Button>
           
           <WireTemplateDialog

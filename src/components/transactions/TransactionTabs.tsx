@@ -1,3 +1,4 @@
+
 import { ArrowRight, Mail, Receipt, CreditCard, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
@@ -34,6 +35,8 @@ interface TransactionTabsProps {
   contacts: Contact[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onRecurringChange?: (isRecurring: boolean) => void;
+  onFrequencyChange?: (frequency: string) => void;
 }
 
 const TransactionTabs = ({
@@ -43,7 +46,9 @@ const TransactionTabs = ({
   savedPayees,
   contacts,
   isSubmitting,
-  onSubmit
+  onSubmit,
+  onRecurringChange,
+  onFrequencyChange
 }: TransactionTabsProps) => {
   const handleTabChange = (value: string) => {
     setTransactionType(value);

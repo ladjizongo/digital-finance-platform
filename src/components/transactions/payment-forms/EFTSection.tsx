@@ -1,3 +1,4 @@
+
 import { ArrowDown, ArrowUp, FileText, FilePlus, CreditCard } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import FileUploadComponent from "../FileUploadComponent";
+import RecurringOptions from "../RecurringOptions";
 
 interface Account {
   id: string;
@@ -33,6 +35,8 @@ export const EFTSection = ({
   const [templateName, setTemplateName] = useState("");
   const [transactionType, setTransactionType] = useState("debit");
   const [eftFile, setEftFile] = useState<File | null>(null);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
 
   const saveTemplate = () => {
     if (!templateName.trim()) {
@@ -184,6 +188,11 @@ export const EFTSection = ({
                 <p className="text-xs text-muted-foreground">Maximum 11 digits</p>
               </div>
             </div>
+            
+            <RecurringOptions
+              onRecurringChange={setIsRecurring}
+              onFrequencyChange={setFrequency}
+            />
           </CardContent>
           
           <CardContent>
@@ -237,7 +246,7 @@ export const EFTSection = ({
           </div>
           
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : `Send EFT ${transactionType === 'credit' ? 'Credit' : 'Debit'}`}
+            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}EFT ${transactionType === 'credit' ? 'Credit' : 'Debit'}`}
           </Button>
         </div>
       </div>

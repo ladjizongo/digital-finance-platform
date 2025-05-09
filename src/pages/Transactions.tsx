@@ -11,6 +11,8 @@ const Transactions = () => {
   const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionType, setTransactionType] = useState("transfer");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringFrequency, setRecurringFrequency] = useState("monthly");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -67,11 +69,21 @@ const Transactions = () => {
     setTimeout(() => {
       setIsSubmitting(false);
       
+      const recurringText = isRecurring ? ` (${recurringFrequency} recurring)` : "";
+      
       toast({
         title: "Transaction submitted",
-        description: "Your transaction has been processed successfully.",
+        description: `Your ${transactionType} transaction${recurringText} has been processed successfully.`,
       });
     }, 2000);
+  };
+
+  const handleRecurringChange = (isRecurring: boolean) => {
+    setIsRecurring(isRecurring);
+  };
+
+  const handleFrequencyChange = (frequency: string) => {
+    setRecurringFrequency(frequency);
   };
 
   return (
@@ -87,6 +99,8 @@ const Transactions = () => {
           contacts={contacts}
           isSubmitting={isSubmitting}
           onSubmit={handleSubmit}
+          onRecurringChange={handleRecurringChange}
+          onFrequencyChange={handleFrequencyChange}
         />
         
         <DataIntegrationsSection />

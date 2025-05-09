@@ -1,10 +1,12 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import RecurringOptions from "./RecurringOptions";
 
 interface Account {
   id: string;
@@ -27,6 +29,9 @@ interface BillPaymentFormProps {
 }
 
 const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit }: BillPaymentFormProps) => {
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
+  
   return (
     <Card>
       <CardHeader>
@@ -90,12 +95,12 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit }: Bill
             <Input id="billMemo" placeholder="Add account number or reference number" />
           </div>
           
-          <div className="flex items-center space-x-2 pt-2">
-            <Checkbox id="billRecurring" />
-            <Label htmlFor="billRecurring" className="text-sm font-normal">Make this a recurring payment</Label>
-          </div>
+          <RecurringOptions
+            onRecurringChange={setIsRecurring}
+            onFrequencyChange={setFrequency}
+          />
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 pt-2">
             <Checkbox id="eStatement" />
             <Label htmlFor="eStatement" className="text-sm font-normal">Receive e-bill statement for this payee</Label>
           </div>
@@ -103,7 +108,7 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit }: Bill
         
         <CardFooter>
           <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-            {isSubmitting ? "Processing..." : "Schedule Payment"}
+            {isSubmitting ? "Processing..." : `Schedule ${isRecurring ? "Recurring " : ""}Payment`}
           </Button>
         </CardFooter>
       </form>

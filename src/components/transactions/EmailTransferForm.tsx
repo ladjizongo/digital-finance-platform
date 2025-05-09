@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import RecurringOptions from "./RecurringOptions";
 
 interface Account {
   id: string;
@@ -28,6 +30,9 @@ interface EmailTransferFormProps {
 }
 
 const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit }: EmailTransferFormProps) => {
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [frequency, setFrequency] = useState("monthly");
+  
   return (
     <Card>
       <CardHeader>
@@ -109,6 +114,11 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit }: Email
             <Textarea id="emailMessage" placeholder="Add a personal message for the recipient" />
           </div>
           
+          <RecurringOptions
+            onRecurringChange={setIsRecurring}
+            onFrequencyChange={setFrequency}
+          />
+          
           <div className="flex items-center space-x-2 pt-2">
             <Checkbox id="saveRecipient" />
             <Label htmlFor="saveRecipient" className="text-sm font-normal">Save this recipient for future transfers</Label>
@@ -132,7 +142,7 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit }: Email
         
         <CardFooter>
           <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
-            {isSubmitting ? "Processing..." : "Send Email Transfer"}
+            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}Email Transfer`}
           </Button>
         </CardFooter>
       </form>
