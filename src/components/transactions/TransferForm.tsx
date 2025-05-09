@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -24,6 +23,11 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) =
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
 
+  // Calculate average balance across all accounts
+  const averageBalance = accounts.length 
+    ? accounts.reduce((sum, account) => sum + account.balance, 0) / accounts.length 
+    : 0;
+
   return (
     <Card>
       <CardHeader>
@@ -36,7 +40,12 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) =
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="fromAccount">From Account</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="fromAccount">From Account</Label>
+                <span className="text-sm text-muted-foreground">
+                  Average Balance: ${averageBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+              </div>
               <Select defaultValue="1">
                 <SelectTrigger id="fromAccount">
                   <SelectValue placeholder="Select account" />

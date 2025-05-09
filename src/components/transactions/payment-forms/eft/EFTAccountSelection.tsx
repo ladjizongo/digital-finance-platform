@@ -15,10 +15,20 @@ interface EFTAccountSelectionProps {
 }
 
 export const EFTAccountSelection = ({ accounts }: EFTAccountSelectionProps) => {
+  // Calculate average balance across all accounts
+  const averageBalance = accounts.length 
+    ? accounts.reduce((sum, account) => sum + account.balance, 0) / accounts.length 
+    : 0;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">From Account</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="text-xl">From Account</CardTitle>
+          <span className="text-sm text-muted-foreground">
+            Average Balance: ${averageBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </span>
+        </div>
         <CardDescription>
           Choose the account to transfer funds from
         </CardDescription>
