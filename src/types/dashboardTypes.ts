@@ -17,6 +17,16 @@ export interface Transaction {
   reference?: string;
   recipient?: string;
   trackingId?: string;
+  createdBy?: string;
+  submittedBy?: string;
+  approvedBy?: string[];
+  currentLocation?: string;
+  statusHistory?: {
+    status: TransactionStatus;
+    date: string;
+    actor?: string;
+    notes?: string;
+  }[];
 }
 
 export type TransactionStatus = 'received' | 'pending_approval' | 'processing' | 'with_bank' | 'completed' | 'failed';
