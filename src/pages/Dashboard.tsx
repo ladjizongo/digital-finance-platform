@@ -8,6 +8,7 @@ import LoansTab from "@/components/dashboard/tabs/LoansTab";
 import BusinessHealthTab from "@/components/dashboard/tabs/BusinessHealthTab";
 import ExternalAccountTab from "@/components/dashboard/tabs/ExternalAccountTab";
 import ApprovalTab from "@/components/dashboard/tabs/ApprovalTab";
+import ReportsTab from "@/components/dashboard/tabs/ReportsTab";
 import type { FinancialData } from "@/types/dashboardTypes";
 
 const Dashboard = () => {
@@ -153,11 +154,12 @@ const Dashboard = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-4xl mb-4 grid-cols-6">
+            <TabsList className="grid w-full max-w-4xl mb-4 grid-cols-7">
               <TabsTrigger value="accounts" className="px-2 text-sm">Accounts</TabsTrigger>
               <TabsTrigger value="creditCards" className="px-2 text-sm">Credit Cards</TabsTrigger>
               <TabsTrigger value="loans" className="px-2 text-sm">Loans</TabsTrigger>
               <TabsTrigger value="approvals" className="px-2 text-sm">Approvals</TabsTrigger>
+              <TabsTrigger value="reports" className="px-2 text-sm">Reports</TabsTrigger>
               <TabsTrigger value="businessHealth" className="px-2 text-sm">Business Health</TabsTrigger>
               <TabsTrigger value="externalAccount" className="px-2 text-sm">External Account</TabsTrigger>
             </TabsList>
@@ -179,6 +181,10 @@ const Dashboard = () => {
             
             <TabsContent value="approvals">
               <ApprovalTab />
+            </TabsContent>
+            
+            <TabsContent value="reports">
+              <ReportsTab />
             </TabsContent>
             
             <TabsContent value="businessHealth">
