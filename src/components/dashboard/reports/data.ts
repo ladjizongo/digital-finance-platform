@@ -1,4 +1,3 @@
-
 import { 
   ApprovedTransaction, 
   DeclinedTransaction, 
@@ -61,8 +60,7 @@ export const approvedTransactions: ApprovedTransaction[] = [
 export const loginAudits: LoginAudit[] = [
   {
     id: "login1",
-    userId: "jsmith",
-    userName: "Jane Smith",
+    user: "Jane Smith",
     date: "May 10, 2025",
     time: "09:15:22",
     ipAddress: "192.168.1.105",
@@ -72,8 +70,7 @@ export const loginAudits: LoginAudit[] = [
   },
   {
     id: "login2",
-    userId: "mjohnson",
-    userName: "Michael Johnson",
+    user: "Michael Johnson",
     date: "May 10, 2025",
     time: "10:22:45",
     ipAddress: "192.168.1.110",
@@ -83,8 +80,7 @@ export const loginAudits: LoginAudit[] = [
   },
   {
     id: "login3",
-    userId: "rbrown",
-    userName: "Robert Brown",
+    user: "Robert Brown",
     date: "May 9, 2025",
     time: "16:05:33",
     ipAddress: "192.168.1.115",
@@ -94,8 +90,7 @@ export const loginAudits: LoginAudit[] = [
   },
   {
     id: "login4",
-    userId: "swilliams",
-    userName: "Sarah Williams",
+    user: "Sarah Williams",
     date: "May 9, 2025",
     time: "14:45:12",
     ipAddress: "192.168.1.120",

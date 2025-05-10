@@ -22,8 +22,62 @@ export interface LoginAudit {
   id: string;
   user: string;
   date: string;
-  ip: string;
+  time: string;
+  ipAddress: string;
   device: string;
   status: 'success' | 'failed';
   location: string;
+}
+
+export interface ApprovedTransaction {
+  id: string;
+  type: string;
+  date: string;
+  amount: number;
+  from: string;
+  to: string;
+  initiatedBy: string;
+  status: TransactionStatus;
+  approvedBy: string;
+  approvedDate: string;
+}
+
+export interface DeclinedTransaction {
+  id: string;
+  type: string;
+  date: string;
+  amount: number;
+  from: string;
+  to: string;
+  initiatedBy: string;
+  status: TransactionStatus;
+  declinedBy: string;
+  declinedDate: string;
+  reason: string;
+}
+
+export interface PendingTransaction {
+  id: string;
+  type: string;
+  date: string;
+  amount: number;
+  from: string;
+  to: string;
+  initiatedBy: string;
+  status: TransactionStatus;
+  requiredApprovers: number;
+  currentApprovers: number;
+  waitingFor: string;
+}
+
+export interface BaseReportFilters {
+  dateFrom?: Date;
+  dateTo?: Date;
+  userFilter: string;
+}
+
+export interface TransactionReportFilters extends BaseReportFilters {
+  transactionType: string;
+  amountMin: string;
+  amountMax: string;
 }

@@ -21,8 +21,7 @@ const LoginAuditTable = ({ auditLogs }: LoginAuditTableProps) => {
         <TableRow>
           <TableHead>Date</TableHead>
           <TableHead>Time</TableHead>
-          <TableHead>User ID</TableHead>
-          <TableHead>User Name</TableHead>
+          <TableHead>User</TableHead>
           <TableHead>IP Address</TableHead>
           <TableHead>Device</TableHead>
           <TableHead>Location</TableHead>
@@ -35,8 +34,7 @@ const LoginAuditTable = ({ auditLogs }: LoginAuditTableProps) => {
             <TableRow key={log.id}>
               <TableCell>{log.date}</TableCell>
               <TableCell>{log.time}</TableCell>
-              <TableCell>{log.userId}</TableCell>
-              <TableCell>{log.userName}</TableCell>
+              <TableCell>{log.user}</TableCell>
               <TableCell>{log.ipAddress}</TableCell>
               <TableCell>{log.device}</TableCell>
               <TableCell>{log.location}</TableCell>
@@ -45,7 +43,7 @@ const LoginAuditTable = ({ auditLogs }: LoginAuditTableProps) => {
           ))
         ) : (
           <TableRow>
-            <TableCell colSpan={8} className="text-center py-4">
+            <TableCell colSpan={7} className="text-center py-4">
               No login records match your filters
             </TableCell>
           </TableRow>
