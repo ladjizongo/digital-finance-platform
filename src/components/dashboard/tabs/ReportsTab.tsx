@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -318,6 +317,14 @@ const ReportsTab = () => {
     }
   };
 
+  // Function to safely format currency values
+  const formatCurrency = (amount: number | undefined) => {
+    if (amount === undefined || amount === null) {
+      return "$0.00";
+    }
+    return `$${amount.toLocaleString()}`;
+  };
+
   // List of users for filtering
   const users = ["All Users", "Jane Smith", "Michael Johnson", "Robert Brown", "Sarah Williams", "David Miller"];
 
@@ -500,7 +507,7 @@ const ReportsTab = () => {
                     <TableRow key={tx.id}>
                       <TableCell>{tx.date}</TableCell>
                       <TableCell>{tx.type}</TableCell>
-                      <TableCell>${tx.amount.toLocaleString()}</TableCell>
+                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
                       <TableCell>{tx.from}</TableCell>
                       <TableCell>{tx.to}</TableCell>
                       <TableCell>{tx.initiatedBy}</TableCell>
@@ -581,7 +588,7 @@ const ReportsTab = () => {
                     <TableRow key={tx.id}>
                       <TableCell>{tx.date}</TableCell>
                       <TableCell>{tx.type}</TableCell>
-                      <TableCell>${tx.amount.toLocaleString()}</TableCell>
+                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
                       <TableCell>{tx.from}</TableCell>
                       <TableCell>{tx.to}</TableCell>
                       <TableCell>{tx.initiatedBy}</TableCell>
@@ -624,7 +631,7 @@ const ReportsTab = () => {
                     <TableRow key={tx.id}>
                       <TableCell>{tx.date}</TableCell>
                       <TableCell>{tx.type}</TableCell>
-                      <TableCell>${tx.amount.toLocaleString()}</TableCell>
+                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
                       <TableCell>{tx.from}</TableCell>
                       <TableCell>{tx.to}</TableCell>
                       <TableCell>{tx.initiatedBy}</TableCell>
