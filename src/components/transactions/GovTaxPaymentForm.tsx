@@ -15,9 +15,17 @@ interface GovTaxPaymentFormProps {
   }>;
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
-const GovTaxPaymentForm = ({ accounts, isSubmitting, onSubmit }: GovTaxPaymentFormProps) => {
+const GovTaxPaymentForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: GovTaxPaymentFormProps) => {
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (onAmountChange && !isNaN(value)) {
+      onAmountChange(value);
+    }
+  };
+
   return (
     <Card className="p-6">
       <form onSubmit={onSubmit} className="space-y-6">
@@ -62,6 +70,7 @@ const GovTaxPaymentForm = ({ accounts, isSubmitting, onSubmit }: GovTaxPaymentFo
               step="0.01"
               min="0"
               placeholder="Enter amount"
+              onChange={handleAmountChange}
               required
             />
           </div>

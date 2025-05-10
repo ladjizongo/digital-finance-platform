@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -17,16 +18,19 @@ interface TransferFormProps {
   accounts: Account[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
-const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) => {
+const TransferForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: TransferFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
 
-  // Calculate average balance across all accounts
-  const averageBalance = accounts.length 
-    ? accounts.reduce((sum, account) => sum + account.balance, 0) / accounts.length 
-    : 0;
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (onAmountChange && !isNaN(value)) {
+      onAmountChange(value);
+    }
+  };
 
   return (
     <Card>
@@ -78,7 +82,15 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit }: TransferFormProps) =
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-500">$</span>
               </div>
-              <Input id="transferAmount" type="number" min="0.01" step="0.01" placeholder="0.00" className="pl-7" />
+              <Input 
+                id="transferAmount" 
+                type="number" 
+                min="0.01" 
+                step="0.01" 
+                placeholder="0.00" 
+                className="pl-7"
+                onChange={handleAmountChange}
+              />
             </div>
           </div>
           

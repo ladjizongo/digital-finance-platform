@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -27,11 +26,19 @@ interface EmailTransferFormProps {
   contacts: Contact[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
-const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit }: EmailTransferFormProps) => {
+const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit, onAmountChange }: EmailTransferFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
+  
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (onAmountChange && !isNaN(value)) {
+      onAmountChange(value);
+    }
+  };
   
   return (
     <Card>
@@ -94,7 +101,15 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit }: Email
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-500">$</span>
               </div>
-              <Input id="emailAmount" type="number" min="0.01" step="0.01" placeholder="0.00" className="pl-7" />
+              <Input 
+                id="emailAmount" 
+                type="number" 
+                min="0.01" 
+                step="0.01" 
+                placeholder="0.00" 
+                className="pl-7"
+                onChange={handleAmountChange}
+              />
             </div>
           </div>
           

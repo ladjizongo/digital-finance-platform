@@ -22,12 +22,14 @@ interface EFTSectionProps {
   accounts: Account[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
 export const EFTSection = ({ 
   accounts, 
   isSubmitting, 
-  onSubmit 
+  onSubmit,
+  onAmountChange
 }: EFTSectionProps) => {
   const { toast } = useToast();
   const [transactionType, setTransactionType] = useState("debit");
@@ -39,6 +41,12 @@ export const EFTSection = ({
     setEftFile(file);
     console.log("EFT file selected:", file.name);
     // In a real app, you might want to parse the file here
+  };
+  
+  const handleAmountChange = (amount: number) => {
+    if (onAmountChange) {
+      onAmountChange(amount);
+    }
   };
   
   return (
@@ -59,7 +67,7 @@ export const EFTSection = ({
               onChange={setTransactionType}
             />
 
-            <EFTAmountInput />
+            <EFTAmountInput onAmountChange={handleAmountChange} />
           </CardContent>
         </Card>
         

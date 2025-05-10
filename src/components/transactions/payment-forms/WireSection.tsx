@@ -22,9 +22,10 @@ interface WireSectionProps {
   accounts: Account[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
-export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionProps) => {
+export const WireSection = ({ accounts, isSubmitting, onSubmit, onAmountChange }: WireSectionProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     recipientName: "",
@@ -100,7 +101,7 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit }: WireSectionPro
             onChange={handleInputChange} 
           />
           
-          <WireAmountAndPurpose />
+          <WireAmountAndPurpose onAmountChange={onAmountChange} />
           
           <RecurringOptions
             onRecurringChange={setIsRecurring}

@@ -26,11 +26,19 @@ interface BillPaymentFormProps {
   savedPayees: Payee[];
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
-const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit }: BillPaymentFormProps) => {
+const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit, onAmountChange }: BillPaymentFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
+  
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value);
+    if (onAmountChange && !isNaN(value)) {
+      onAmountChange(value);
+    }
+  };
   
   return (
     <Card>
@@ -81,7 +89,15 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit }: Bill
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-500">$</span>
               </div>
-              <Input id="billAmount" type="number" min="0.01" step="0.01" placeholder="0.00" className="pl-7" />
+              <Input 
+                id="billAmount" 
+                type="number" 
+                min="0.01" 
+                step="0.01" 
+                placeholder="0.00" 
+                className="pl-7"
+                onChange={handleAmountChange}
+              />
             </div>
           </div>
           
