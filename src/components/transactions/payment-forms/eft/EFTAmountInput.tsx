@@ -1,8 +1,25 @@
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export const EFTAmountInput = () => {
+interface EFTAmountInputProps {
+  onAmountChange?: (amount: number) => void;
+}
+
+export const EFTAmountInput = ({ onAmountChange }: EFTAmountInputProps) => {
+  const [amount, setAmount] = useState<string>("0.00");
+  
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAmount(value);
+    
+    const numericValue = parseFloat(value);
+    if (onAmountChange && !isNaN(numericValue)) {
+      onAmountChange(numericValue);
+    }
+  };
+  
   return (
     <div className="space-y-2">
       <Label htmlFor="amount">Amount</Label>
@@ -12,6 +29,8 @@ export const EFTAmountInput = () => {
         </div>
         <Input
           id="amount"
+          value={amount}
+          onChange={handleAmountChange}
           placeholder="0.00"
           className="pl-6"
           type="number"
