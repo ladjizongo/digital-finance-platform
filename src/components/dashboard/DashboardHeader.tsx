@@ -1,5 +1,5 @@
 
-import { LogOut, ArrowRight } from "lucide-react";
+import { LogOut, ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
@@ -13,6 +13,10 @@ const DashboardHeader = () => {
             <Link to="/transactions" className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-500">
               <ArrowRight className="mr-2 h-4 w-4" />
               Transactions & Payments
+            </Link>
+            <Link to="/admin" className="inline-flex items-center text-sm font-medium text-purple-600 hover:text-purple-500">
+              <Shield className="mr-2 h-4 w-4" />
+              Admin Portal
             </Link>
             <a
               href="https://www.canada.ca/en/revenue-agency/services/payments/payments-cra/individual-payments/make-payment.html"
