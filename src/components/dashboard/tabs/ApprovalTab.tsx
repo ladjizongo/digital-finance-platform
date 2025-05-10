@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Clock } from "lucide-react";
+import { Check, Clock, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -25,7 +25,11 @@ const pendingTransactions = [
     from: "Checking Account",
     to: "Supplier Inc.",
     initiatedBy: "Jane Smith",
-    status: "pending"
+    status: "pending",
+    approvers: [
+      { name: "Michael Johnson", role: "Manager", status: "pending" },
+      { name: "Sarah Williams", role: "Director", status: "pending" }
+    ]
   },
   { 
     id: "tx2",
@@ -35,7 +39,12 @@ const pendingTransactions = [
     from: "Business Account",
     to: "Equipment Vendor Ltd.",
     initiatedBy: "Robert Johnson",
-    status: "pending"
+    status: "pending",
+    approvers: [
+      { name: "Michael Johnson", role: "Manager", status: "approved" },
+      { name: "Sarah Williams", role: "Director", status: "pending" },
+      { name: "David Miller", role: "Executive", status: "pending" }
+    ]
   },
   { 
     id: "tx3",
@@ -45,7 +54,11 @@ const pendingTransactions = [
     from: "Investment Account",
     to: "Checking Account",
     initiatedBy: "Sarah Williams",
-    status: "pending"
+    status: "pending",
+    approvers: [
+      { name: "Michael Johnson", role: "Manager", status: "pending" },
+      { name: "David Miller", role: "Director", status: "pending" }
+    ]
   }
 ];
 
@@ -53,6 +66,7 @@ const ApprovalTab = () => {
   const { toast } = useToast();
   const [transactions, setTransactions] = useState(pendingTransactions);
   const [activeTab, setActiveTab] = useState("all");
+  const [expandedTransaction, setExpandedTransaction] = useState<string | null>(null);
 
   const handleApprove = (id: string) => {
     setTransactions(prev => prev.filter(tx => tx.id !== id));
@@ -72,9 +86,51 @@ const ApprovalTab = () => {
     });
   };
 
+  const toggleTransactionDetails = (id: string) => {
+    setExpandedTransaction(prev => prev === id ? null : id);
+  };
+
   const filteredTransactions = activeTab === "all" 
     ? transactions
     : transactions.filter(tx => tx.type === activeTab);
+
+  const renderApprovalFlow = (transaction: typeof pendingTransactions[0]) => {
+    const approvalLevel = getApprovalLevel(transaction.amount);
+    
+    return (
+      <div className="mt-2 bg-gray-50 p-4 rounded-md border border-gray-200">
+        <div className="flex items-center mb-3">
+          <Users className="h-5 w-5 text-amber-500 mr-2" />
+          <h3 className="font-medium text-gray-700">Approval Flow</h3>
+        </div>
+        
+        <p className="text-sm text-gray-500 mb-3">
+          <span className="font-medium">Required approvals:</span> {approvalLevel.requiredApprovers} ({approvalLevel.description})
+        </p>
+        
+        <div className="space-y-3">
+          {transaction.approvers.map((approver, index) => (
+            <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
+              <div>
+                <p className="font-medium">{approver.name}</p>
+                <p className="text-sm text-gray-500">{approver.role}</p>
+              </div>
+              <Badge variant={approver.status === "approved" ? "outline" : "secondary"} 
+                className={approver.status === "approved" 
+                  ? "border-green-500 text-green-700" 
+                  : "border-amber-500 text-amber-700"}>
+                {approver.status === "approved" ? (
+                  <span className="flex items-center">
+                    <Check className="mr-1 h-3 w-3" /> Approved
+                  </span>
+                ) : "Pending"}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Card>
@@ -114,38 +170,59 @@ const ApprovalTab = () => {
                 <TableBody>
                   {filteredTransactions.map((tx) => {
                     const approvalLevel = getApprovalLevel(tx.amount);
+                    const isExpanded = expandedTransaction === tx.id;
+                    
                     return (
-                      <TableRow key={tx.id}>
-                        <TableCell>{tx.date}</TableCell>
-                        <TableCell className="capitalize">{tx.type}</TableCell>
-                        <TableCell>{tx.from}</TableCell>
-                        <TableCell>{tx.to}</TableCell>
-                        <TableCell>${tx.amount.toLocaleString()}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="border-amber-500 text-amber-700">
-                            {approvalLevel.name} Level
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{tx.initiatedBy}</TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="border-red-500 hover:bg-red-50 text-red-600"
-                            onClick={() => handleReject(tx.id)}
-                          >
-                            Reject
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            className="border-green-500 hover:bg-green-50 text-green-600"  
-                            onClick={() => handleApprove(tx.id)}
-                          >
-                            <Check className="mr-1 h-4 w-4" /> Approve
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+                      <React.Fragment key={tx.id}>
+                        <TableRow 
+                          className={isExpanded ? "bg-gray-50" : ""}
+                          onClick={() => toggleTransactionDetails(tx.id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <TableCell>{tx.date}</TableCell>
+                          <TableCell className="capitalize">{tx.type}</TableCell>
+                          <TableCell>{tx.from}</TableCell>
+                          <TableCell>{tx.to}</TableCell>
+                          <TableCell>${tx.amount.toLocaleString()}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="border-amber-500 text-amber-700">
+                              {approvalLevel.name} Level
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{tx.initiatedBy}</TableCell>
+                          <TableCell className="text-right space-x-2">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="border-red-500 hover:bg-red-50 text-red-600"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleReject(tx.id);
+                              }}
+                            >
+                              Reject
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="border-green-500 hover:bg-green-50 text-green-600"  
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleApprove(tx.id);
+                              }}
+                            >
+                              <Check className="mr-1 h-4 w-4" /> Approve
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                        {isExpanded && (
+                          <TableRow>
+                            <TableCell colSpan={8} className="p-0">
+                              {renderApprovalFlow(tx)}
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </TableBody>
