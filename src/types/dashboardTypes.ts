@@ -12,7 +12,15 @@ export interface Transaction {
   description: string;
   amount: number;
   account?: string;
+  status?: TransactionStatus;
+  type?: TransactionType;
+  reference?: string;
+  recipient?: string;
+  trackingId?: string;
 }
+
+export type TransactionStatus = 'received' | 'pending_approval' | 'processing' | 'with_bank' | 'completed' | 'failed';
+export type TransactionType = 'eft' | 'wire' | 'transfer' | 'email_transfer';
 
 export interface CreditCard {
   id: string;

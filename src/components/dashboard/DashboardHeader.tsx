@@ -1,5 +1,5 @@
 
-import { LogOut, ArrowRight, Shield } from "lucide-react";
+import { LogOut, ArrowRight, Shield, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
