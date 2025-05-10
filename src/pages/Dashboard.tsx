@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -6,6 +7,7 @@ import CreditCardsTab from "@/components/dashboard/tabs/CreditCardsTab";
 import LoansTab from "@/components/dashboard/tabs/LoansTab";
 import BusinessHealthTab from "@/components/dashboard/tabs/BusinessHealthTab";
 import ExternalAccountTab from "@/components/dashboard/tabs/ExternalAccountTab";
+import ApprovalTab from "@/components/dashboard/tabs/ApprovalTab";
 import type { FinancialData } from "@/types/dashboardTypes";
 
 const Dashboard = () => {
@@ -151,10 +153,11 @@ const Dashboard = () => {
       <main className="container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-3xl mb-4 grid-cols-5">
+            <TabsList className="grid w-full max-w-4xl mb-4 grid-cols-6">
               <TabsTrigger value="accounts" className="px-2 text-sm">Accounts</TabsTrigger>
               <TabsTrigger value="creditCards" className="px-2 text-sm">Credit Cards</TabsTrigger>
               <TabsTrigger value="loans" className="px-2 text-sm">Loans</TabsTrigger>
+              <TabsTrigger value="approvals" className="px-2 text-sm">Approvals</TabsTrigger>
               <TabsTrigger value="businessHealth" className="px-2 text-sm">Business Health</TabsTrigger>
               <TabsTrigger value="externalAccount" className="px-2 text-sm">External Account</TabsTrigger>
             </TabsList>
@@ -172,6 +175,10 @@ const Dashboard = () => {
             
             <TabsContent value="loans">
               <LoansTab financialData={financialData} />
+            </TabsContent>
+            
+            <TabsContent value="approvals">
+              <ApprovalTab />
             </TabsContent>
             
             <TabsContent value="businessHealth">
