@@ -29,7 +29,7 @@ export interface Transaction {
   }[];
 }
 
-export type TransactionStatus = 'received' | 'pending_approval' | 'processing' | 'with_bank' | 'completed' | 'failed';
+export type TransactionStatus = 'received' | 'pending_approval' | 'processing' | 'with_bank' | 'completed' | 'failed' | 'approved';
 export type TransactionType = 'eft' | 'wire' | 'transfer' | 'email_transfer';
 
 export interface CreditCard {
