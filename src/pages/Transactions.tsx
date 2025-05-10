@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
 import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
+import { getApprovalLevel } from "@/utils/approvalLevels";
 
 const Transactions = () => {
   const { toast } = useToast();
@@ -13,6 +14,7 @@ const Transactions = () => {
   const [transactionType, setTransactionType] = useState("transfer");
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringFrequency, setRecurringFrequency] = useState("monthly");
+  const [transactionAmount, setTransactionAmount] = useState(0);
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -70,11 +72,19 @@ const Transactions = () => {
       setIsSubmitting(false);
       
       const recurringText = isRecurring ? ` (${recurringFrequency} recurring)` : "";
+      const approvalLevel = getApprovalLevel(transactionAmount);
       
-      toast({
-        title: "Transaction submitted",
-        description: `Your ${transactionType} transaction${recurringText} has been processed successfully.`,
-      });
+      if (approvalLevel.requiredApprovers > 0) {
+        toast({
+          title: "Transaction submitted for approval",
+          description: `Your ${transactionType} transaction${recurringText} requires ${approvalLevel.requiredApprovers} approval(s). You'll be notified once approved.`,
+        });
+      } else {
+        toast({
+          title: "Transaction submitted",
+          description: `Your ${transactionType} transaction${recurringText} has been processed successfully.`,
+        });
+      }
     }, 2000);
   };
 
@@ -84,6 +94,10 @@ const Transactions = () => {
 
   const handleFrequencyChange = (frequency: string) => {
     setRecurringFrequency(frequency);
+  };
+
+  const handleAmountChange = (amount: number) => {
+    setTransactionAmount(amount);
   };
 
   return (
@@ -101,6 +115,7 @@ const Transactions = () => {
           onSubmit={handleSubmit}
           onRecurringChange={handleRecurringChange}
           onFrequencyChange={handleFrequencyChange}
+          onAmountChange={handleAmountChange}
         />
         
         <DataIntegrationsSection />

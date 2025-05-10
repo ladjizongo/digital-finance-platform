@@ -37,6 +37,7 @@ interface TransactionTabsProps {
   onSubmit: (e: React.FormEvent) => void;
   onRecurringChange?: (isRecurring: boolean) => void;
   onFrequencyChange?: (frequency: string) => void;
+  onAmountChange?: (amount: number) => void;
 }
 
 const TransactionTabs = ({
@@ -48,7 +49,8 @@ const TransactionTabs = ({
   isSubmitting,
   onSubmit,
   onRecurringChange,
-  onFrequencyChange
+  onFrequencyChange,
+  onAmountChange
 }: TransactionTabsProps) => {
   const handleTabChange = (value: string) => {
     setTransactionType(value);
@@ -91,6 +93,7 @@ const TransactionTabs = ({
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
       
@@ -99,6 +102,7 @@ const TransactionTabs = ({
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
       
@@ -107,6 +111,7 @@ const TransactionTabs = ({
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
       
@@ -116,6 +121,7 @@ const TransactionTabs = ({
           savedPayees={savedPayees}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
       
@@ -125,6 +131,7 @@ const TransactionTabs = ({
           contacts={contacts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
       
@@ -133,6 +140,7 @@ const TransactionTabs = ({
           accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
         />
       </TabsContent>
     </Tabs>
