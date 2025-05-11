@@ -2,9 +2,36 @@
 import { useRef, useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+// Define interface for SpeechRecognition if it's not already defined
+interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+  message: string;
+}
+
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  abort: () => void;
+  onresult: (event: SpeechRecognitionEvent) => void;
+  onerror: (event: SpeechRecognitionErrorEvent) => void;
+  onend: () => void;
+}
+
 export function useSpeechRecognition(onTranscriptReceived: (transcript: string) => void) {
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -15,13 +42,13 @@ export function useSpeechRecognition(onTranscriptReceived: (transcript: string) 
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = 'en-US';
       
-      recognitionRef.current.onresult = (event: any) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript;
         onTranscriptReceived(transcript);
         setIsListening(false);
       };
       
-      recognitionRef.current.onerror = (event: any) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error("Speech recognition error", event);
         setIsListening(false);
         toast({
