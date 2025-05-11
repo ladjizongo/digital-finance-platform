@@ -6,7 +6,6 @@ import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
 import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
 import { getApprovalLevel } from "@/utils/approvalLevels";
-import AIAgentInterface from "@/components/transactions/AIAgent/AIAgentInterface";
 
 const Transactions = () => {
   const { toast } = useToast();
@@ -109,34 +108,6 @@ const Transactions = () => {
   const handleAmountChange = (amount: number) => {
     setTransactionAmount(amount);
   };
-  
-  const handleAIExecuteTransaction = (transactionDetails: {
-    type: string;
-    amount?: number;
-    fromAccount?: string;
-    toAccount?: string;
-    recipient?: string;
-    purpose?: string;
-  }) => {
-    // Set form values based on AI agent input
-    setTransactionType(transactionDetails.type);
-    if (transactionDetails.amount) {
-      setTransactionAmount(transactionDetails.amount);
-    }
-    
-    // Navigate to the correct tab
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("tab", transactionDetails.type);
-    window.history.replaceState(null, "", `?${searchParams.toString()}`);
-    
-    // Simulate form submission after a delay to allow the UI to update
-    setTimeout(() => {
-      toast({
-        title: "AI Assistant",
-        description: `Your ${transactionDetails.type} transaction is ready to review. Please confirm the details and submit.`,
-      });
-    }, 500);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -158,12 +129,6 @@ const Transactions = () => {
         
         <DataIntegrationsSection />
       </main>
-      
-      {/* AI Assistant */}
-      <AIAgentInterface 
-        onExecuteTransaction={handleAIExecuteTransaction}
-        accounts={accounts}
-      />
     </div>
   );
 };

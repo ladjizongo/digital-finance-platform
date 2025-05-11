@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
@@ -12,10 +12,18 @@ import ForeignExchange from "./pages/ForeignExchange";
 import NotFound from "./pages/NotFound";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import AdminPortal from "./pages/AdminPortal";
+import AIAgentInterface from "@/components/AIAgent/AIAgentInterface";
 
 const queryClient = new QueryClient();
 
 const App = () => {
+  const [accounts, setAccounts] = useState([
+    { id: "1", name: "Checking Account", number: "****1234", balance: 3250.75 },
+    { id: "2", name: "Savings Account", number: "****5678", balance: 15600.00 },
+    { id: "3", name: "Investment Account", number: "****9012", balance: 6000.00 },
+    { id: "4", name: "Retirement Account", number: "****3456", balance: 42500.00 },
+  ]);
+
   useEffect(() => {
     // Add CSP meta tag programmatically
     const metaCSP = document.createElement('meta');
@@ -47,6 +55,23 @@ const App = () => {
     };
   }, []);
 
+  const handleExecuteTransaction = (transactionDetails: {
+    type: string;
+    amount?: number;
+    fromAccount?: string;
+    toAccount?: string;
+    recipient?: string;
+    purpose?: string;
+  }) => {
+    // Navigate to the transactions page with the right parameters
+    const searchParams = new URLSearchParams();
+    if (transactionDetails.type) {
+      searchParams.set("tab", transactionDetails.type);
+    }
+    
+    window.location.href = `/transactions?${searchParams.toString()}`;
+  };
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -63,6 +88,12 @@ const App = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          
+          {/* AI Agent interface available on all pages */}
+          <AIAgentInterface 
+            onExecuteTransaction={handleExecuteTransaction}
+            accounts={accounts}
+          />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
