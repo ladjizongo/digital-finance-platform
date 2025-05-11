@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { Mic, Send, Loader2, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { approvedTransactions, loginAudits, declinedTransactions, pendingTransactions } from "@/components/dashboard/reports/data";
 
 interface AIAgentProps {
   onExecuteTransaction: (transactionDetails: {
@@ -108,6 +109,68 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
     processCommand(input);
   };
   
+  const getInformationAbout = (topic: string, query: string) => {
+    // Helper to extract information about different parts of the application
+    let response = "";
+    const lowerQuery = query.toLowerCase();
+    
+    switch(topic) {
+      case "transactions":
+        if (lowerQuery.includes("approved") || lowerQuery.includes("completed")) {
+          response = `I found ${approvedTransactions.length} approved transactions. `;
+          if (approvedTransactions.length > 0) {
+            const recent = approvedTransactions[0];
+            response += `The most recent one was a ${recent.type} transaction for $${recent.amount} on ${recent.date}.`;
+          }
+        } else if (lowerQuery.includes("declined") || lowerQuery.includes("rejected")) {
+          response = `There are ${declinedTransactions.length} declined transactions. `;
+          if (declinedTransactions.length > 0) {
+            const reasons = [...new Set(declinedTransactions.map(tx => tx.reason))];
+            response += `Common rejection reasons include: ${reasons.join(", ")}.`;
+          }
+        } else if (lowerQuery.includes("pending")) {
+          response = `There are ${pendingTransactions.length} pending transactions awaiting approval.`;
+        } else {
+          const totalTx = approvedTransactions.length + declinedTransactions.length + pendingTransactions.length;
+          response = `There are ${totalTx} transactions in the system: ${approvedTransactions.length} approved, ${declinedTransactions.length} declined, and ${pendingTransactions.length} pending.`;
+        }
+        break;
+        
+      case "audit":
+      case "login":
+        response = `There are ${loginAudits.length} login audit records. `;
+        const successfulLogins = loginAudits.filter(log => log.status === "success").length;
+        const failedLogins = loginAudits.filter(log => log.status === "failed").length;
+        response += `${successfulLogins} successful logins and ${failedLogins} failed attempts.`;
+        break;
+        
+      case "approvals":
+        const pendingApprovalCount = pendingTransactions.reduce((acc, tx) => {
+          return acc + (tx.requiredApprovers - tx.currentApprovers);
+        }, 0);
+        response = `There are ${pendingTransactions.length} transactions requiring approval, with a total of ${pendingApprovalCount} pending approvals needed.`;
+        break;
+        
+      case "reports":
+        response = "You can generate reports for approved transactions, declined transactions, pending approvals, and login audits from the Reports tab in the Dashboard.";
+        break;
+        
+      case "business health":
+        response = "The Business Health tab provides financial metrics, cash flow analysis, and overall health score for your business. You can upload financial statements to get detailed insights.";
+        break;
+        
+      case "admin":
+      case "admin portal":
+        response = "The Admin Portal allows you to manage users, set approval limits, and configure system settings. You can access it from the navigation menu.";
+        break;
+        
+      default:
+        response = "I can provide information about transactions, audit logs, approvals, reports, business health, and the admin portal. What would you like to know about?";
+    }
+    
+    return response;
+  };
+  
   const processCommand = async (command: string) => {
     const userMessage = command.trim();
     addMessage(userMessage, true);
@@ -120,7 +183,47 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
       
       const lowerCommand = userMessage.toLowerCase();
       
-      // Try to extract transaction type
+      // Check if this is an information request
+      const infoTopics = [
+        { keywords: ["transaction", "transfer", "payment"], topic: "transactions" },
+        { keywords: ["audit", "login history", "security"], topic: "audit" },
+        { keywords: ["approval", "pending", "authorize"], topic: "approvals" },
+        { keywords: ["report", "analytics", "summary"], topic: "reports" },
+        { keywords: ["business health", "financial", "metrics"], topic: "business health" },
+        { keywords: ["admin", "portal", "settings"], topic: "admin portal" }
+      ];
+      
+      // Check if it's an information request
+      const isQuestion = lowerCommand.includes("?") || 
+        lowerCommand.includes("tell me") || 
+        lowerCommand.includes("show me") || 
+        lowerCommand.includes("what") || 
+        lowerCommand.includes("how") ||
+        lowerCommand.includes("where") ||
+        lowerCommand.includes("when") ||
+        lowerCommand.includes("why") ||
+        lowerCommand.includes("who");
+        
+      if (isQuestion) {
+        // Find which topic the question is about
+        for (const {keywords, topic} of infoTopics) {
+          if (keywords.some(keyword => lowerCommand.includes(keyword))) {
+            const response = getInformationAbout(topic, lowerCommand);
+            addMessage(response, false);
+            setIsProcessing(false);
+            setInput("");
+            return;
+          }
+        }
+        
+        // Generic response if no specific topic was identified
+        addMessage("I can help you with information about transactions, audit logs, approvals, reports, business health, and the admin portal. Please specify what you'd like to know.", false);
+        setIsProcessing(false);
+        setInput("");
+        return;
+      }
+      
+      // Try to extract transaction type if this is an action request
       let type = "";
       if (lowerCommand.includes("transfer")) type = "transfer";
       else if (lowerCommand.includes("wire")) type = "wire";
@@ -147,7 +250,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         return;
       }
       else {
-        addMessage("I can help you navigate or make transactions. Try saying something like 'transfer money', 'go to dashboard', or ask for help.", false);
+        addMessage("I can help you navigate, make transactions, or provide information about your financial data. Try saying something like 'transfer money', 'tell me about recent transactions', or 'go to dashboard'.", false);
         setIsProcessing(false);
         setInput("");
         return;
@@ -218,8 +321,8 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
                 <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
                 <p className="mb-2">How can I help you today?</p>
                 <p className="text-sm max-w-md">
-                  Try saying or typing something like "Transfer $500 from my checking account to savings", 
-                  "Take me to the dashboard", or "Open the admin portal"
+                  Try saying or typing things like "Tell me about recent transactions", 
+                  "What's my business health score?", or "Show me pending approvals"
                 </p>
               </div>
             ) : (
