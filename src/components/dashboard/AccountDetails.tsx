@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { PlusCircle, ArrowUpDown } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import PADDialog from "./pad/PADDialog";
 import type { Account, Transaction } from "@/types/dashboardTypes";
@@ -69,12 +69,6 @@ const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             PAD Agreement
-          </Button>
-          <Button variant="outline" className="flex items-center" asChild>
-            <Link to="/transactions?tab=forex">
-              <ArrowUpDown className="mr-2 h-4 w-4" />
-              Foreign Exchange
-            </Link>
           </Button>
         </div>
         <Button asChild>
