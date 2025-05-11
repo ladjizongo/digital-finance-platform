@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -70,7 +71,7 @@ const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
             PAD Agreement
           </Button>
           <Button variant="outline" className="flex items-center" asChild>
-            <Link to="/forex">
+            <Link to="/transactions?tab=forex">
               <ArrowUpDown className="mr-2 h-4 w-4" />
               Foreign Exchange
             </Link>

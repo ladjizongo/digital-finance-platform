@@ -1,5 +1,5 @@
 
-import { ArrowRight, Mail, Receipt, CreditCard, FileText } from "lucide-react";
+import { ArrowRight, Mail, Receipt, CreditCard, FileText, ArrowUpDown } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
 import { EFTSection } from "./payment-forms/EFTSection";
@@ -7,6 +7,7 @@ import { WireSection } from "./payment-forms/WireSection";
 import BillPaymentForm from "./BillPaymentForm";
 import EmailTransferForm from "./EmailTransferForm";
 import GovTaxPaymentForm from "./GovTaxPaymentForm";
+import FXTabContent from "./forex/FXTabContent";
 
 interface Account {
   id: string;
@@ -65,7 +66,7 @@ const TransactionTabs = ({
 
   return (
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid grid-cols-5 w-full mb-8">
+      <TabsList className="grid grid-cols-6 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <ArrowRight className="mr-2 h-4 w-4" />
           Transfers
@@ -85,6 +86,10 @@ const TransactionTabs = ({
         <TabsTrigger value="email" className="flex items-center">
           <Mail className="mr-2 h-4 w-4" />
           Email Transfer
+        </TabsTrigger>
+        <TabsTrigger value="forex" className="flex items-center">
+          <ArrowUpDown className="mr-2 h-4 w-4" />
+          Foreign Exchange
         </TabsTrigger>
       </TabsList>
       
@@ -129,6 +134,15 @@ const TransactionTabs = ({
         <EmailTransferForm 
           accounts={accounts}
           contacts={contacts}
+          isSubmitting={isSubmitting}
+          onSubmit={onSubmit}
+          onAmountChange={onAmountChange}
+        />
+      </TabsContent>
+      
+      <TabsContent value="forex">
+        <FXTabContent 
+          accounts={accounts}
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}

@@ -35,6 +35,9 @@ const Transactions = () => {
         case "tax":
           setTransactionType("tax");
           break;
+        case "forex":
+          setTransactionType("forex");
+          break;
         default:
           setTransactionType("transfer");
       }
@@ -74,7 +77,13 @@ const Transactions = () => {
       const recurringText = isRecurring ? ` (${recurringFrequency} recurring)` : "";
       const approvalLevel = getApprovalLevel(transactionAmount);
       
-      if (approvalLevel.requiredApprovers > 0) {
+      // Custom success message for forex
+      if (transactionType === "forex") {
+        toast({
+          title: "Foreign Exchange Initiated",
+          description: `Your currency exchange has been submitted successfully${approvalLevel.requiredApprovers > 0 ? ' and requires approval' : ''}.`,
+        });
+      } else if (approvalLevel.requiredApprovers > 0) {
         toast({
           title: "Transaction submitted for approval",
           description: `Your ${transactionType} transaction${recurringText} requires ${approvalLevel.requiredApprovers} approval(s). You'll be notified once approved.`,
