@@ -13,6 +13,14 @@ export interface UserPermissions {
   approvals: boolean;
 }
 
+// Transaction approval limits
+export interface ApprovalLimits {
+  eft: number;
+  wire: number;
+  transfer: number;
+  emailTransfer: number;
+}
+
 // User interface
 export interface User {
   id: string;
@@ -21,4 +29,5 @@ export interface User {
   role: Role;
   lastActive: string;
   permissions: UserPermissions;
+  approvalLimits?: ApprovalLimits;
 }

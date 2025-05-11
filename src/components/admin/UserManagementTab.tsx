@@ -20,6 +20,12 @@ const initialUsers: User[] = [
       audit: true,
       emailTransfer: true,
       approvals: true
+    },
+    approvalLimits: {
+      eft: 100000,
+      wire: 250000,
+      transfer: 200000,
+      emailTransfer: 50000
     }
   },
   {
@@ -35,7 +41,13 @@ const initialUsers: User[] = [
       reporting: true,
       audit: false,
       emailTransfer: true,
-      approvals: false
+      approvals: true
+    },
+    approvalLimits: {
+      eft: 25000,
+      wire: 50000,
+      transfer: 50000,
+      emailTransfer: 10000
     }
   },
   {
@@ -52,6 +64,12 @@ const initialUsers: User[] = [
       audit: false,
       emailTransfer: true,
       approvals: false
+    },
+    approvalLimits: {
+      eft: 0,
+      wire: 0,
+      transfer: 5000,
+      emailTransfer: 2500
     }
   },
   {
@@ -67,7 +85,13 @@ const initialUsers: User[] = [
       reporting: true,
       audit: false,
       emailTransfer: true,
-      approvals: false
+      approvals: true
+    },
+    approvalLimits: {
+      eft: 10000,
+      wire: 0,
+      transfer: 15000,
+      emailTransfer: 5000
     }
   }
 ];
