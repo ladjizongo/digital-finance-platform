@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
+import { PlusCircle } from "lucide-react";
+import { useState } from "react";
+import PADDialog from "./PADDialog";
 import type { Account, Transaction } from "@/types/dashboardTypes";
 
 interface AccountDetailsProps {
@@ -11,6 +14,7 @@ interface AccountDetailsProps {
 }
 
 const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
+  const [isPADDialogOpen, setIsPADDialogOpen] = useState(false);
   const filteredTransactions = transactions.filter(
     transaction => transaction.account === account.id
   );
@@ -56,11 +60,27 @@ const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline">View All Transactions</Button>
+        <div className="flex space-x-2">
+          <Button variant="outline">View All Transactions</Button>
+          <Button 
+            variant="outline" 
+            className="flex items-center" 
+            onClick={() => setIsPADDialogOpen(true)}
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            PAD Agreement
+          </Button>
+        </div>
         <Button asChild>
           <Link to="/transactions">Make Transaction</Link>
         </Button>
       </CardFooter>
+      
+      <PADDialog 
+        open={isPADDialogOpen} 
+        onOpenChange={setIsPADDialogOpen} 
+        account={account} 
+      />
     </Card>
   );
 };
