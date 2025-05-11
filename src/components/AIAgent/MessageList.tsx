@@ -5,20 +5,22 @@ import { MessageSquare } from "lucide-react";
 interface Message {
   text: string;
   fromUser: boolean;
+  isTyping?: boolean;
 }
 
 interface MessageListProps {
   messages: Message[];
+  isTyping: boolean;
 }
 
-const MessageList = ({ messages }: MessageListProps) => {
+const MessageList = ({ messages, isTyping }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  if (messages.length === 0) {
+  if (messages.length === 0 && !isTyping) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
         <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
@@ -49,6 +51,19 @@ const MessageList = ({ messages }: MessageListProps) => {
           </div>
         </div>
       ))}
+
+      {isTyping && (
+        <div className="flex justify-start">
+          <div className="rounded-lg px-4 py-2 bg-secondary text-secondary-foreground">
+            <div className="flex space-x-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.2s" }}></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div ref={messagesEndRef} />
     </div>
   );

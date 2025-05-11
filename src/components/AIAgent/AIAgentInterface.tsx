@@ -30,6 +30,7 @@ interface AIAgentProps {
 
 const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{text: string, fromUser: boolean}[]>([]);
   const { toast } = useToast();
@@ -56,8 +57,11 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
     const userMessage = command.trim();
     addMessage(userMessage, true);
     setIsProcessing(true);
+    setIsTyping(true);
     
     try {
+      // Start showing typing indicator before processing
+      
       // Simulate AI processing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -69,9 +73,12 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         
         if (topic) {
           const response = AIAgentService.getInformationAbout(topic, lowerCommand);
+          // Stop typing indicator before adding the response
+          setIsTyping(false);
           addMessage(response, false);
         } else {
           // Generic response if no specific topic was identified
+          setIsTyping(false);
           addMessage("I can help you with information about transactions, audit logs, approvals, reports, business health, and the admin portal. Please specify what you'd like to know.", false);
         }
         
@@ -82,6 +89,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
       
       // Handle navigation commands
       if (lowerCommand.includes("dashboard") || lowerCommand.includes("home")) {
+        setIsTyping(false);
         addMessage("Taking you to the dashboard...", false);
         setTimeout(() => {
           window.location.href = "/dashboard";
@@ -90,6 +98,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         setInput("");
         return;
       } else if (lowerCommand.includes("admin") || lowerCommand.includes("portal")) {
+        setIsTyping(false);
         addMessage("Taking you to the admin portal...", false);
         setTimeout(() => {
           window.location.href = "/admin";
@@ -108,16 +117,19 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         if (transactionDetails.amount) response += ` for $${transactionDetails.amount}`;
         response += `. Preparing your transaction now...`;
         
+        setIsTyping(false);
         addMessage(response, false);
         
         // Execute the transaction
         onExecuteTransaction(transactionDetails);
       } else {
+        setIsTyping(false);
         addMessage("I can help you navigate, make transactions, or provide information about your financial data. Try saying something like 'transfer money', 'tell me about recent transactions', or 'go to dashboard'.", false);
       }
       
     } catch (error) {
       console.error("Error processing command:", error);
+      setIsTyping(false);
       addMessage("Sorry, I encountered an error processing your request. Please try again.", false);
     } finally {
       setIsProcessing(false);
@@ -141,7 +153,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
             <CardTitle className="text-center">Digital Finance Assistant</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow overflow-y-auto pt-4 pb-20">
-            <MessageList messages={messages} />
+            <MessageList messages={messages} isTyping={isTyping} />
           </CardContent>
           <CardFooter className="border-t p-4 absolute bottom-0 left-0 right-0 bg-background">
             <AgentInputForm
