@@ -10,9 +10,10 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { AIAgentService } from "@/services/AIAgentService";
 import MessageList from "./MessageList";
 import AgentInputForm from "./AgentInputForm";
+import { useNavigate } from "react-router-dom";
 
 interface AIAgentProps {
-  onExecuteTransaction: (transactionDetails: {
+  onExecuteTransaction?: (transactionDetails: {
     type: string;
     amount?: number;
     fromAccount?: string;
@@ -20,7 +21,7 @@ interface AIAgentProps {
     recipient?: string;
     purpose?: string;
   }) => void;
-  accounts: Array<{
+  accounts?: Array<{
     id: string;
     name: string;
     number: string;
@@ -28,12 +29,13 @@ interface AIAgentProps {
   }>;
 }
 
-const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
+const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{text: string, fromUser: boolean}[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const addMessage = (text: string, fromUser: boolean) => {
     setMessages(prev => [...prev, {text, fromUser}]);
@@ -51,6 +53,30 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
     if (!input.trim() || isProcessing) return;
     
     processCommand(input);
+  };
+  
+  const executeTransaction = (transactionDetails: { 
+    type: string; 
+    amount?: number; 
+    fromAccount?: string; 
+    toAccount?: string; 
+    recipient?: string;
+    purpose?: string;
+  }) => {
+    if (onExecuteTransaction) {
+      onExecuteTransaction(transactionDetails);
+    } else {
+      // If no callback is provided, navigate to transactions page with appropriate parameters
+      const params = new URLSearchParams();
+      if (transactionDetails.type) params.set('tab', transactionDetails.type);
+      navigate(`/transactions?${params.toString()}`);
+      
+      // Show toast notification
+      toast({
+        title: "Transaction initiated",
+        description: `Preparing ${transactionDetails.type} transaction interface for you.`,
+      });
+    }
   };
   
   const processCommand = async (command: string) => {
@@ -92,7 +118,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         setIsTyping(false);
         addMessage("Taking you to the dashboard...", false);
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          navigate("/dashboard");
         }, 1000);
         setIsProcessing(false);
         setInput("");
@@ -101,7 +127,16 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         setIsTyping(false);
         addMessage("Taking you to the admin portal...", false);
         setTimeout(() => {
-          window.location.href = "/admin";
+          navigate("/admin");
+        }, 1000);
+        setIsProcessing(false);
+        setInput("");
+        return;
+      } else if (lowerCommand.includes("transaction") || lowerCommand.includes("payment")) {
+        setIsTyping(false);
+        addMessage("Taking you to the transactions page...", false);
+        setTimeout(() => {
+          navigate("/transactions");
         }, 1000);
         setIsProcessing(false);
         setInput("");
@@ -121,7 +156,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         addMessage(response, false);
         
         // Execute the transaction
-        onExecuteTransaction(transactionDetails);
+        executeTransaction(transactionDetails);
       } else {
         setIsTyping(false);
         addMessage("I can help you navigate, make transactions, or provide information about your financial data. Try saying something like 'transfer money', 'tell me about recent transactions', or 'go to dashboard'.", false);

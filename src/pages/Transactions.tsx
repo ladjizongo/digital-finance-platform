@@ -6,6 +6,7 @@ import TransactionHeader from "@/components/transactions/TransactionHeader";
 import TransactionTabs from "@/components/transactions/TransactionTabs";
 import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
 import { getApprovalLevel } from "@/utils/approvalLevels";
+import AIAgentInterface from "@/components/AIAgent/AIAgentInterface";
 
 const Transactions = () => {
   const { toast } = useToast();
@@ -109,6 +110,31 @@ const Transactions = () => {
     setTransactionAmount(amount);
   };
 
+  const handleExecuteTransaction = (transactionDetails: { 
+    type: string; 
+    amount?: number; 
+    fromAccount?: string; 
+    toAccount?: string; 
+    recipient?: string;
+    purpose?: string;
+  }) => {
+    // Set form values based on AI agent's extracted transaction details
+    setTransactionType(transactionDetails.type);
+    if (transactionDetails.amount) {
+      setTransactionAmount(transactionDetails.amount);
+    }
+    
+    // Update URL with transaction type
+    const newParams = new URLSearchParams(window.location.search);
+    newParams.set('tab', transactionDetails.type);
+    window.history.replaceState(null, "", `?${newParams.toString()}`);
+    
+    toast({
+      title: "Transaction prepared",
+      description: `I've set up a ${transactionDetails.type} transaction for you${transactionDetails.amount ? ` for $${transactionDetails.amount}` : ''}. Please review and submit.`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <TransactionHeader />
@@ -129,6 +155,11 @@ const Transactions = () => {
         
         <DataIntegrationsSection />
       </main>
+      
+      <AIAgentInterface 
+        onExecuteTransaction={handleExecuteTransaction}
+        accounts={accounts}
+      />
     </div>
   );
 };

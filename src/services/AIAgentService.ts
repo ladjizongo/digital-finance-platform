@@ -79,27 +79,95 @@ export class AIAgentService {
     else if (lowerCommand.includes("eft")) type = "eft";
     else if (lowerCommand.includes("bill") || lowerCommand.includes("pay bill")) type = "bill";
     else if (lowerCommand.includes("email") || lowerCommand.includes("e-transfer")) type = "email";
-    else if (lowerCommand.includes("forex") || lowerCommand.includes("exchange")) type = "forex";
+    else if (lowerCommand.includes("tax") || lowerCommand.includes("taxes")) type = "tax";
+    else if (lowerCommand.includes("forex") || lowerCommand.includes("exchange") || lowerCommand.includes("currency")) type = "forex";
+    else if (lowerCommand.includes("payment") || lowerCommand.includes("pay") || lowerCommand.includes("send money")) {
+      // Default to transfer if generic payment terms are used
+      type = "transfer";
+    }
     else return null;
     
     // Extract amount using regex
-    const amountRegex = /\$?(\d+(?:\.\d{1,2})?)/;
+    const amountRegex = /\$?(\d+(?:,\d{3})*(?:\.\d{1,2})?)|(\d+(?:,\d{3})*(?:\.\d{1,2})?) dollars?/;
     const amountMatch = lowerCommand.match(amountRegex);
-    const amount = amountMatch ? parseFloat(amountMatch[1]) : undefined;
+    let amount = undefined;
     
-    // Extract account information (simplified)
-    const fromAccountMatch = accounts.find(account => 
-      lowerCommand.includes(account.name.toLowerCase()) || 
-      lowerCommand.includes(account.number)
-    );
+    if (amountMatch) {
+      // Remove commas and then parse the float
+      const cleanAmount = amountMatch[1] || amountMatch[2];
+      amount = parseFloat(cleanAmount.replace(/,/g, ''));
+    }
     
-    let fromAccount = fromAccountMatch ? fromAccountMatch.id : accounts[0]?.id;
+    // Extract account information
+    let fromAccount: string | undefined;
+    let toAccount: string | undefined;
     
-    return {
-      type,
-      amount,
-      fromAccount,
-    };
+    // Look for source account
+    for (const account of accounts) {
+      const lowerAccountName = account.name.toLowerCase();
+      const lowerAccountNumber = account.number.toLowerCase();
+      
+      if (lowerCommand.includes(`from ${lowerAccountName}`) || 
+          lowerCommand.includes(`from my ${lowerAccountName}`) ||
+          lowerCommand.includes(`using ${lowerAccountName}`) ||
+          lowerCommand.includes(`using my ${lowerAccountName}`) ||
+          lowerCommand.includes(lowerAccountNumber)) {
+        fromAccount = account.id;
+        break;
+      }
+    }
+    
+    // If no specific source account was mentioned, use the first account as default
+    if (!fromAccount && accounts.length > 0) {
+      fromAccount = accounts[0].id;
+    }
+    
+    // Look for destination account for internal transfers
+    if (type === "transfer") {
+      for (const account of accounts) {
+        const lowerAccountName = account.name.toLowerCase();
+        
+        if (lowerCommand.includes(`to ${lowerAccountName}`) || 
+            lowerCommand.includes(`to my ${lowerAccountName}`)) {
+          toAccount = account.id;
+          break;
+        }
+      }
+    }
+    
+    // Extract recipient information for external transfers
+    let recipient: string | undefined;
+    if (type !== "transfer" && !toAccount) {
+      const recipientRegex = /to\s+([A-Za-z\s&]+)(?:\s|$)/i;
+      const recipientMatch = lowerCommand.match(recipientRegex);
+      
+      if (recipientMatch && recipientMatch[1]) {
+        recipient = recipientMatch[1].trim();
+      }
+    }
+    
+    // Extract purpose or note
+    let purpose: string | undefined;
+    const purposeRegex = /for\s+([A-Za-z\s&]+)(?:\s|$)/i;
+    const purposeMatch = lowerCommand.match(purposeRegex);
+    
+    if (purposeMatch && purposeMatch[1]) {
+      purpose = purposeMatch[1].trim();
+    }
+    
+    // Only return a transaction if we have at least a type
+    if (type) {
+      return {
+        type,
+        amount,
+        fromAccount,
+        toAccount,
+        recipient,
+        purpose
+      };
+    }
+    
+    return null;
   }
 
   static isInformationRequest(command: string): boolean {
