@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import ForeignExchange from "./pages/ForeignExchange";
 import NotFound from "./pages/NotFound";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import AdminPortal from "./pages/AdminPortal";
@@ -56,6 +57,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/forex" element={<ForeignExchange />} />
             <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
             <Route path="/admin" element={<AdminPortal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
