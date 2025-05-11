@@ -1,11 +1,10 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import { PlusCircle, ArrowUpDown } from "lucide-react";
 import { useState } from "react";
-import PADDialog from "./PADDialog";
+import PADDialog from "./pad/PADDialog";
 import type { Account, Transaction } from "@/types/dashboardTypes";
 
 interface AccountDetailsProps {
