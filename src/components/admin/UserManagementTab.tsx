@@ -1,8 +1,13 @@
 
 import { useState } from "react";
+import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import UserMetricsCards from "./UserMetricsCards";
 import UserPermissionsTable from "./UserPermissionsTable";
+import AddUserDialog from "./AddUserDialog";
+import DeleteUserConfirmDialog from "./DeleteUserConfirmDialog";
 import { User } from "./types";
+import { useToast } from "@/hooks/use-toast";
 
 // Sample user data
 const initialUsers: User[] = [
@@ -97,12 +102,73 @@ const initialUsers: User[] = [
 ];
 
 const UserManagementTab = () => {
+  const { toast } = useToast();
   const [users, setUsers] = useState<User[]>(initialUsers);
+  const [addUserDialogOpen, setAddUserDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  
+  // Add new user
+  const handleAddUser = (newUser: Omit<User, "id">) => {
+    // Generate a new ID (in a real app, this would come from the backend)
+    const id = (users.length + 1).toString();
+    setUsers([...users, { ...newUser, id }]);
+  };
+
+  // Delete user
+  const openDeleteDialog = (user: User) => {
+    setUserToDelete(user);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteUser = () => {
+    if (!userToDelete) return;
+    
+    const updatedUsers = users.filter(user => user.id !== userToDelete.id);
+    setUsers(updatedUsers);
+    
+    toast({
+      title: "User deleted",
+      description: `${userToDelete.name} has been removed.`,
+    });
+    
+    setDeleteDialogOpen(false);
+    setUserToDelete(null);
+  };
   
   return (
     <>
-      <UserMetricsCards users={users} />
-      <UserPermissionsTable users={users} setUsers={setUsers} />
+      <div className="flex justify-between items-center mb-6">
+        <UserMetricsCards users={users} />
+        <Button 
+          onClick={() => setAddUserDialogOpen(true)}
+          className="flex items-center gap-1"
+        >
+          <PlusCircle className="h-4 w-4" />
+          Add User
+        </Button>
+      </div>
+      
+      <UserPermissionsTable 
+        users={users} 
+        setUsers={setUsers} 
+        onDeleteUser={openDeleteDialog}
+      />
+      
+      <AddUserDialog 
+        open={addUserDialogOpen}
+        onOpenChange={setAddUserDialogOpen}
+        onAddUser={handleAddUser}
+      />
+      
+      {userToDelete && (
+        <DeleteUserConfirmDialog 
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          onConfirm={confirmDeleteUser}
+          userName={userToDelete.name}
+        />
+      )}
     </>
   );
 };

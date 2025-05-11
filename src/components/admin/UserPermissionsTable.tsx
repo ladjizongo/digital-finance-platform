@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Search, Settings } from "lucide-react";
+import { Search, Settings, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -15,9 +15,10 @@ import { formatCurrency } from "../transactions/transactionUtils";
 interface UserPermissionsTableProps {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  onDeleteUser: (user: User) => void;
 }
 
-const UserPermissionsTable = ({ users, setUsers }: UserPermissionsTableProps) => {
+const UserPermissionsTable = ({ users, setUsers, onDeleteUser }: UserPermissionsTableProps) => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -111,6 +112,7 @@ const UserPermissionsTable = ({ users, setUsers }: UserPermissionsTableProps) =>
                   <TableHead>Audit</TableHead>
                   <TableHead>Approvals</TableHead>
                   <TableHead>Approval Limits</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -212,11 +214,23 @@ const UserPermissionsTable = ({ users, setUsers }: UserPermissionsTableProps) =>
                           )}
                         </div>
                       </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex items-center text-xs text-red-600 hover:text-red-800 hover:bg-red-50"
+                          onClick={() => onDeleteUser(user)}
+                          disabled={user.role === 'Admin'}
+                        >
+                          <Trash2 className="mr-1 h-3 w-3" />
+                          Delete
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-6 text-gray-500">
+                    <TableCell colSpan={11} className="text-center py-6 text-gray-500">
                       No users found matching your search
                     </TableCell>
                   </TableRow>
