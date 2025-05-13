@@ -16,6 +16,38 @@ export interface TransactionDetails {
 }
 
 export class AIAgentService {
+  // Platform information for common queries
+  static getPlatformInfo(query: string): string {
+    const lowerQuery = query.toLowerCase();
+    
+    // Dashboard information
+    if (lowerQuery.includes("dashboard") || lowerQuery.includes("home screen")) {
+      return "The Dashboard is your main hub where you can view account summaries, recent transactions, approvals needed, and business health metrics. You can access different sections through the tabs on the left side.";
+    }
+    
+    // Transaction information
+    else if (lowerQuery.includes("transaction types") || lowerQuery.includes("what transactions")) {
+      return "We support various transaction types including: transfers between accounts, wire transfers, EFT (Electronic Fund Transfers), email transfers, bill payments, tax payments, and foreign exchange (forex) transactions.";
+    }
+    
+    // Approval process
+    else if (lowerQuery.includes("approval") && lowerQuery.includes("process")) {
+      return "Transactions above certain thresholds require approvals. The number of approvers depends on the transaction amount. You can check pending approvals in the Approvals tab on the dashboard.";
+    }
+    
+    // Admin features
+    else if (lowerQuery.includes("admin") || lowerQuery.includes("administration")) {
+      return "The Admin Portal allows administrators to manage users, set approval limits, configure system settings, and review audit logs. You can access it through the navigation menu.";
+    }
+    
+    // Help with platform
+    else if (lowerQuery.includes("help") || lowerQuery.includes("tutorial")) {
+      return "I can help you navigate the platform, explain features, assist with transactions, and answer questions about your accounts or the system. What specific area would you like help with?";
+    }
+    
+    return null;
+  }
+
   static getInformationAbout(topic: string, query: string): string {
     const lowerQuery = query.toLowerCase();
     

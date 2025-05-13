@@ -10,12 +10,15 @@ import AIAgentInterface from "@/components/AIAgent/AIAgentInterface";
 
 const Transactions = () => {
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transactionType, setTransactionType] = useState("transfer");
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringFrequency, setRecurringFrequency] = useState("monthly");
   const [transactionAmount, setTransactionAmount] = useState(0);
+  const [selectedFromAccount, setSelectedFromAccount] = useState("");
+  const [selectedToAccount, setSelectedToAccount] = useState("");
+  const [recipient, setRecipient] = useState("");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -110,6 +113,18 @@ const Transactions = () => {
     setTransactionAmount(amount);
   };
 
+  const handleFromAccountChange = (accountId: string) => {
+    setSelectedFromAccount(accountId);
+  };
+
+  const handleToAccountChange = (accountId: string) => {
+    setSelectedToAccount(accountId);
+  };
+
+  const handleRecipientChange = (recipient: string) => {
+    setRecipient(recipient);
+  };
+
   const handleExecuteTransaction = (transactionDetails: { 
     type: string; 
     amount?: number; 
@@ -124,10 +139,22 @@ const Transactions = () => {
       setTransactionAmount(transactionDetails.amount);
     }
     
+    if (transactionDetails.fromAccount) {
+      setSelectedFromAccount(transactionDetails.fromAccount);
+    }
+    
+    if (transactionDetails.toAccount) {
+      setSelectedToAccount(transactionDetails.toAccount);
+    }
+    
+    if (transactionDetails.recipient) {
+      setRecipient(transactionDetails.recipient);
+    }
+    
     // Update URL with transaction type
     const newParams = new URLSearchParams(window.location.search);
     newParams.set('tab', transactionDetails.type);
-    window.history.replaceState(null, "", `?${newParams.toString()}`);
+    setSearchParams(newParams);
     
     toast({
       title: "Transaction prepared",
@@ -151,6 +178,9 @@ const Transactions = () => {
           onRecurringChange={handleRecurringChange}
           onFrequencyChange={handleFrequencyChange}
           onAmountChange={handleAmountChange}
+          selectedFromAccount={selectedFromAccount} 
+          selectedToAccount={selectedToAccount}
+          recipient={recipient}
         />
         
         <DataIntegrationsSection />
