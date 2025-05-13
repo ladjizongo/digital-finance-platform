@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { FileUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface UploadedFile {
   id: string;
@@ -20,6 +22,14 @@ const DOCUMENT_TYPES = {
   BUSINESS_PLAN: "Business Plan"
 };
 
+// Credit Application Types
+const CREDIT_APPLICATION_TYPES = [
+  "Overdraft",
+  "Line of Credit",
+  "Term Loan",
+  "Canadian Small Business Financing Loan (CSBFL)"
+];
+
 // Updated to show consecutive years in format YYYY-YYYY for Financial Statement
 const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
 
@@ -34,27 +44,47 @@ const CreditDocumentUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedDocType, setSelectedDocType] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
+  const [selectedCreditType, setSelectedCreditType] = useState<string>(CREDIT_APPLICATION_TYPES[0]);
 
   useEffect(() => {
     const savedFiles = localStorage.getItem('uploadedCreditDocs');
     if (savedFiles) {
       setFiles(JSON.parse(savedFiles));
     }
+    
+    // Load saved credit application type if available
+    const savedCreditType = localStorage.getItem('selectedCreditType');
+    if (savedCreditType) {
+      setSelectedCreditType(savedCreditType);
+    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('uploadedCreditDocs', JSON.stringify(files));
   }, [files]);
+  
+  useEffect(() => {
+    // Save the selected credit type
+    localStorage.setItem('selectedCreditType', selectedCreditType);
+  }, [selectedCreditType]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files?.length || !selectedDocType) {
-      toast.error("Please select document type before uploading");
+      toast({
+        title: "Error",
+        description: "Please select document type before uploading",
+        variant: "destructive"
+      });
       return;
     }
     
     // For documents that require a year, validate year is selected
     if (!YEAR_INDEPENDENT_DOCUMENTS.includes(selectedDocType) && !selectedYear) {
-      toast.error("Please select a year for this document type");
+      toast({
+        title: "Error",
+        description: "Please select a year for this document type",
+        variant: "destructive"
+      });
       return;
     }
     
@@ -77,7 +107,10 @@ const CreditDocumentUpload = () => {
     
     setFiles(prev => [...prev, ...newFiles]);
     setIsUploading(false);
-    toast.success("Documents uploaded successfully");
+    toast({
+      title: "Success",
+      description: "Documents uploaded successfully"
+    });
   };
 
   const removeFile = (fileId: string) => {
@@ -86,7 +119,10 @@ const CreditDocumentUpload = () => {
       localStorage.setItem('uploadedCreditDocs', JSON.stringify(updatedFiles));
       return updatedFiles;
     });
-    toast.success("Document removed");
+    toast({
+      title: "Success",
+      description: "Document removed"
+    });
   };
 
   const isDocumentUploaded = (docType: string, year: string) => {
@@ -113,11 +149,18 @@ const CreditDocumentUpload = () => {
 
   const handleSubmit = () => {
     if (!isSubmitReady()) {
-      toast.error("Please upload at least one document for each type before submitting");
+      toast({
+        title: "Error",
+        description: "Please upload at least one document for each type before submitting",
+        variant: "destructive"
+      });
       return;
     }
 
-    toast.success("Documents submitted successfully!");
+    toast({
+      title: "Success",
+      description: "Documents submitted successfully for " + selectedCreditType + " application!"
+    });
     
     setFiles([]);
     localStorage.removeItem('uploadedCreditDocs');
@@ -146,10 +189,29 @@ const CreditDocumentUpload = () => {
       <CardHeader>
         <CardTitle>Credit Application Documents</CardTitle>
         <CardDescription>
-          Upload your financial documents and tax assessments
+          Upload your financial documents and tax assessments for your credit application
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Credit Application Type Selection */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium text-gray-700">Select Application Type:</h4>
+          <RadioGroup 
+            value={selectedCreditType}
+            onValueChange={setSelectedCreditType}
+            className="grid grid-cols-1 md:grid-cols-2 gap-2"
+          >
+            {CREDIT_APPLICATION_TYPES.map((type) => (
+              <div key={type} className="flex items-center space-x-2 rounded-md border p-3 hover:bg-gray-50">
+                <RadioGroupItem value={type} id={`credit-type-${type}`} />
+                <Label htmlFor={`credit-type-${type}`} className="flex-1 cursor-pointer">
+                  {type}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
+
         <div className="grid gap-6">
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-gray-700">Required Documents:</h4>
@@ -321,7 +383,7 @@ const CreditDocumentUpload = () => {
               disabled={!files.length || !isSubmitReady()}
               className="w-full sm:w-auto"
             >
-              Submit Documents
+              Submit {selectedCreditType} Application
               <FileUp className="ml-2 h-4 w-4" />
             </Button>
           </div>
