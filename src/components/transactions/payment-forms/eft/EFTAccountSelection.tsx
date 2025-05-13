@@ -12,13 +12,21 @@ interface Account {
 
 interface EFTAccountSelectionProps {
   accounts: Account[];
+  selectedAccount?: string;
+  onAccountChange?: (accountId: string) => void;
 }
 
-export const EFTAccountSelection = ({ accounts }: EFTAccountSelectionProps) => {
+export const EFTAccountSelection = ({ accounts, selectedAccount, onAccountChange }: EFTAccountSelectionProps) => {
   // Calculate average balance across all accounts
   const averageBalance = accounts.length 
     ? accounts.reduce((sum, account) => sum + account.balance, 0) / accounts.length 
     : 0;
+    
+  const handleValueChange = (value: string) => {
+    if (onAccountChange) {
+      onAccountChange(value);
+    }
+  };
 
   return (
     <Card>
@@ -36,7 +44,11 @@ export const EFTAccountSelection = ({ accounts }: EFTAccountSelectionProps) => {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="fromAccount">Select Account</Label>
-          <Select defaultValue={accounts[0]?.id}>
+          <Select 
+            value={selectedAccount} 
+            onValueChange={handleValueChange}
+            defaultValue={accounts.length > 0 ? accounts[0].id : undefined}
+          >
             <SelectTrigger id="fromAccount">
               <SelectValue placeholder="Select an account" />
             </SelectTrigger>

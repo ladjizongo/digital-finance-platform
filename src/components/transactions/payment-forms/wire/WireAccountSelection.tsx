@@ -17,13 +17,25 @@ interface Account {
 
 interface WireAccountSelectionProps {
   accounts: Account[];
+  selectedAccount?: string;
+  onAccountChange?: (accountId: string) => void;
 }
 
-export const WireAccountSelection = ({ accounts }: WireAccountSelectionProps) => {
+export const WireAccountSelection = ({ accounts, selectedAccount, onAccountChange }: WireAccountSelectionProps) => {
+  const handleValueChange = (value: string) => {
+    if (onAccountChange) {
+      onAccountChange(value);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <Label htmlFor="wireFromAccount">From Account</Label>
-      <Select defaultValue="1">
+      <Select 
+        value={selectedAccount} 
+        onValueChange={handleValueChange}
+        defaultValue={accounts.length > 0 ? accounts[0].id : undefined}
+      >
         <SelectTrigger id="wireFromAccount">
           <SelectValue placeholder="Select account" />
         </SelectTrigger>
