@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,9 +22,18 @@ interface WireSectionProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  onFromAccountChange?: (accountId: string) => void;
 }
 
-export const WireSection = ({ accounts, isSubmitting, onSubmit, onAmountChange }: WireSectionProps) => {
+export const WireSection = ({ 
+  accounts, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  onFromAccountChange 
+}: WireSectionProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     recipientName: "",
@@ -83,7 +91,11 @@ export const WireSection = ({ accounts, isSubmitting, onSubmit, onAmountChange }
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
-          <WireAccountSelection accounts={accounts} />
+          <WireAccountSelection 
+            accounts={accounts} 
+            selectedAccount={selectedFromAccount}
+            onAccountChange={onFromAccountChange}
+          />
           
           <WireTransferType 
             value={formData.transferType} 

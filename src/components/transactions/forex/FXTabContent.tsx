@@ -20,15 +20,34 @@ interface FXTabContentProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  selectedToAccount?: string;
+  onFromAccountChange?: (accountId: string) => void;
+  onToAccountChange?: (accountId: string) => void;
 }
 
-const FXTabContent = ({ accounts, isSubmitting, onSubmit, onAmountChange }: FXTabContentProps) => {
+const FXTabContent = ({ 
+  accounts, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  selectedToAccount,
+  onFromAccountChange,
+  onToAccountChange
+}: FXTabContentProps) => {
   const [fromCurrency, setFromCurrency] = useState("USD");
   const [toCurrency, setToCurrency] = useState("EUR");
   const [amount, setAmount] = useState("1000");
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [rate, setRate] = useState(0);
-  const [fromAccount, setFromAccount] = useState(accounts[0]?.id || "");
+  const [fromAccount, setFromAccount] = useState(selectedFromAccount || accounts[0]?.id || "");
+  
+  useEffect(() => {
+    if (selectedFromAccount) {
+      setFromAccount(selectedFromAccount);
+    }
+  }, [selectedFromAccount]);
   
   const currencies = ["USD", "EUR", "GBP", "CAD", "AUD", "JPY", "CHF", "CNY"];
   
@@ -57,6 +76,13 @@ const FXTabContent = ({ accounts, isSubmitting, onSubmit, onAmountChange }: FXTa
     e.preventDefault();
     onSubmit(e);
   };
+
+  const handleFromAccountChange = (value: string) => {
+    setFromAccount(value);
+    if (onFromAccountChange) {
+      onFromAccountChange(value);
+    }
+  };
   
   return (
     <Card>
@@ -71,7 +97,11 @@ const FXTabContent = ({ accounts, isSubmitting, onSubmit, onAmountChange }: FXTa
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="fxFromAccount">From Account</Label>
-            <Select defaultValue={accounts[0]?.id} value={fromAccount} onValueChange={setFromAccount}>
+            <Select 
+              defaultValue={accounts[0]?.id} 
+              value={fromAccount} 
+              onValueChange={handleFromAccountChange}
+            >
               <SelectTrigger id="fxFromAccount">
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>

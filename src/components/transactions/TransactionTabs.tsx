@@ -78,7 +78,7 @@ const TransactionTabs = ({
 
   return (
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid grid-cols-6 w-full mb-8">
+      <TabsList className="grid grid-cols-7 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <ArrowRight className="mr-2 h-4 w-4" />
           Transfers
@@ -98,6 +98,10 @@ const TransactionTabs = ({
         <TabsTrigger value="email" className="flex items-center">
           <Mail className="mr-2 h-4 w-4" />
           Email Transfer
+        </TabsTrigger>
+        <TabsTrigger value="tax" className="flex items-center">
+          <FileText className="mr-2 h-4 w-4" />
+          Tax Payment
         </TabsTrigger>
         <TabsTrigger value="forex" className="flex items-center">
           <ArrowUpDown className="mr-2 h-4 w-4" />

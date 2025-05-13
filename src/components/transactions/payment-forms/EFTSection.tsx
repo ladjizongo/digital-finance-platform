@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,13 +22,17 @@ interface EFTSectionProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  onFromAccountChange?: (accountId: string) => void;
 }
 
 export const EFTSection = ({ 
   accounts, 
   isSubmitting, 
   onSubmit,
-  onAmountChange
+  onAmountChange,
+  selectedFromAccount,
+  onFromAccountChange
 }: EFTSectionProps) => {
   const { toast } = useToast();
   const [transactionType, setTransactionType] = useState("debit");
@@ -52,7 +55,7 @@ export const EFTSection = ({
   return (
     <form onSubmit={onSubmit}>
       <div className="space-y-8">
-        <EFTAccountSelection accounts={accounts} />
+        <EFTAccountSelection accounts={accounts} selectedAccount={selectedFromAccount} onAccountChange={onFromAccountChange} />
         
         <Card>
           <CardHeader>

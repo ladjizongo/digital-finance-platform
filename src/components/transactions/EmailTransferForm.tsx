@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -27,9 +28,23 @@ interface EmailTransferFormProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  recipient?: string;
+  onFromAccountChange?: (accountId: string) => void;
+  onRecipientChange?: (recipient: string) => void;
 }
 
-const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit, onAmountChange }: EmailTransferFormProps) => {
+const EmailTransferForm = ({ 
+  accounts, 
+  contacts, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  recipient,
+  onFromAccountChange,
+  onRecipientChange
+}: EmailTransferFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
   
@@ -37,6 +52,18 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit, onAmoun
     const value = parseFloat(e.target.value);
     if (onAmountChange && !isNaN(value)) {
       onAmountChange(value);
+    }
+  };
+
+  const handleAccountChange = (value: string) => {
+    if (onFromAccountChange) {
+      onFromAccountChange(value);
+    }
+  };
+
+  const handleRecipientChange = (value: string) => {
+    if (onRecipientChange) {
+      onRecipientChange(value);
     }
   };
   
@@ -52,7 +79,11 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit, onAmoun
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="emailFromAccount">From Account</Label>
-            <Select defaultValue="1">
+            <Select 
+              defaultValue={accounts[0]?.id}
+              value={selectedFromAccount || accounts[0]?.id}
+              onValueChange={handleAccountChange}
+            >
               <SelectTrigger id="emailFromAccount">
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>
@@ -68,7 +99,10 @@ const EmailTransferForm = ({ accounts, contacts, isSubmitting, onSubmit, onAmoun
           
           <div className="space-y-2">
             <Label htmlFor="recipient">Recipient</Label>
-            <Select>
+            <Select 
+              value={recipient}
+              onValueChange={handleRecipientChange}
+            >
               <SelectTrigger id="recipient">
                 <SelectValue placeholder="Select a recipient or add new" />
               </SelectTrigger>

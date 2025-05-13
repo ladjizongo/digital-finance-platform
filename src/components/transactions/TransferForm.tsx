@@ -19,9 +19,22 @@ interface TransferFormProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  selectedToAccount?: string;
+  onFromAccountChange?: (accountId: string) => void;
+  onToAccountChange?: (accountId: string) => void;
 }
 
-const TransferForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: TransferFormProps) => {
+const TransferForm = ({ 
+  accounts, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  selectedToAccount,
+  onFromAccountChange,
+  onToAccountChange 
+}: TransferFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
 
@@ -29,6 +42,18 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: Tran
     const value = parseFloat(e.target.value);
     if (onAmountChange && !isNaN(value)) {
       onAmountChange(value);
+    }
+  };
+
+  const handleFromAccountChange = (value: string) => {
+    if (onFromAccountChange) {
+      onFromAccountChange(value);
+    }
+  };
+
+  const handleToAccountChange = (value: string) => {
+    if (onToAccountChange) {
+      onToAccountChange(value);
     }
   };
 
@@ -45,7 +70,11 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: Tran
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="fromAccount">From Account</Label>
-              <Select defaultValue="1">
+              <Select 
+                defaultValue={accounts[0]?.id}
+                value={selectedFromAccount || accounts[0]?.id}
+                onValueChange={handleFromAccountChange}
+              >
                 <SelectTrigger id="fromAccount">
                   <SelectValue placeholder="Select account" />
                 </SelectTrigger>
@@ -61,7 +90,11 @@ const TransferForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: Tran
             
             <div className="space-y-2">
               <Label htmlFor="toAccount">To Account</Label>
-              <Select defaultValue="2">
+              <Select 
+                defaultValue={accounts[1]?.id}
+                value={selectedToAccount || accounts[1]?.id}
+                onValueChange={handleToAccountChange}
+              >
                 <SelectTrigger id="toAccount">
                   <SelectValue placeholder="Select account" />
                 </SelectTrigger>

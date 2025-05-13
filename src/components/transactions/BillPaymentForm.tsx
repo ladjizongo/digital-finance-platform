@@ -27,9 +27,23 @@ interface BillPaymentFormProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  recipient?: string;
+  onFromAccountChange?: (accountId: string) => void;
+  onRecipientChange?: (recipient: string) => void;
 }
 
-const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit, onAmountChange }: BillPaymentFormProps) => {
+const BillPaymentForm = ({ 
+  accounts, 
+  savedPayees, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  recipient,
+  onFromAccountChange,
+  onRecipientChange
+}: BillPaymentFormProps) => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("monthly");
   
@@ -37,6 +51,18 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit, onAmou
     const value = parseFloat(e.target.value);
     if (onAmountChange && !isNaN(value)) {
       onAmountChange(value);
+    }
+  };
+
+  const handleAccountChange = (value: string) => {
+    if (onFromAccountChange) {
+      onFromAccountChange(value);
+    }
+  };
+
+  const handleRecipientChange = (value: string) => {
+    if (onRecipientChange) {
+      onRecipientChange(value);
     }
   };
   
@@ -52,7 +78,11 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit, onAmou
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="billFromAccount">From Account</Label>
-            <Select defaultValue="1">
+            <Select 
+              defaultValue={accounts[0]?.id}
+              value={selectedFromAccount || accounts[0]?.id}
+              onValueChange={handleAccountChange}
+            >
               <SelectTrigger id="billFromAccount">
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>
@@ -68,7 +98,10 @@ const BillPaymentForm = ({ accounts, savedPayees, isSubmitting, onSubmit, onAmou
           
           <div className="space-y-2">
             <Label htmlFor="billPayee">Payee / Biller</Label>
-            <Select>
+            <Select 
+              value={recipient}
+              onValueChange={handleRecipientChange}
+            >
               <SelectTrigger id="billPayee">
                 <SelectValue placeholder="Select a payee or add new" />
               </SelectTrigger>
