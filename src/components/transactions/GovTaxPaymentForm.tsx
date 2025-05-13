@@ -16,13 +16,28 @@ interface GovTaxPaymentFormProps {
   isSubmitting: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  onFromAccountChange?: (accountId: string) => void;
 }
 
-const GovTaxPaymentForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }: GovTaxPaymentFormProps) => {
+const GovTaxPaymentForm = ({ 
+  accounts, 
+  isSubmitting, 
+  onSubmit, 
+  onAmountChange,
+  selectedFromAccount,
+  onFromAccountChange
+}: GovTaxPaymentFormProps) => {
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(e.target.value);
     if (onAmountChange && !isNaN(value)) {
       onAmountChange(value);
+    }
+  };
+
+  const handleAccountChange = (value: string) => {
+    if (onFromAccountChange) {
+      onFromAccountChange(value);
     }
   };
 
@@ -32,7 +47,12 @@ const GovTaxPaymentForm = ({ accounts, isSubmitting, onSubmit, onAmountChange }:
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="sourceAccount">From Account</Label>
-            <Select name="sourceAccount" defaultValue={accounts[0]?.id}>
+            <Select 
+              name="sourceAccount" 
+              defaultValue={accounts[0]?.id}
+              value={selectedFromAccount || accounts[0]?.id}
+              onValueChange={handleAccountChange}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select account" />
               </SelectTrigger>

@@ -181,6 +181,9 @@ const Transactions = () => {
           selectedFromAccount={selectedFromAccount} 
           selectedToAccount={selectedToAccount}
           recipient={recipient}
+          onFromAccountChange={handleFromAccountChange}
+          onToAccountChange={handleToAccountChange}
+          onRecipientChange={handleRecipientChange}
         />
         
         <DataIntegrationsSection />

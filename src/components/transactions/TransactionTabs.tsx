@@ -39,6 +39,12 @@ interface TransactionTabsProps {
   onRecurringChange?: (isRecurring: boolean) => void;
   onFrequencyChange?: (frequency: string) => void;
   onAmountChange?: (amount: number) => void;
+  selectedFromAccount?: string;
+  selectedToAccount?: string;
+  recipient?: string;
+  onFromAccountChange?: (accountId: string) => void;
+  onToAccountChange?: (accountId: string) => void;
+  onRecipientChange?: (recipient: string) => void;
 }
 
 const TransactionTabs = ({
@@ -51,7 +57,13 @@ const TransactionTabs = ({
   onSubmit,
   onRecurringChange,
   onFrequencyChange,
-  onAmountChange
+  onAmountChange,
+  selectedFromAccount,
+  selectedToAccount,
+  recipient,
+  onFromAccountChange,
+  onToAccountChange,
+  onRecipientChange
 }: TransactionTabsProps) => {
   const handleTabChange = (value: string) => {
     setTransactionType(value);
@@ -99,6 +111,10 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          selectedToAccount={selectedToAccount}
+          onFromAccountChange={onFromAccountChange}
+          onToAccountChange={onToAccountChange}
         />
       </TabsContent>
       
@@ -108,6 +124,8 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          onFromAccountChange={onFromAccountChange}
         />
       </TabsContent>
       
@@ -117,6 +135,8 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          onFromAccountChange={onFromAccountChange}
         />
       </TabsContent>
       
@@ -127,6 +147,10 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          recipient={recipient}
+          onFromAccountChange={onFromAccountChange}
+          onRecipientChange={onRecipientChange}
         />
       </TabsContent>
       
@@ -137,6 +161,10 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          recipient={recipient}
+          onFromAccountChange={onFromAccountChange}
+          onRecipientChange={onRecipientChange}
         />
       </TabsContent>
       
@@ -146,6 +174,10 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          selectedToAccount={selectedToAccount}
+          onFromAccountChange={onFromAccountChange}
+          onToAccountChange={onToAccountChange}
         />
       </TabsContent>
       
@@ -155,6 +187,8 @@ const TransactionTabs = ({
           isSubmitting={isSubmitting}
           onSubmit={onSubmit}
           onAmountChange={onAmountChange}
+          selectedFromAccount={selectedFromAccount}
+          onFromAccountChange={onFromAccountChange}
         />
       </TabsContent>
     </Tabs>
