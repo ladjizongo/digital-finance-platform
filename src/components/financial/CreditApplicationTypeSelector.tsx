@@ -29,6 +29,10 @@ export function CreditApplicationTypeSelector({ value, onChange }: CreditApplica
           <Label htmlFor="termLoan" className="cursor-pointer">Term Loan</Label>
         </div>
         <div className="flex items-center space-x-2 rounded-md border p-3 hover:bg-gray-50">
+          <RadioGroupItem value="equipmentPurchase" id="equipmentPurchase" />
+          <Label htmlFor="equipmentPurchase" className="cursor-pointer">Equipment Purchase</Label>
+        </div>
+        <div className="flex items-center space-x-2 rounded-md border p-3 hover:bg-gray-50">
           <RadioGroupItem value="csbfl" id="csbfl" />
           <Label htmlFor="csbfl" className="cursor-pointer">Canadian Small Business Financing Loan (CSBFL)</Label>
         </div>
