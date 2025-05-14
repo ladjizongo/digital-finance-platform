@@ -1,15 +1,13 @@
 
 import FinancialHealthCard from "@/components/FinancialHealthCard";
-import CreditDocumentUpload from "@/components/financial/CreditDocumentUpload";
+import CreditApplicationSection from "@/components/financial/CreditApplicationSection";
 
 const BusinessHealthTab = () => {
   return (
-    <>
+    <div className="space-y-8">
       <FinancialHealthCard />
-      <div className="mt-8">
-        <CreditDocumentUpload />
-      </div>
-    </>
+      <CreditApplicationSection />
+    </div>
   );
 };
 

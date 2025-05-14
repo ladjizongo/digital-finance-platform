@@ -1,395 +1,192 @@
 
-import { useState, useEffect } from "react";
-import { FileUp } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { FileSpreadsheet, FileText, Sparkles } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
-interface UploadedFile {
-  id: string;
-  name: string;
-  type: string;
-  year: string;
-  documentType: string;
+interface CreditDocumentUploadProps {
+  applicationType?: string;
 }
 
-const DOCUMENT_TYPES = {
-  FINANCIAL_STATEMENT: "Financial Statement",
-  PERSONAL_NOTICE_OF_ASSESSMENT: "Personal Notice of Assessment",
-  BUSINESS_PLAN: "Business Plan"
-};
-
-// Credit Application Types
-const CREDIT_APPLICATION_TYPES = [
-  "Overdraft",
-  "Line of Credit",
-  "Term Loan",
-  "Canadian Small Business Financing Loan (CSBFL)"
-];
-
-// Updated to show consecutive years in format YYYY-YYYY for Financial Statement
-const YEAR_RANGES = ["2024-2025", "2023-2024", "2022-2023"];
-
-// Years in YYYY format for Personal Notice of Assessment
-const ASSESSMENT_YEARS = ["2024", "2023", "2022"];
-
-// Document types that don't require years
-const YEAR_INDEPENDENT_DOCUMENTS = [DOCUMENT_TYPES.BUSINESS_PLAN];
-
-const CreditDocumentUpload = () => {
-  const [files, setFiles] = useState<UploadedFile[]>([]);
+const CreditDocumentUpload = ({ applicationType = "overdraft" }: CreditDocumentUploadProps) => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [selectedDocType, setSelectedDocType] = useState<string>("");
-  const [selectedYear, setSelectedYear] = useState<string>("");
-  const [selectedCreditType, setSelectedCreditType] = useState<string>(CREDIT_APPLICATION_TYPES[0]);
-
-  useEffect(() => {
-    const savedFiles = localStorage.getItem('uploadedCreditDocs');
-    if (savedFiles) {
-      setFiles(JSON.parse(savedFiles));
-    }
-    
-    // Load saved credit application type if available
-    const savedCreditType = localStorage.getItem('selectedCreditType');
-    if (savedCreditType) {
-      setSelectedCreditType(savedCreditType);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('uploadedCreditDocs', JSON.stringify(files));
-  }, [files]);
   
-  useEffect(() => {
-    // Save the selected credit type
-    localStorage.setItem('selectedCreditType', selectedCreditType);
-  }, [selectedCreditType]);
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files?.length || !selectedDocType) {
-      toast({
-        title: "Error",
-        description: "Please select document type before uploading",
-        variant: "destructive"
-      });
-      return;
-    }
+  const getRequiredDocuments = () => {
+    const common = [
+      "Business Plan",
+      "Financial Statements (Last 2 years)",
+      "Business Banking Statements (Last 6 months)"
+    ];
     
-    // For documents that require a year, validate year is selected
-    if (!YEAR_INDEPENDENT_DOCUMENTS.includes(selectedDocType) && !selectedYear) {
-      toast({
-        title: "Error",
-        description: "Please select a year for this document type",
-        variant: "destructive"
-      });
+    switch (applicationType) {
+      case "overdraft":
+        return [...common, "Overdraft Agreement Form"];
+      case "lineOfCredit":
+        return [...common, "Cash Flow Projections", "Accounts Receivable Aging Report"];
+      case "termLoan":
+        return [...common, "Asset List", "Existing Loan Statements", "Purchase Agreements"];
+      case "csbfl":
+        return [
+          ...common, 
+          "CSBFL Application Form", 
+          "Purchase Invoices or Estimates",
+          "Proof of Canadian Citizenship or Permanent Residency",
+          "Business Registration Documents"
+        ];
+      default:
+        return common;
+    }
+  };
+  
+  const getTitleByType = () => {
+    switch (applicationType) {
+      case "overdraft": return "Overdraft Application";
+      case "lineOfCredit": return "Line of Credit Application";
+      case "termLoan": return "Term Loan Application";
+      case "csbfl": return "CSBFL Application";
+      default: return "Credit Application";
+    }
+  };
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setSelectedFiles(prev => [...prev, ...newFiles]);
+    }
+  };
+  
+  const handleUpload = () => {
+    if (selectedFiles.length === 0) {
+      toast.error("Please select files to upload");
       return;
     }
     
     setIsUploading(true);
-    const newFiles: UploadedFile[] = [];
     
-    for (const file of Array.from(event.target.files)) {
-      const fileId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
-      newFiles.push({
-        id: fileId,
-        name: file.name,
-        type: file.type,
-        year: YEAR_INDEPENDENT_DOCUMENTS.includes(selectedDocType) ? "N/A" : selectedYear,
-        documentType: selectedDocType
+    // Simulate upload
+    setTimeout(() => {
+      toast.success("Documents uploaded successfully", {
+        description: `${selectedFiles.length} documents have been uploaded for your ${getTitleByType()}`
       });
-    }
-    
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setFiles(prev => [...prev, ...newFiles]);
-    setIsUploading(false);
-    toast({
-      title: "Success",
-      description: "Documents uploaded successfully"
-    });
+      setSelectedFiles([]);
+      setIsUploading(false);
+    }, 2000);
   };
-
-  const removeFile = (fileId: string) => {
-    setFiles(prev => {
-      const updatedFiles = prev.filter(file => file.id !== fileId);
-      localStorage.setItem('uploadedCreditDocs', JSON.stringify(updatedFiles));
-      return updatedFiles;
-    });
-    toast({
-      title: "Success",
-      description: "Document removed"
-    });
+  
+  const handleRemoveFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
-
-  const isDocumentUploaded = (docType: string, year: string) => {
-    return files.some(file => file.documentType === docType && file.year === year);
-  };
-
-  const isYearIndependentDocumentUploaded = (docType: string) => {
-    return files.some(file => file.documentType === docType);
-  };
-
-  const isSubmitReady = () => {
-    // For Financial Statements, we need at least one for any YEAR_RANGES
-    const hasFinancialStatement = YEAR_RANGES.some(year => 
-      files.some(file => file.documentType === DOCUMENT_TYPES.FINANCIAL_STATEMENT && file.year === year)
-    );
-    
-    // For Personal Notice of Assessment, we need at least one for any ASSESSMENT_YEARS
-    const hasNoticeOfAssessment = ASSESSMENT_YEARS.some(year => 
-      files.some(file => file.documentType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT && file.year === year)
-    );
-    
-    return hasFinancialStatement && hasNoticeOfAssessment;
-  };
-
-  const handleSubmit = () => {
-    if (!isSubmitReady()) {
-      toast({
-        title: "Error",
-        description: "Please upload at least one document for each type before submitting",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Success",
-      description: "Documents submitted successfully for " + selectedCreditType + " application!"
-    });
-    
-    setFiles([]);
-    localStorage.removeItem('uploadedCreditDocs');
-  };
-
-  const getYearOptions = () => {
-    if (selectedDocType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT) {
-      return ASSESSMENT_YEARS;
-    }
-    return YEAR_RANGES;
-  };
-
-  const getYearLabel = () => {
-    if (selectedDocType === DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT) {
-      return "Select Year";
-    }
-    return "Select Year Range";
-  };
-
-  const requiresYear = (docType: string) => {
-    return !YEAR_INDEPENDENT_DOCUMENTS.includes(docType);
-  };
-
+  
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Credit Application Documents</CardTitle>
-        <CardDescription>
-          Upload your financial documents and tax assessments for your credit application
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Credit Application Type Selection */}
-        <div className="space-y-4">
-          <h4 className="text-sm font-medium text-gray-700">Select Application Type:</h4>
-          <RadioGroup 
-            value={selectedCreditType}
-            onValueChange={setSelectedCreditType}
-            className="grid grid-cols-1 md:grid-cols-2 gap-2"
-          >
-            {CREDIT_APPLICATION_TYPES.map((type) => (
-              <div key={type} className="flex items-center space-x-2 rounded-md border p-3 hover:bg-gray-50">
-                <RadioGroupItem value={type} id={`credit-type-${type}`} />
-                <Label htmlFor={`credit-type-${type}`} className="flex-1 cursor-pointer">
-                  {type}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-
-        <div className="grid gap-6">
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="mb-4">
+            <CardTitle className="text-lg">{getTitleByType()} Documents</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Upload the following documents to complete your application
+            </p>
+          </div>
+          
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-gray-700">Required Documents:</h4>
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Financial Statement Section */}
-              <div className="space-y-2">
-                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.FINANCIAL_STATEMENT}</div>
-                <div className="grid gap-2">
-                  {YEAR_RANGES.map((year) => {
-                    const isUploaded = isDocumentUploaded(DOCUMENT_TYPES.FINANCIAL_STATEMENT, year);
-                    return (
-                      <div key={`FINANCIAL_STATEMENT-${year}`} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`FINANCIAL_STATEMENT-${year}`}
-                          checked={isUploaded}
-                          disabled={true}
-                        />
-                        <label
-                          htmlFor={`FINANCIAL_STATEMENT-${year}`}
-                          className="text-sm text-gray-600"
-                        >
-                          {year}
-                          {isUploaded && " ✓"}
-                        </label>
-                      </div>
-                    );
-                  })}
+            <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+              {getRequiredDocuments().map((doc, index) => (
+                <div key={index} className="border rounded-md p-4 bg-gray-50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <FileText className="h-4 w-4 text-indigo-600" />
+                    <span className="text-sm font-medium">{doc}</span>
+                  </div>
+                  <p className="text-xs text-gray-500">Required</p>
                 </div>
-              </div>
-              
-              {/* Personal Notice of Assessment Section */}
-              <div className="space-y-2">
-                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT}</div>
-                <div className="grid gap-2">
-                  {ASSESSMENT_YEARS.map((year) => {
-                    const isUploaded = isDocumentUploaded(DOCUMENT_TYPES.PERSONAL_NOTICE_OF_ASSESSMENT, year);
-                    return (
-                      <div key={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`}
-                          checked={isUploaded}
-                          disabled={true}
-                        />
-                        <label
-                          htmlFor={`PERSONAL_NOTICE_OF_ASSESSMENT-${year}`}
-                          className="text-sm text-gray-600"
-                        >
-                          {year}
-                          {isUploaded && " ✓"}
-                        </label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              ))}
             </div>
             
-            {/* Additional Document Types - Business Plan */}
-            <div className="grid gap-4 md:grid-cols-2">
-              {/* Business Plan Section */}
-              <div className="space-y-2">
-                <div className="font-medium text-sm text-gray-700">{DOCUMENT_TYPES.BUSINESS_PLAN}</div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="BUSINESS_PLAN"
-                    checked={isYearIndependentDocumentUploaded(DOCUMENT_TYPES.BUSINESS_PLAN)}
-                    disabled={true}
-                  />
-                  <label
-                    htmlFor="BUSINESS_PLAN"
-                    className="text-sm text-gray-600"
-                  >
-                    Business Plan
-                    {isYearIndependentDocumentUploaded(DOCUMENT_TYPES.BUSINESS_PLAN) && " ✓"}
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex flex-col space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Upload Document
-              </label>
-              <div className="grid gap-4 md:grid-cols-3">
-                <select
-                  className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-                  value={selectedDocType}
-                  onChange={(e) => {
-                    setSelectedDocType(e.target.value);
-                    setSelectedYear("");
-                  }}
+            <div className="flex flex-col gap-4 mt-6">
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                  className="text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-700"
+                />
+                <Button 
+                  onClick={handleUpload} 
+                  disabled={selectedFiles.length === 0 || isUploading}
                 >
-                  <option value="">Select Document Type</option>
-                  {Object.values(DOCUMENT_TYPES).map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-                {selectedDocType && requiresYear(selectedDocType) && (
-                  <select
-                    className="rounded-md border border-gray-300 px-3 py-2 text-sm"
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                  >
-                    <option value="">{getYearLabel()}</option>
-                    {getYearOptions().map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
-                )}
-                <div className="flex items-center gap-4">
-                  <input
-                    id="documentUpload"
-                    type="file"
-                    multiple
-                    accept=".pdf,.doc,.docx,.xls,.xlsx"
-                    onChange={handleFileUpload}
-                    className="text-sm file:mr-4 file:rounded-md file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-indigo-700"
-                    disabled={isUploading || !selectedDocType || (requiresYear(selectedDocType) && !selectedYear)}
-                  />
-                  {isUploading && (
-                    <div className="text-sm text-gray-500">Uploading...</div>
-                  )}
-                </div>
+                  {isUploading ? "Uploading..." : "Upload"}
+                </Button>
               </div>
-            </div>
-          </div>
-
-          {files.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-700">Uploaded Documents:</h4>
-              <div className="border rounded-lg divide-y">
-                {files.map((file) => (
-                  <div
-                    key={file.id}
-                    className="flex items-center justify-between p-3 hover:bg-gray-50"
-                  >
-                    <div className="flex items-center space-x-3">
-                      <FileUp className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-700">{file.name}</p>
-                        <p className="text-xs text-gray-500">
-                          {file.documentType}{file.year !== "N/A" ? ` - ${file.year}` : ""}
-                        </p>
+              
+              {selectedFiles.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium mb-2">Selected Files ({selectedFiles.length})</h4>
+                  <div className="space-y-2">
+                    {selectedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 border rounded-md">
+                        <div className="flex items-center gap-2">
+                          <FileSpreadsheet className="h-4 w-4 text-gray-600" />
+                          <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+                          <span className="text-xs text-gray-500">
+                            ({(file.size / 1024).toFixed(0)} KB)
+                          </span>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={() => handleRemoveFile(index)}
+                        >
+                          Remove
+                        </Button>
                       </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      Remove
-                    </Button>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              )}
             </div>
-          )}
-
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={handleSubmit}
-              disabled={!files.length || !isSubmitReady()}
-              className="w-full sm:w-auto"
-            >
-              Submit {selectedCreditType} Application
-              <FileUp className="ml-2 h-4 w-4" />
-            </Button>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-5 w-5 text-indigo-600" />
+            <CardTitle className="text-lg">AI-Powered Application Support</CardTitle>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <p className="text-sm text-gray-600 mb-3">
+                Our AI can analyze your financial documents and provide insights to strengthen your {getTitleByType().toLowerCase()}.
+              </p>
+              <Button variant="outline" className="w-full">Analyze My Documents</Button>
+            </div>
+            
+            <div className="relative overflow-hidden rounded-md border">
+              <AspectRatio ratio={16/9}>
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white p-6">
+                  <div className="text-center">
+                    <h3 className="font-semibold mb-2">Pro Tip</h3>
+                    <p className="text-sm">
+                      {applicationType === "csbfl" 
+                        ? "CSBFL loans offer favorable terms for small businesses with government backing."
+                        : applicationType === "termLoan"
+                        ? "Term loans are best for specific large purchases with fixed repayment schedules."
+                        : applicationType === "lineOfCredit"
+                        ? "Lines of credit provide flexible access to funds, only paying interest on what you use."
+                        : "Overdraft protection ensures you can cover expenses even when cash flow is tight."}
+                    </p>
+                  </div>
+                </div>
+              </AspectRatio>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
