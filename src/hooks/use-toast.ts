@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 type ToastProps = {
   title?: string;
   description?: string;
+  action?: React.ReactNode;
   duration?: number;
   variant?: 'default' | 'destructive' | 'success';
 };
@@ -11,6 +12,7 @@ type ToastProps = {
 type ToastState = {
   open: boolean;
   id: string;
+  action?: React.ReactNode; // Add the action property
 } & ToastProps;
 
 let TOAST_ID = 0;
@@ -20,12 +22,12 @@ export const useToast = () => {
   const [toasts, setToasts] = useState<ToastState[]>([]);
 
   const toast = useCallback(
-    ({ title, description, duration = 3000, variant = 'default' }: ToastProps) => {
+    ({ title, description, action, duration = 3000, variant = 'default' }: ToastProps) => {
       const id = String(TOAST_ID++);
       
       setToasts((current) => [
         ...current,
-        { id, title, description, duration, open: true, variant },
+        { id, title, description, action, duration, open: true, variant },
       ]);
 
       return id;
