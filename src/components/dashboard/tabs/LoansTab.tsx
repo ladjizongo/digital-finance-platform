@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import CreditApplicationSection from "@/components/financial/CreditApplicationSection";
 import type { FinancialData, Loan } from "@/types/dashboardTypes";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {financialData.loans.map(loan => (
           <Card 
@@ -135,6 +136,9 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
           </CardContent>
         </Card>
       )}
+
+      {/* Credit Application Section */}
+      <CreditApplicationSection />
     </div>
   );
 };
