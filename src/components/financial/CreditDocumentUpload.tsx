@@ -53,7 +53,6 @@ const CreditDocumentUpload = ({ applicationType = "overdraft" }: CreditDocumentU
           ...common, 
           "CSBFL Application Form", 
           "Purchase Invoices or Estimates",
-          "Proof of Canadian Citizenship or Permanent Residency",
           "Business Registration Documents"
         ];
       default:
@@ -132,7 +131,6 @@ const CreditDocumentUpload = ({ applicationType = "overdraft" }: CreditDocumentU
                     <FileText className="h-4 w-4 text-indigo-600" />
                     <span className="text-sm font-medium">{doc}</span>
                   </div>
-                  <p className="text-xs text-gray-500">Required</p>
                 </div>
               ))}
             </div>
