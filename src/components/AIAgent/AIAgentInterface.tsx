@@ -86,8 +86,6 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
     setIsTyping(true);
     
     try {
-      // Start showing typing indicator before processing
-      
       // Simulate AI processing delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -103,6 +101,22 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
         return;
       }
       
+      // Check if this is a navigation request
+      if (AIAgentService.isNavigationRequest(lowerCommand)) {
+        const destination = AIAgentService.getNavigationDestination(lowerCommand);
+        
+        if (destination) {
+          setIsTyping(false);
+          addMessage(destination.description, false);
+          setTimeout(() => {
+            navigate(destination.route);
+          }, 1000);
+          setIsProcessing(false);
+          setInput("");
+          return;
+        }
+      }
+      
       // Check if this is an information request
       if (AIAgentService.isInformationRequest(lowerCommand)) {
         const topic = AIAgentService.getTopicFromQuery(lowerCommand);
@@ -115,48 +129,9 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
         } else {
           // Generic response if no specific topic was identified
           setIsTyping(false);
-          addMessage("I can help you with information about transactions, audit logs, approvals, reports, business health, and the admin portal. Please specify what you'd like to know.", false);
+          addMessage("I can help you with information about transactions, audit logs, approvals, reports, business health, credit applications, forex, and the admin portal. Please specify what you'd like to know.", false);
         }
         
-        setIsProcessing(false);
-        setInput("");
-        return;
-      }
-      
-      // Handle navigation commands
-      if (lowerCommand.includes("dashboard") || lowerCommand.includes("home")) {
-        setIsTyping(false);
-        addMessage("Taking you to the dashboard...", false);
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 1000);
-        setIsProcessing(false);
-        setInput("");
-        return;
-      } else if (lowerCommand.includes("admin") || lowerCommand.includes("portal")) {
-        setIsTyping(false);
-        addMessage("Taking you to the admin portal...", false);
-        setTimeout(() => {
-          navigate("/admin");
-        }, 1000);
-        setIsProcessing(false);
-        setInput("");
-        return;
-      } else if (lowerCommand.includes("transaction") || lowerCommand.includes("payment")) {
-        setIsTyping(false);
-        addMessage("Taking you to the transactions page...", false);
-        setTimeout(() => {
-          navigate("/transactions");
-        }, 1000);
-        setIsProcessing(false);
-        setInput("");
-        return;
-      } else if (lowerCommand.includes("forex") || lowerCommand.includes("exchange") || lowerCommand.includes("currency")) {
-        setIsTyping(false);
-        addMessage("Taking you to the foreign exchange page...", false);
-        setTimeout(() => {
-          navigate("/forex");
-        }, 1000);
         setIsProcessing(false);
         setInput("");
         return;
@@ -178,7 +153,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
         executeTransaction(transactionDetails);
       } else {
         setIsTyping(false);
-        addMessage("I can help you navigate, make transactions, or provide information about your financial data. Try saying something like 'transfer money', 'tell me about recent transactions', or 'go to dashboard'.", false);
+        addMessage("I can help you navigate the platform, provide information about various features, or assist with transactions. Try saying something like 'go to dashboard', 'tell me about credit applications', or 'transfer money'.", false);
       }
       
     } catch (error) {

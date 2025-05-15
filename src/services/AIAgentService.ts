@@ -45,6 +45,26 @@ export class AIAgentService {
       return "I can help you navigate the platform, explain features, assist with transactions, and answer questions about your accounts or the system. What specific area would you like help with?";
     }
     
+    // Credit application information
+    else if (lowerQuery.includes("credit application") || lowerQuery.includes("loan application")) {
+      return "The Credit Application section allows you to apply for business financing. You can select from different application types such as overdraft, line of credit, term loan, equipment purchase, or CSBFL. You'll need to upload supporting documents for your application.";
+    }
+    
+    // Forex information
+    else if (lowerQuery.includes("forex") || lowerQuery.includes("foreign exchange") || lowerQuery.includes("currency exchange")) {
+      return "Our Foreign Exchange section allows you to convert between currencies, view current exchange rates, and see your transaction history. You can access it from the main navigation menu.";
+    }
+    
+    // User management information
+    else if (lowerQuery.includes("user management") || lowerQuery.includes("manage users")) {
+      return "In the Admin Portal, you can manage users, set their permissions, and configure approval limits for different transaction types. You can add new users, delete existing ones, and modify their access rights.";
+    }
+    
+    // Business health information
+    else if (lowerQuery.includes("business health") || lowerQuery.includes("financial health")) {
+      return "The Business Health section provides metrics on your company's financial performance, cash flow forecasts, and overall health score. You can upload financial statements for detailed analysis.";
+    }
+    
     return null;
   }
 
@@ -95,6 +115,16 @@ export class AIAgentService {
       case "admin":
       case "admin portal":
         return "The Admin Portal allows you to manage users, set approval limits, and configure system settings. You can access it from the navigation menu.";
+
+      case "credit application":
+        return "The Credit Application section supports various application types including overdraft, line of credit, term loans, equipment financing, and CSBFL. You'll need to provide business documents such as financial statements and a business plan.";
+        
+      case "forex":
+      case "foreign exchange":
+        return "Our Foreign Exchange service allows you to convert between currencies at competitive rates. You can view current exchange rates, past transactions, and execute new conversions.";
+        
+      case "user management":
+        return "The User Management section enables administrators to add, edit, and remove users from the system. You can assign roles (Admin, Manager, User) and set specific permissions for transaction types and approval limits.";
         
       default:
         return "I can provide information about transactions, audit logs, approvals, reports, business health, and the admin portal. What would you like to know about?";
@@ -213,23 +243,83 @@ export class AIAgentService {
       lowerCommand.includes("where") ||
       lowerCommand.includes("when") ||
       lowerCommand.includes("why") ||
-      lowerCommand.includes("who");
+      lowerCommand.includes("who") ||
+      lowerCommand.includes("explain") ||
+      lowerCommand.includes("describe") ||
+      lowerCommand.includes("information about") ||
+      lowerCommand.includes("details on") ||
+      lowerCommand.includes("help me with");
   }
 
   static getTopicFromQuery(query: string): string | null {
     const lowerQuery = query.toLowerCase();
     const infoTopics = [
-      { keywords: ["transaction", "transfer", "payment"], topic: "transactions" },
-      { keywords: ["audit", "login history", "security"], topic: "audit" },
-      { keywords: ["approval", "pending", "authorize"], topic: "approvals" },
-      { keywords: ["report", "analytics", "summary"], topic: "reports" },
-      { keywords: ["business health", "financial", "metrics"], topic: "business health" },
-      { keywords: ["admin", "portal", "settings"], topic: "admin portal" }
+      { keywords: ["transaction", "transfer", "payment", "wire", "eft"], topic: "transactions" },
+      { keywords: ["audit", "login history", "security", "log"], topic: "audit" },
+      { keywords: ["approval", "pending", "authorize", "approve"], topic: "approvals" },
+      { keywords: ["report", "analytics", "summary", "stats"], topic: "reports" },
+      { keywords: ["business health", "financial", "metrics", "score"], topic: "business health" },
+      { keywords: ["admin", "portal", "settings", "configuration"], topic: "admin portal" },
+      { keywords: ["credit", "loan", "financing", "application"], topic: "credit application" },
+      { keywords: ["forex", "foreign exchange", "currency", "exchange rate"], topic: "forex" },
+      { keywords: ["user", "permission", "role", "account access"], topic: "user management" }
     ];
     
     for (const {keywords, topic} of infoTopics) {
       if (keywords.some(keyword => lowerQuery.includes(keyword))) {
         return topic;
+      }
+    }
+    
+    return null;
+  }
+
+  static isNavigationRequest(command: string): boolean {
+    const lowerCommand = command.toLowerCase();
+    
+    return lowerCommand.includes("go to") ||
+      lowerCommand.includes("navigate to") ||
+      lowerCommand.includes("take me to") ||
+      lowerCommand.includes("show me the") ||
+      lowerCommand.includes("open the") ||
+      lowerCommand.includes("access the") ||
+      (lowerCommand.includes("switch to") && !lowerCommand.includes("currency"));
+  }
+
+  static getNavigationDestination(command: string): {route: string, description: string} | null {
+    const lowerCommand = command.toLowerCase();
+    
+    const navigationMap = [
+      { 
+        keywords: ["dashboard", "home", "main page", "overview"], 
+        route: "/dashboard",
+        description: "Taking you to the Dashboard..."
+      },
+      { 
+        keywords: ["transaction", "payment", "transfer", "wire", "eft"], 
+        route: "/transactions",
+        description: "Taking you to the Transactions page..."
+      },
+      { 
+        keywords: ["admin", "portal", "user management", "settings"], 
+        route: "/admin",
+        description: "Taking you to the Admin Portal..."
+      },
+      { 
+        keywords: ["forex", "foreign exchange", "currency", "exchange rate"], 
+        route: "/forex",
+        description: "Taking you to the Foreign Exchange page..."
+      },
+      { 
+        keywords: ["confirmation", "receipt", "payment confirmation"], 
+        route: "/payment-confirmation",
+        description: "Taking you to the Payment Confirmation page..."
+      }
+    ];
+    
+    for (const {keywords, route, description} of navigationMap) {
+      if (keywords.some(keyword => lowerCommand.includes(keyword))) {
+        return { route, description };
       }
     }
     
