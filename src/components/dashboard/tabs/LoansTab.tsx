@@ -1,9 +1,7 @@
-
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import CreditApplicationSection from "@/components/financial/CreditApplicationSection";
-import type { FinancialData, Loan } from "@/types/dashboardTypes";
-import { cn } from "@/lib/utils";
+import { CreditApplicationContainer } from "@/components/financial/creditApplication";
+import type { FinancialData } from "@/types/dashboardTypes";
 
 interface LoansTabProps {
   financialData: FinancialData;
@@ -138,7 +136,7 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
       )}
 
       {/* Credit Application Section */}
-      <CreditApplicationSection />
+      <CreditApplicationContainer />
     </div>
   );
 };
