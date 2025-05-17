@@ -70,13 +70,13 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
       />
       
       <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
-        <TabsList className="grid grid-cols-5 w-full max-w-md mb-4">
+        <TabsList className="grid grid-cols-5 w-full max-w-4xl mb-4">
           {accounts.map(account => (
             <TabsTrigger key={account.id} value={account.id} className="relative group">
               {editingTabId === account.id ? (
                 <div className="flex items-center space-x-1" onClick={(e) => e.stopPropagation()}>
                   <Input
-                    className="h-6 py-0 px-1 w-24"
+                    className="h-6 py-0 px-1 w-28"
                     value={editingTabName}
                     onChange={(e) => setEditingTabName(e.target.value)}
                     onKeyDown={handleKeyDown}
@@ -102,10 +102,10 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center space-x-1">
-                  <span className="truncate">{account.name}</span>
+                <div className="flex items-center space-x-1 px-1 w-full justify-center">
+                  <span className="truncate max-w-[100px]">{account.name}</span>
                   <button 
-                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                     onClick={(e) => startTabEdit(account, e)}
                   >
                     <Pencil className="h-3 w-3" />
