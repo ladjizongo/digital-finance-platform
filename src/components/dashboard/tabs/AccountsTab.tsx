@@ -28,7 +28,7 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
       />
       
       <Tabs defaultValue={activeAccount} value={activeAccount} onValueChange={setActiveAccount} className="w-full">
-        <TabsList className="grid grid-cols-4 w-full max-w-md mb-4">
+        <TabsList className="grid grid-cols-5 w-full max-w-md mb-4">
           {financialData.accounts.map(account => (
             <TabsTrigger key={account.id} value={account.id}>
               Account {account.id}
