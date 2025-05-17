@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -17,10 +16,11 @@ const Dashboard = () => {
   const financialData: FinancialData = {
     totalBalance: 24850.75,
     accounts: [
-      { id: "1", name: "Checking Account", balance: 3250.75, accountNumber: "****1234" },
-      { id: "2", name: "Savings Account", balance: 15600.00, accountNumber: "****5678" },
-      { id: "3", name: "Investment Account", balance: 6000.00, accountNumber: "****9012" },
-      { id: "4", name: "Retirement Account", balance: 42500.00, accountNumber: "****3456" },
+      { id: "1", name: "CAD Checking Account", balance: 3250.75, accountNumber: "****1234" },
+      { id: "2", name: "CAD Savings Account", balance: 15600.00, accountNumber: "****5678" },
+      { id: "3", name: "EUR Account", balance: 6000.00, accountNumber: "****9012" },
+      { id: "4", name: "GBP Account", balance: 4250.00, accountNumber: "****3456" },
+      { id: "5", name: "CNY Account", balance: 32500.00, accountNumber: "****7890" },
     ],
     creditCards: [
       {

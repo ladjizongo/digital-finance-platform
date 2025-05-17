@@ -1,9 +1,9 @@
-
 export interface Account {
   id: string;
   name: string;
   balance: number;
   accountNumber: string;
+  currency?: string;
 }
 
 export interface Transaction {
