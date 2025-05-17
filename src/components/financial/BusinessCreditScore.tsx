@@ -2,13 +2,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, ArrowUp, ArrowDown } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface BusinessCreditScoreProps {
   score?: number;
 }
 
 export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScoreProps) => {
-  const [score, setScore] = useState(initialScore || Math.floor(Math.random() * 200) + 600); // Random score between 600-800 if none provided
+  const [score, setScore] = useState(initialScore || Math.floor(Math.random() * 80) + 15); // Random score between 15-95
   const [previousScore, setPreviousScore] = useState<number | null>(null);
   
   useEffect(() => {
@@ -24,9 +25,9 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
     // Simulate periodic score updates
     const interval = setInterval(() => {
       setScore(currentScore => {
-        // Small random fluctuation (-3 to +5 points)
-        const change = Math.floor(Math.random() * 9) - 3;
-        const newScore = Math.max(580, Math.min(850, currentScore + change));
+        // Small random fluctuation (-2 to +3 points)
+        const change = Math.floor(Math.random() * 6) - 2;
+        const newScore = Math.max(10, Math.min(99, currentScore + change));
         localStorage.setItem("businessCreditScore", String(newScore));
         return newScore;
       });
@@ -37,10 +38,10 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
   
   // Determine score category
   const getScoreCategory = (value: number) => {
-    if (value >= 750) return { label: "Excellent", color: "text-green-600" };
-    if (value >= 700) return { label: "Good", color: "text-green-500" };
-    if (value >= 650) return { label: "Fair", color: "text-yellow-500" };
-    if (value >= 600) return { label: "Poor", color: "text-orange-500" };
+    if (value >= 80) return { label: "Excellent", color: "text-green-600" };
+    if (value >= 65) return { label: "Good", color: "text-green-500" };
+    if (value >= 50) return { label: "Fair", color: "text-yellow-500" };
+    if (value >= 35) return { label: "Poor", color: "text-orange-500" };
     return { label: "Very Poor", color: "text-red-600" };
   };
   
@@ -48,6 +49,15 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
   
   // Calculate change from previous score
   const scoreDelta = previousScore ? score - previousScore : 0;
+
+  // Determine progress bar color
+  const getProgressColor = (value: number) => {
+    if (value >= 80) return "bg-green-600";
+    if (value >= 65) return "bg-green-500";
+    if (value >= 50) return "bg-yellow-500";
+    if (value >= 35) return "bg-orange-500";
+    return "bg-red-600";
+  };
   
   return (
     <Card>
@@ -57,38 +67,19 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center py-4">
-          <div className="relative">
-            <svg className="w-32 h-32">
-              <circle
-                className="text-gray-200"
-                strokeWidth="12"
-                stroke="currentColor"
-                fill="transparent"
-                r="58"
-                cx="64"
-                cy="64"
-              />
-              <circle
-                className={`${score >= 700 ? 'text-green-500' : score >= 650 ? 'text-yellow-500' : 'text-orange-500'}`}
-                strokeWidth="12"
-                strokeDasharray={360}
-                strokeDashoffset={360 - ((score - 300) / 550) * 360}
-                strokeLinecap="round"
-                stroke="currentColor"
-                fill="transparent"
-                r="58"
-                cx="64"
-                cy="64"
-                transform="rotate(-90 64 64)"
-              />
-            </svg>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-              <p className="text-3xl font-bold">{score}</p>
-              <p className={`text-sm font-medium ${color}`}>{label}</p>
+          <div className="w-full mb-6">
+            <div className="mb-2 flex items-center justify-between">
+              <p className={`text-3xl font-bold ${color}`}>{score}%</p>
+              <p className={`text-sm font-semibold ${color}`}>{label}</p>
             </div>
+            <Progress 
+              value={score} 
+              className="h-3 w-full" 
+              indicatorClassName={getProgressColor(score)}
+            />
           </div>
           
-          <div className="flex items-center mt-4">
+          <div className="flex items-center mb-4">
             {scoreDelta > 0 ? (
               <>
                 <ArrowUp className="h-4 w-4 text-green-500 mr-1" />
@@ -104,9 +95,9 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
             )}
           </div>
           
-          <div className="mt-6 text-sm text-gray-600">
+          <div className="text-sm text-gray-600">
             <p>A business credit score is a numerical representation of your business's creditworthiness, 
-            typically ranging from 300 to 850. Higher scores indicate better creditworthiness and may 
+            typically ranging from 0 to 99%. Higher scores indicate better creditworthiness and may 
             result in more favorable loan terms and interest rates.</p>
           </div>
         </div>
