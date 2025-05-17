@@ -3,27 +3,79 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Pencil } from "lucide-react";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import PADDialog from "./pad/PADDialog";
 import type { Account, Transaction } from "@/types/dashboardTypes";
 
 interface AccountDetailsProps {
   account: Account;
   transactions: Transaction[];
+  onRenameAccount?: (accountId: string, newName: string) => void;
 }
 
-const AccountDetails = ({ account, transactions }: AccountDetailsProps) => {
+const AccountDetails = ({ account, transactions, onRenameAccount }: AccountDetailsProps) => {
   const [isPADDialogOpen, setIsPADDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [accountName, setAccountName] = useState(account.name);
+  
   const filteredTransactions = transactions.filter(
     transaction => transaction.account === account.id
   );
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveName = () => {
+    if (accountName.trim() === "") {
+      toast.error("Account name cannot be empty");
+      return;
+    }
+    
+    if (onRenameAccount) {
+      onRenameAccount(account.id, accountName);
+      toast.success("Account renamed successfully");
+    }
+    
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setAccountName(account.name);
+    setIsEditing(false);
+  };
+
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>{account.name}</CardTitle>
-        <CardDescription>Account {account.accountNumber}</CardDescription>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="space-y-1">
+          {isEditing ? (
+            <div className="flex space-x-2 items-center">
+              <Input
+                className="font-semibold text-lg"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+                autoFocus
+              />
+              <Button size="sm" onClick={handleSaveName}>Save</Button>
+              <Button size="sm" variant="outline" onClick={handleCancelEdit}>Cancel</Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <CardTitle>{account.name}</CardTitle>
+              {onRenameAccount && (
+                <Button variant="ghost" size="icon" onClick={handleEditClick}>
+                  <Pencil className="h-4 w-4" />
+                  <span className="sr-only">Edit account name</span>
+                </Button>
+              )}
+            </div>
+          )}
+          <CardDescription>Account {account.accountNumber}</CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold mb-6">
