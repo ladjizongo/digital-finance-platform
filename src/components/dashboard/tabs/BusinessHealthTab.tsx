@@ -1,7 +1,6 @@
 
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
-import { DataIntegrationsSection } from "@/components/transactions/DataIntegrationsSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CirclePercent } from "lucide-react";
 
@@ -17,7 +16,7 @@ const BusinessHealthTab = () => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Monitor your business credit score, financial metrics, and connect to external data sources to improve financial visibility.
+            Monitor your business credit score, financial metrics, and overall financial health.
           </p>
         </CardContent>
       </Card>
@@ -26,15 +25,6 @@ const BusinessHealthTab = () => {
         <BusinessCreditScore />
         <FinancialHealthCard />
       </div>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl font-bold">External Data Sources</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <DataIntegrationsSection />
-        </CardContent>
-      </Card>
     </div>
   );
 };
