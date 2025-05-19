@@ -69,7 +69,7 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
         <div className="flex flex-col items-center justify-center py-4">
           <div className="w-full mb-6">
             <div className="mb-2 flex items-center justify-between">
-              <p className={`text-3xl font-bold ${color}`}>{score}%</p>
+              <p className={`text-3xl font-bold ${color}`}>{score}</p>
               <p className={`text-sm font-semibold ${color}`}>{label}</p>
             </div>
             <Progress 
@@ -97,7 +97,7 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
           
           <div className="text-sm text-gray-600">
             <p>A business credit score is a numerical representation of your business's creditworthiness, 
-            typically ranging from 0 to 99%. Higher scores indicate better creditworthiness and may 
+            typically ranging from 0 to 99. Higher scores indicate better creditworthiness and may 
             result in more favorable loan terms and interest rates.</p>
           </div>
         </div>
@@ -105,3 +105,4 @@ export const BusinessCreditScore = ({ score: initialScore }: BusinessCreditScore
     </Card>
   );
 };
+
