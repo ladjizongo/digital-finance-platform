@@ -226,7 +226,7 @@ const ApprovalTab = () => {
                               <div className="flex items-center gap-2">
                                 {tx.type}
                                 {requiresRSA && (
-                                  <Shield className="h-4 w-4 text-red-500" title="RSA Required" />
+                                  <Shield className="h-4 w-4 text-red-500" />
                                 )}
                               </div>
                             </TableCell>
