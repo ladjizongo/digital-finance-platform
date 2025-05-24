@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   Card, 
@@ -9,11 +8,13 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, Users } from "lucide-react";
+import { Check, Clock, Users, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getApprovalLevel } from "@/utils/approvalLevels";
+import { RSATokenVerification } from "@/components/transactions/RSATokenVerification";
 
 // Sample pending transactions for demonstration
 const pendingTransactions = [
@@ -67,14 +68,41 @@ const ApprovalTab = () => {
   const [transactions, setTransactions] = useState(pendingTransactions);
   const [activeTab, setActiveTab] = useState("all");
   const [expandedTransaction, setExpandedTransaction] = useState<string | null>(null);
+  const [showRSADialog, setShowRSADialog] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<typeof pendingTransactions[0] | null>(null);
 
-  const handleApprove = (id: string) => {
+  const handleApprove = (id: string, transaction: typeof pendingTransactions[0]) => {
+    // Check if transaction requires RSA verification (EFT or Wire with high amount)
+    if ((transaction.type === "eft" || transaction.type === "wire") && transaction.amount >= 10000) {
+      setSelectedTransaction(transaction);
+      setShowRSADialog(true);
+      return;
+    }
+
+    // Regular approval for other transactions
+    completeApproval(id);
+  };
+
+  const completeApproval = (id: string) => {
     setTransactions(prev => prev.filter(tx => tx.id !== id));
     
     toast({
       title: "Transaction approved",
       description: "The transaction has been approved and will be processed shortly."
     });
+  };
+
+  const handleRSAVerified = () => {
+    if (selectedTransaction) {
+      completeApproval(selectedTransaction.id);
+    }
+    setShowRSADialog(false);
+    setSelectedTransaction(null);
+  };
+
+  const handleRSACancel = () => {
+    setShowRSADialog(false);
+    setSelectedTransaction(null);
   };
 
   const handleReject = (id: string) => {
@@ -96,16 +124,28 @@ const ApprovalTab = () => {
 
   const renderApprovalFlow = (transaction: typeof pendingTransactions[0]) => {
     const approvalLevel = getApprovalLevel(transaction.amount);
+    const requiresRSA = (transaction.type === "eft" || transaction.type === "wire") && transaction.amount >= 10000;
     
     return (
       <div className="mt-2 bg-gray-50 p-4 rounded-md border border-gray-200">
         <div className="flex items-center mb-3">
           <Users className="h-5 w-5 text-amber-500 mr-2" />
           <h3 className="font-medium text-gray-700">Approval Flow</h3>
+          {requiresRSA && (
+            <Badge variant="outline" className="ml-2 border-red-500 text-red-700">
+              <Shield className="h-3 w-3 mr-1" />
+              RSA Required
+            </Badge>
+          )}
         </div>
         
         <p className="text-sm text-gray-500 mb-3">
           <span className="font-medium">Required approvals:</span> {approvalLevel.requiredApprovers} ({approvalLevel.description})
+          {requiresRSA && (
+            <span className="block text-red-600 font-medium mt-1">
+              Dual RSA token verification required for {transaction.type.toUpperCase()} transactions ≥ $10,000
+            </span>
+          )}
         </p>
         
         <div className="space-y-3">
@@ -133,109 +173,143 @@ const ApprovalTab = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl flex items-center">
-          <Clock className="mr-2 h-5 w-5 text-amber-500" />
-          Pending Approvals
-        </CardTitle>
-        <CardDescription>
-          Review and approve pending transactions that require your authorization
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="wire">Wire Transfers</TabsTrigger>
-            <TabsTrigger value="eft">EFT Payments</TabsTrigger>
-            <TabsTrigger value="transfer">Internal Transfers</TabsTrigger>
-          </TabsList>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center">
+            <Clock className="mr-2 h-5 w-5 text-amber-500" />
+            Pending Approvals
+          </CardTitle>
+          <CardDescription>
+            Review and approve pending transactions that require your authorization. High-value EFT and Wire transfers require dual RSA token verification.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="wire">Wire Transfers</TabsTrigger>
+              <TabsTrigger value="eft">EFT Payments</TabsTrigger>
+              <TabsTrigger value="transfer">Internal Transfers</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value={activeTab}>
-            {filteredTransactions.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>From</TableHead>
-                    <TableHead>To</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Approval Level</TableHead>
-                    <TableHead>Initiated By</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredTransactions.map((tx) => {
-                    const approvalLevel = getApprovalLevel(tx.amount);
-                    const isExpanded = expandedTransaction === tx.id;
-                    
-                    return (
-                      <React.Fragment key={tx.id}>
-                        <TableRow 
-                          className={isExpanded ? "bg-gray-50" : ""}
-                          onClick={() => toggleTransactionDetails(tx.id)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          <TableCell>{tx.date}</TableCell>
-                          <TableCell className="capitalize">{tx.type}</TableCell>
-                          <TableCell>{tx.from}</TableCell>
-                          <TableCell>{tx.to}</TableCell>
-                          <TableCell>${tx.amount.toLocaleString()}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="border-amber-500 text-amber-700">
-                              {approvalLevel.name} Level
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{tx.initiatedBy}</TableCell>
-                          <TableCell className="text-right space-x-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="border-red-500 hover:bg-red-50 text-red-600"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleReject(tx.id);
-                              }}
-                            >
-                              Reject
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              className="border-green-500 hover:bg-green-50 text-green-600"  
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleApprove(tx.id);
-                              }}
-                            >
-                              <Check className="mr-1 h-4 w-4" /> Approve
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                        {isExpanded && (
-                          <TableRow>
-                            <TableCell colSpan={8} className="p-0">
-                              {renderApprovalFlow(tx)}
+            <TabsContent value={activeTab}>
+              {filteredTransactions.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>From</TableHead>
+                      <TableHead>To</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Approval Level</TableHead>
+                      <TableHead>Initiated By</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredTransactions.map((tx) => {
+                      const approvalLevel = getApprovalLevel(tx.amount);
+                      const isExpanded = expandedTransaction === tx.id;
+                      const requiresRSA = (tx.type === "eft" || tx.type === "wire") && tx.amount >= 10000;
+                      
+                      return (
+                        <React.Fragment key={tx.id}>
+                          <TableRow 
+                            className={isExpanded ? "bg-gray-50" : ""}
+                            onClick={() => toggleTransactionDetails(tx.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <TableCell>{tx.date}</TableCell>
+                            <TableCell className="capitalize">
+                              <div className="flex items-center gap-2">
+                                {tx.type}
+                                {requiresRSA && (
+                                  <Shield className="h-4 w-4 text-red-500" title="RSA Required" />
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>{tx.from}</TableCell>
+                            <TableCell>{tx.to}</TableCell>
+                            <TableCell>${tx.amount.toLocaleString()}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="border-amber-500 text-amber-700">
+                                {approvalLevel.name} Level
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{tx.initiatedBy}</TableCell>
+                            <TableCell className="text-right space-x-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-red-500 hover:bg-red-50 text-red-600"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleReject(tx.id);
+                                }}
+                              >
+                                Reject
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                className="border-green-500 hover:bg-green-50 text-green-600"  
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleApprove(tx.id, tx);
+                                }}
+                              >
+                                {requiresRSA ? (
+                                  <>
+                                    <Shield className="mr-1 h-4 w-4" /> RSA Approve
+                                  </>
+                                ) : (
+                                  <>
+                                    <Check className="mr-1 h-4 w-4" /> Approve
+                                  </>
+                                )}
+                              </Button>
                             </TableCell>
                           </TableRow>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">No pending transactions to approve</p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+                          {isExpanded && (
+                            <TableRow>
+                              <TableCell colSpan={8} className="p-0">
+                                {renderApprovalFlow(tx)}
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">No pending transactions to approve</p>
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      <Dialog open={showRSADialog} onOpenChange={setShowRSADialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Security Verification Required</DialogTitle>
+          </DialogHeader>
+          {selectedTransaction && (
+            <RSATokenVerification
+              onVerified={handleRSAVerified}
+              onCancel={handleRSACancel}
+              transactionType={selectedTransaction.type.toUpperCase()}
+              amount={selectedTransaction.amount}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
