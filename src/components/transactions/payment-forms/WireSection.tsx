@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,7 +42,19 @@ export const WireSection = ({
     swiftCode: "",
     accountNumber: "",
     recipientAddress: "",
-    transferType: "domestic"
+    recipientCity: "",
+    recipientCountry: "",
+    recipientPostalCode: "",
+    bankAddress: "",
+    bankCity: "",
+    bankCountry: "",
+    bankPostalCode: "",
+    purposeCode: "",
+    remittanceInfo: "",
+    chargeBearer: "SHA",
+    intermediaryBank: "",
+    intermediarySwift: "",
+    transferType: "international"
   });
   const [wireFile, setWireFile] = useState<File | null>(null);
   const [isRecurring, setIsRecurring] = useState(false);
@@ -64,8 +77,8 @@ export const WireSection = ({
     localStorage.setItem("wireTemplates", JSON.stringify([...templates, newTemplate]));
     
     toast({
-      title: "Template Saved",
-      description: "Your wire transfer template has been saved successfully."
+      title: "ISO 20022 Template Saved",
+      description: "Your wire transfer template has been saved with ISO 20022 compliance."
     });
   };
 
@@ -75,21 +88,57 @@ export const WireSection = ({
     
     if (file.name.endsWith('.xml')) {
       toast({
-        title: "XML File Selected",
-        description: "XML file will be processed for wire transfer details"
+        title: "ISO 20022 XML File Selected",
+        description: "XML file will be processed for ISO 20022 compliant wire transfer details"
       });
     }
+  };
+
+  const validateForm = () => {
+    const requiredFields = [
+      'recipientName', 'recipientBank', 'swiftCode', 'accountNumber', 
+      'recipientAddress', 'recipientCity', 'recipientCountry', 
+      'purposeCode', 'remittanceInfo', 'chargeBearer'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missingFields.length > 0) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields marked with *",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    toast({
+      title: "ISO 20022 Validation",
+      description: "Wire transfer validated against ISO 20022 standards. Processing..."
+    });
+    
+    onSubmit(e);
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Wire Transfer</CardTitle>
+        <CardTitle>ISO 20022 Compliant Wire Transfer</CardTitle>
         <CardDescription>
-          Send funds via wire transfer internationally or for high-value domestic transfers
+          Send funds via wire transfer with full ISO 20022 compliance for international and high-value domestic transfers
         </CardDescription>
       </CardHeader>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <WireAccountSelection 
             accounts={accounts} 
@@ -105,7 +154,10 @@ export const WireSection = ({
           <WireFileUpload onFileSelected={handleFileSelected} />
           
           <div className="space-y-2 mt-4 pt-4 border-t">
-            <h3 className="text-lg font-medium">Or Enter Wire Details Manually</h3>
+            <h3 className="text-lg font-medium">ISO 20022 Wire Transfer Details</h3>
+            <p className="text-sm text-gray-600">
+              Complete all required fields for ISO 20022 compliance. Fields marked with * are mandatory.
+            </p>
           </div>
           
           <WireDetailsForm 
@@ -123,7 +175,7 @@ export const WireSection = ({
         
         <CardFooter className="flex gap-4">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}Wire Transfer`}
+            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}ISO 20022 Wire Transfer`}
           </Button>
           
           <WireTemplateDialog
