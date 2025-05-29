@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Gauge, TrendingUp, TrendingDown, Award } from "lucide-react";
 import { FinancialMetrics } from "@/types/financial";
 import { calculateFinancialScore } from "@/hooks/useFinancialMetrics";
+import { FinancialRecommendations } from "./FinancialRecommendations";
 
 interface BusinessHealthScoreProps {
   metrics: FinancialMetrics;
@@ -65,20 +66,24 @@ export const BusinessHealthScore = ({ metrics }: BusinessHealthScoreProps) => {
   const explanation = getDetailedExplanation(metrics);
 
   return (
-    <div className="rounded-lg border bg-card px-5 py-4 mb-6 flex flex-col sm:flex-row items-center gap-5 animate-fade-in">
-      <div className="flex flex-col items-center justify-center p-3">
-        <span className="text-4xl font-bold mb-2">{score}</span>
-        <div className="flex items-center gap-2">
-          {icon}
-          <span className="text-md font-medium text-muted-foreground">{label}</span>
+    <div className="space-y-6">
+      <div className="rounded-lg border bg-card px-5 py-4 flex flex-col sm:flex-row items-center gap-5 animate-fade-in">
+        <div className="flex flex-col items-center justify-center p-3">
+          <span className="text-4xl font-bold mb-2">{score}</span>
+          <div className="flex items-center gap-2">
+            {icon}
+            <span className="text-md font-medium text-muted-foreground">{label}</span>
+          </div>
         </div>
+        <div className="text-sm text-gray-700 flex-1">
+          {explanation}
+        </div>
+        {isNewWeek && (
+          <div className="mt-2 text-xs text-indigo-600">Score updated for this week</div>
+        )}
       </div>
-      <div className="text-sm text-gray-700 flex-1">
-        {explanation}
-      </div>
-      {isNewWeek && (
-        <div className="mt-2 text-xs text-indigo-600">Score updated for this week</div>
-      )}
+      
+      <FinancialRecommendations metrics={metrics} />
     </div>
   );
 };
