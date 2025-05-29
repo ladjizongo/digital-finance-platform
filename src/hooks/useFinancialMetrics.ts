@@ -1,8 +1,47 @@
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FinancialFormValues } from "@/schemas/financialFormSchema";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { toast } from "sonner";
+
+// Enhanced scoring logic using financial ratios
+export const calculateFinancialScore = (metrics: FinancialMetrics) => {
+  if (!metrics || !metrics.yearlyData || metrics.yearlyData.length === 0) return 50;
+
+  const currentYear = metrics.selectedYear || metrics.yearlyData[0]?.year;
+  const currentYearData = metrics.yearlyData.find(d => d.year === currentYear);
+  
+  if (!currentYearData) return 50;
+
+  let score = 70; // Base score
+
+  // Current Ratio (Current Assets / Current Liabilities)
+  const currentRatio = currentYearData.assets.currentAssets / currentYearData.liabilities.currentLiabilities;
+  if (currentRatio >= 2.0) score += 15;
+  else if (currentRatio >= 1.5) score += 10;
+  else if (currentRatio >= 1.0) score += 5;
+  else score -= 10;
+
+  // Debt to Equity Ratio
+  const debtToEquity = currentYearData.liabilities.totalLiabilities / currentYearData.equity;
+  if (debtToEquity <= 0.3) score += 10;
+  else if (debtToEquity <= 0.6) score += 5;
+  else if (debtToEquity > 1.0) score -= 10;
+
+  // Profit Margin
+  const profitMargin = currentYearData.income.netIncome / currentYearData.income.revenue;
+  if (profitMargin >= 0.15) score += 10;
+  else if (profitMargin >= 0.05) score += 5;
+  else if (profitMargin < 0) score -= 15;
+
+  // Cash flow trend (reuse existing logic)
+  if (metrics.cashFlow && metrics.cashFlow.length >= 3) {
+    const recent = metrics.cashFlow.slice(-3);
+    const avgBalance = recent.reduce((sum, f) => sum + f.balance, 0) / recent.length;
+    score += Math.max(-10, Math.min(10, avgBalance / 2000));
+  }
+
+  return Math.round(Math.max(30, Math.min(95, score)));
+};
 
 export const useFinancialMetrics = () => {
   const queryClient = useQueryClient();
@@ -20,7 +59,9 @@ export const useFinancialMetrics = () => {
   const { mutate: processFinancials, isPending: isProcessing } = useMutation({
     mutationFn: async () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      return {
+      
+      // Using your example values
+      const exampleData: FinancialMetrics = {
         monthlyAverageBalance: 12580.75,
         cashFlow: [
           { month: "Jan", income: 24000, expenses: 18000, balance: 6000, accountId: "1" },
@@ -29,39 +70,8 @@ export const useFinancialMetrics = () => {
           { month: "Apr", income: 23000, expenses: 21000, balance: 2000, accountId: "1" },
           { month: "May", income: 28000, expenses: 20000, balance: 8000, accountId: "1" },
           { month: "Jun", income: 29000, expenses: 22000, balance: 7000, accountId: "1" },
-          { month: "Jan", income: 12000, expenses: 8000, balance: 4000, accountId: "2" },
-          { month: "Feb", income: 13000, expenses: 9500, balance: 3500, accountId: "2" },
-          { month: "Mar", income: 15000, expenses: 10000, balance: 5000, accountId: "2" },
-          { month: "Apr", income: 14000, expenses: 11000, balance: 3000, accountId: "2" },
-          { month: "May", income: 16000, expenses: 12000, balance: 4000, accountId: "2" },
-          { month: "Jun", income: 17000, expenses: 12500, balance: 4500, accountId: "2" },
         ],
         yearlyData: [
-          {
-            year: "2023",
-            payableDays: 32,
-            receivableDays: 45,
-            biWeeklyPayroll: 8500,
-            monthlyPayroll: 8500 * 2.17,
-            monthlyPayables: 45000,
-            monthlyReceivables: 52000,
-            assets: {
-              currentAssets: 45000,
-              longTermAssets: 230000,
-              totalAssets: 275000,
-            },
-            liabilities: {
-              currentLiabilities: 35000,
-              longTermLiabilities: 150000,
-              totalLiabilities: 185000,
-            },
-            equity: 90000,
-            income: {
-              revenue: 320000,
-              expenses: 270000,
-              netIncome: 50000,
-            },
-          },
           {
             year: "2024",
             payableDays: 28,
@@ -71,16 +81,16 @@ export const useFinancialMetrics = () => {
             monthlyPayables: 48000,
             monthlyReceivables: 55000,
             assets: {
-              currentAssets: 58000,
+              currentAssets: 800000, // Your example value
               longTermAssets: 245000,
-              totalAssets: 303000,
+              totalAssets: 1045000,
             },
             liabilities: {
-              currentLiabilities: 38000,
+              currentLiabilities: 400000, // Your example value
               longTermLiabilities: 140000,
-              totalLiabilities: 178000,
+              totalLiabilities: 540000,
             },
-            equity: 125000,
+            equity: 505000, // Calculated: total assets - total liabilities
             income: {
               revenue: 380000,
               expenses: 295000,
@@ -89,7 +99,9 @@ export const useFinancialMetrics = () => {
           }
         ],
         selectedYear: "2024"
-      } as FinancialMetrics;
+      };
+      
+      return exampleData;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(['financialMetrics'], data);
