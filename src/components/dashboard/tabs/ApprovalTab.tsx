@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   Card, 
@@ -143,7 +144,7 @@ const ApprovalTab = () => {
           <span className="font-medium">Required approvals:</span> {approvalLevel.requiredApprovers} ({approvalLevel.description})
           {requiresRSA && (
             <span className="block text-red-600 font-medium mt-1">
-              Dual RSA token verification required for {transaction.type.toUpperCase()} transactions ≥ $10,000
+              RSA token verification required for {transaction.type.toUpperCase()} transactions ≥ $10,000
             </span>
           )}
         </p>
@@ -181,7 +182,7 @@ const ApprovalTab = () => {
             Pending Approvals
           </CardTitle>
           <CardDescription>
-            Review and approve pending transactions that require your authorization. High-value EFT and Wire transfers require dual RSA token verification.
+            Review and approve pending transactions that require your authorization. High-value EFT and Wire transfers require RSA token verification.
           </CardDescription>
         </CardHeader>
         <CardContent>

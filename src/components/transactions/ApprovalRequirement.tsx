@@ -48,7 +48,7 @@ export const ApprovalRequirement = ({ amount, transactionType }: ApprovalRequire
         <p className="mt-1 text-sm">{approvalLevel.description}</p>
         {requiresRSA && (
           <p className="mt-1 text-sm font-medium text-red-700">
-            Dual RSA token verification required for {transactionType?.toUpperCase()} transactions ≥ $10,000
+            RSA token verification required for {transactionType?.toUpperCase()} transactions ≥ $10,000
           </p>
         )}
       </AlertDescription>

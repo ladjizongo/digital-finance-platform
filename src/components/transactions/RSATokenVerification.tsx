@@ -21,8 +21,7 @@ export const RSATokenVerification = ({
   transactionType, 
   amount 
 }: RSATokenVerificationProps) => {
-  const [primaryToken, setPrimaryToken] = useState("");
-  const [secondaryToken, setSecondaryToken] = useState("");
+  const [token, setToken] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState("");
   const { toast } = useToast();
@@ -30,8 +29,8 @@ export const RSATokenVerification = ({
   const handleVerify = async () => {
     setError("");
     
-    if (primaryToken.length !== 6 || secondaryToken.length !== 6) {
-      setError("Both RSA tokens must be 6 digits");
+    if (token.length !== 6) {
+      setError("RSA token must be 6 digits");
       return;
     }
 
@@ -40,16 +39,15 @@ export const RSATokenVerification = ({
     // Simulate RSA token verification
     setTimeout(() => {
       // In a real implementation, you would verify against an RSA server
-      if (primaryToken === "123456" && secondaryToken === "654321") {
+      if (token === "123456") {
         toast({
           title: "RSA Verification Successful",
-          description: "Dual RSA tokens verified. Transaction approved.",
+          description: "RSA token verified. Transaction approved.",
         });
         onVerified();
       } else {
-        setError("Invalid RSA token codes. Please check your RSA devices and try again.");
-        setPrimaryToken("");
-        setSecondaryToken("");
+        setError("Invalid RSA token code. Please check your RSA device and try again.");
+        setToken("");
       }
       setIsVerifying(false);
     }, 2000);
@@ -60,43 +58,24 @@ export const RSATokenVerification = ({
       <CardHeader className="text-center">
         <CardTitle className="flex items-center justify-center gap-2">
           <Shield className="h-5 w-5 text-amber-600" />
-          Dual RSA Token Verification
+          RSA Token Verification
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <Alert className="bg-amber-50 border-amber-200">
           <AlertCircle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800">
-            This {transactionType} transaction for ${amount.toLocaleString()} requires dual RSA token verification from two authorized approvers.
+            This {transactionType} transaction for ${amount.toLocaleString()} requires RSA token verification.
           </AlertDescription>
         </Alert>
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="primary-token">Primary RSA Token (Approver 1)</Label>
+            <Label htmlFor="rsa-token">RSA Token</Label>
             <InputOTP 
               maxLength={6} 
-              value={primaryToken} 
-              onChange={setPrimaryToken}
-              disabled={isVerifying}
-            >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="secondary-token">Secondary RSA Token (Approver 2)</Label>
-            <InputOTP 
-              maxLength={6} 
-              value={secondaryToken} 
-              onChange={setSecondaryToken}
+              value={token} 
+              onChange={setToken}
               disabled={isVerifying}
             >
               <InputOTPGroup>
@@ -129,7 +108,7 @@ export const RSATokenVerification = ({
           </Button>
           <Button 
             onClick={handleVerify}
-            disabled={primaryToken.length !== 6 || secondaryToken.length !== 6 || isVerifying}
+            disabled={token.length !== 6 || isVerifying}
             className="flex-1"
           >
             {isVerifying ? "Verifying..." : "Verify & Approve"}
@@ -137,7 +116,7 @@ export const RSATokenVerification = ({
         </div>
 
         <div className="text-xs text-gray-500 text-center">
-          <p>Enter the current 6-digit codes from both RSA security tokens.</p>
+          <p>Enter the current 6-digit code from your RSA security token.</p>
           <p>Codes refresh every 60 seconds.</p>
         </div>
       </CardContent>
