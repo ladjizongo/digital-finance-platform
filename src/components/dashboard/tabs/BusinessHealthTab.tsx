@@ -78,7 +78,6 @@ const BusinessHealthTab = () => {
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
         <TabsList className="w-full max-w-md mb-4">
           <TabsTrigger value="overview">Business Overview</TabsTrigger>
-          <TabsTrigger value="externalData">Document Analysis</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
@@ -111,6 +110,55 @@ const BusinessHealthTab = () => {
               </Card>
             )}
           </div>
+
+          {/* Document Analysis Section */}
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-indigo-800">Document Analysis</CardTitle>
+              <CardDescription>
+                Upload and analyze financial statements with advanced document parsing and AI-powered insights
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EnhancedUploadSection 
+                file={file}
+                setFile={setFile}
+                isLoading={isProcessing}
+                onUpload={handleUpload}
+                onParseComplete={handleParseComplete}
+              />
+            </CardContent>
+          </Card>
+
+          {parsedDocumentData && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Extracted Financial Data</CardTitle>
+                <CardDescription>
+                  Key metrics extracted from {file?.name}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {Object.entries(parsedDocumentData).map(([key, value]) => {
+                    if (typeof value === 'number' && key !== 'confidence') {
+                      return (
+                        <div key={key} className="p-4 border rounded-lg">
+                          <div className="text-sm font-medium text-muted-foreground capitalize">
+                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                          </div>
+                          <div className="text-2xl font-bold">
+                            ${value.toLocaleString()}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Comprehensive Financial Information */}
           {financialSummary && (
@@ -207,63 +255,14 @@ const BusinessHealthTab = () => {
             </div>
           )}
 
+          {/* Analysis Results */}
+          {metrics && (
+            <AnalysisResultsTabs metrics={metrics} />
+          )}
+
           {/* Original Financial Health Card for Upload */}
           {!metrics && (
             <FinancialHealthCard />
-          )}
-        </TabsContent>
-        
-        <TabsContent value="externalData" className="space-y-6">
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-indigo-800">Enhanced Document Analysis</CardTitle>
-              <CardDescription>
-                Upload and analyze financial statements with advanced document parsing and AI-powered insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <EnhancedUploadSection 
-                file={file}
-                setFile={setFile}
-                isLoading={isProcessing}
-                onUpload={handleUpload}
-                onParseComplete={handleParseComplete}
-              />
-            </CardContent>
-          </Card>
-
-          {parsedDocumentData && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Extracted Financial Data</CardTitle>
-                <CardDescription>
-                  Key metrics extracted from {file?.name}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {Object.entries(parsedDocumentData).map(([key, value]) => {
-                    if (typeof value === 'number' && key !== 'confidence') {
-                      return (
-                        <div key={key} className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground capitalize">
-                            {key.replace(/([A-Z])/g, ' $1').trim()}
-                          </div>
-                          <div className="text-2xl font-bold">
-                            ${value.toLocaleString()}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {metrics && (
-            <AnalysisResultsTabs metrics={metrics} />
           )}
         </TabsContent>
       </Tabs>
