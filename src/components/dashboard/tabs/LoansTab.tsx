@@ -1,6 +1,9 @@
+
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { CreditApplicationContainer } from "@/components/financial/creditApplication";
+import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
+import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import type { FinancialData } from "@/types/dashboardTypes";
 
 interface LoansTabProps {
@@ -9,6 +12,7 @@ interface LoansTabProps {
 
 const LoansTab = ({ financialData }: LoansTabProps) => {
   const [activeLoan, setActiveLoan] = useState("loan1");
+  const { metrics } = useFinancialMetrics();
 
   const getPayableDaysColorClass = (days: number) => {
     if (days >= 30) return "text-red-600";
@@ -137,6 +141,21 @@ const LoansTab = ({ financialData }: LoansTabProps) => {
 
       {/* Credit Application Section */}
       <CreditApplicationContainer />
+
+      {/* Business Health Analysis - Show if financial data available */}
+      {metrics && (
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Business Health Analysis</CardTitle>
+            <CardDescription>
+              Based on uploaded financial documents from credit application
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BusinessHealthScore metrics={metrics} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
