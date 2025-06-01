@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect } from "react";
 import { MessageSquare } from "lucide-react";
+import ChatbotSuggestions from "@/components/financial/ChatbotSuggestions";
 
 interface Message {
   text: string;
@@ -11,9 +12,10 @@ interface Message {
 interface MessageListProps {
   messages: Message[];
   isTyping: boolean;
+  onSuggestionClick?: (suggestion: string) => void;
 }
 
-const MessageList = ({ messages, isTyping }: MessageListProps) => {
+const MessageList = ({ messages, isTyping, onSuggestionClick }: MessageListProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -22,13 +24,18 @@ const MessageList = ({ messages, isTyping }: MessageListProps) => {
 
   if (messages.length === 0 && !isTyping) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
-        <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
-        <p className="mb-2">How can I help you today?</p>
-        <p className="text-sm max-w-md">
-          Try saying or typing things like "Tell me about recent transactions", 
-          "What's my business health score?", or "Show me pending approvals"
-        </p>
+      <div className="space-y-6">
+        {onSuggestionClick && (
+          <ChatbotSuggestions onSuggestionClick={onSuggestionClick} />
+        )}
+        <div className="flex flex-col items-center justify-center text-center text-muted-foreground">
+          <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
+          <p className="mb-2">How can I help you today?</p>
+          <p className="text-sm max-w-md">
+            Try saying or typing things like "Tell me about recent transactions", 
+            "What's my business health score?", or "Show me pending approvals"
+          </p>
+        </div>
       </div>
     );
   }

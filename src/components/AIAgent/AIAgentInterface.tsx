@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -10,6 +9,7 @@ import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
 import { AIAgentService } from "@/services/AIAgentService";
 import MessageList from "./MessageList";
 import AgentInputForm from "./AgentInputForm";
+import ChatbotSuggestions from "@/components/financial/ChatbotSuggestions";
 import { useNavigate } from "react-router-dom";
 
 interface AIAgentProps {
@@ -53,6 +53,10 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
     if (!input.trim() || isProcessing) return;
     
     processCommand(input);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    processCommand(suggestion);
   };
   
   const executeTransaction = (transactionDetails: { 
@@ -182,7 +186,13 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
             <CardTitle className="text-center">Digital Finance Assistant</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow overflow-y-auto pt-4 pb-20">
-            <MessageList messages={messages} isTyping={isTyping} />
+            {messages.length === 0 ? (
+              <div className="space-y-6">
+                <ChatbotSuggestions onSuggestionClick={handleSuggestionClick} />
+              </div>
+            ) : (
+              <MessageList messages={messages} isTyping={isTyping} />
+            )}
           </CardContent>
           <CardFooter className="border-t p-4 absolute bottom-0 left-0 right-0 bg-background">
             <AgentInputForm
