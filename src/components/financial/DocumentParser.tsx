@@ -1,202 +1,122 @@
 
-import { useState } from "react";
-import { FileText, AlertCircle, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-
-interface ParsedData {
-  revenue?: number;
-  expenses?: number;
-  netIncome?: number;
-  cashFlow?: number;
-  totalAssets?: number;
-  totalLiabilities?: number;
-  documentType?: string;
-  confidence?: number;
-}
+import { Button } from "@/components/ui/button";
+import { FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface DocumentParserProps {
   file: File;
-  onParseComplete: (data: ParsedData) => void;
+  onParseComplete: (data: any) => void;
 }
 
 export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) => {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
-  const [parsedData, setParsedData] = useState<ParsedData | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [extractedData, setExtractedData] = useState<any>(null);
+  const [confidence, setConfidence] = useState(0);
 
-  const simulateDocumentParsing = async () => {
-    setIsProcessing(true);
-    setError(null);
+  const analyzeDocument = async () => {
+    setIsAnalyzing(true);
     
-    // Simulate parsing progress
-    for (let i = 0; i <= 100; i += 10) {
-      setProgress(i);
-      await new Promise(resolve => setTimeout(resolve, 200));
+    // Simulate document analysis with AI/OCR
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Mock extracted financial data with CAC information
+    const mockData = {
+      revenue: Math.floor(Math.random() * 500000) + 200000,
+      expenses: Math.floor(Math.random() * 300000) + 150000,
+      totalAssets: Math.floor(Math.random() * 800000) + 400000,
+      totalLiabilities: Math.floor(Math.random() * 400000) + 200000,
+      netIncome: Math.floor(Math.random() * 100000) + 50000,
+      // CAC-related data
+      salesMarketingCosts: Math.floor(Math.random() * 50000) + 10000,
+      newCustomersAcquired: Math.floor(Math.random() * 200) + 50,
+      confidence: Math.floor(Math.random() * 30) + 70
+    };
+    
+    // Calculate CAC if we have the necessary data
+    if (mockData.salesMarketingCosts && mockData.newCustomersAcquired > 0) {
+      mockData.cac = mockData.salesMarketingCosts / mockData.newCustomersAcquired;
     }
+    
+    setExtractedData(mockData);
+    setConfidence(mockData.confidence);
+    setAnalysisComplete(true);
+    setIsAnalyzing(false);
+    
+    onParseComplete(mockData);
+  };
 
-    try {
-      // Simulate document analysis based on file type
-      const fileType = file.name.toLowerCase();
-      let mockData: ParsedData;
+  const getConfidenceColor = (confidence: number) => {
+    if (confidence >= 80) return "bg-green-100 text-green-800";
+    if (confidence >= 60) return "bg-yellow-100 text-yellow-800";
+    return "bg-red-100 text-red-800";
+  };
 
-      if (fileType.includes('income') || fileType.includes('profit')) {
-        mockData = {
-          revenue: 485000,
-          expenses: 320000,
-          netIncome: 165000,
-          documentType: "Income Statement",
-          confidence: 92
-        };
-      } else if (fileType.includes('balance')) {
-        mockData = {
-          totalAssets: 850000,
-          totalLiabilities: 320000,
-          documentType: "Balance Sheet",
-          confidence: 88
-        };
-      } else if (fileType.includes('cash')) {
-        mockData = {
-          cashFlow: 125000,
-          documentType: "Cash Flow Statement",
-          confidence: 85
-        };
-      } else {
-        // General financial document
-        mockData = {
-          revenue: 425000,
-          expenses: 285000,
-          netIncome: 140000,
-          cashFlow: 98000,
-          totalAssets: 720000,
-          totalLiabilities: 280000,
-          documentType: "Financial Statement",
-          confidence: 78
-        };
-      }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
 
-      setParsedData(mockData);
-      onParseComplete(mockData);
-    } catch (err) {
-      setError("Failed to parse document. Please ensure it's a valid financial document.");
-    } finally {
-      setIsProcessing(false);
+  useEffect(() => {
+    if (file && !analysisComplete) {
+      analyzeDocument();
     }
-  };
-
-  const extractTextFromPDF = async (file: File): Promise<string> => {
-    // In a real implementation, you would use a PDF parsing library like pdf-parse
-    // For now, we'll simulate the extraction
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("Mock extracted text from PDF containing financial data...");
-      }, 1000);
-    });
-  };
-
-  const parseExcelData = async (file: File): Promise<any[]> => {
-    // In a real implementation, you would use a library like xlsx
-    // For now, we'll simulate the parsing
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { account: "Revenue", amount: 485000 },
-          { account: "Expenses", amount: 320000 },
-          { account: "Net Income", amount: 165000 }
-        ]);
-      }, 1000);
-    });
-  };
+  }, [file, analysisComplete]);
 
   return (
-    <Card className="mt-4">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Document Analysis
+    <Card className="border-blue-200 bg-blue-50">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <FileText className="h-4 w-4" />
+          {file.name}
+          {analysisComplete && <CheckCircle className="h-4 w-4 text-green-600" />}
+          {isAnalyzing && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Processing: {file.name}</span>
-          <span className="text-sm text-muted-foreground">
-            {(file.size / (1024 * 1024)).toFixed(2)} MB
-          </span>
-        </div>
-
-        {isProcessing && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span>Analyzing document...</span>
-              <span>{progress}%</span>
+      <CardContent>
+        {isAnalyzing && (
+          <div className="flex items-center gap-2 text-sm text-blue-600">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Analyzing document and extracting financial data...
+          </div>
+        )}
+        
+        {analysisComplete && extractedData && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Badge className={getConfidenceColor(confidence)}>
+                {confidence}% Confidence
+              </Badge>
+              <span className="text-sm text-gray-600">Analysis Complete</span>
             </div>
-            <Progress value={progress} className="w-full" />
+            
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div><span className="font-medium">Revenue:</span> {formatCurrency(extractedData.revenue)}</div>
+              <div><span className="font-medium">Expenses:</span> {formatCurrency(extractedData.expenses)}</div>
+              <div><span className="font-medium">Assets:</span> {formatCurrency(extractedData.totalAssets)}</div>
+              <div><span className="font-medium">Liabilities:</span> {formatCurrency(extractedData.totalLiabilities)}</div>
+              {extractedData.salesMarketingCosts && (
+                <div><span className="font-medium">Sales & Marketing:</span> {formatCurrency(extractedData.salesMarketingCosts)}</div>
+              )}
+              {extractedData.newCustomersAcquired && (
+                <div><span className="font-medium">New Customers:</span> {extractedData.newCustomersAcquired}</div>
+              )}
+              {extractedData.cac && (
+                <div><span className="font-medium">CAC:</span> {formatCurrency(extractedData.cac)}</div>
+              )}
+            </div>
           </div>
         )}
-
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {parsedData && !isProcessing && (
-          <Alert>
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>
-              Document parsed successfully! Document type: {parsedData.documentType} 
-              (Confidence: {parsedData.confidence}%)
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {!isProcessing && !parsedData && !error && (
-          <button
-            onClick={simulateDocumentParsing}
-            className="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
-          >
+        
+        {!isAnalyzing && !analysisComplete && (
+          <Button onClick={analyzeDocument} size="sm" className="w-full">
             Analyze Document
-          </button>
-        )}
-
-        {parsedData && (
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            {parsedData.revenue && (
-              <div className="p-3 bg-green-50 rounded-lg">
-                <div className="text-sm font-medium text-green-800">Revenue</div>
-                <div className="text-lg font-bold text-green-900">
-                  ${parsedData.revenue.toLocaleString()}
-                </div>
-              </div>
-            )}
-            {parsedData.expenses && (
-              <div className="p-3 bg-red-50 rounded-lg">
-                <div className="text-sm font-medium text-red-800">Expenses</div>
-                <div className="text-lg font-bold text-red-900">
-                  ${parsedData.expenses.toLocaleString()}
-                </div>
-              </div>
-            )}
-            {parsedData.netIncome && (
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <div className="text-sm font-medium text-blue-800">Net Income</div>
-                <div className="text-lg font-bold text-blue-900">
-                  ${parsedData.netIncome.toLocaleString()}
-                </div>
-              </div>
-            )}
-            {parsedData.cashFlow && (
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <div className="text-sm font-medium text-purple-800">Cash Flow</div>
-                <div className="text-lg font-bold text-purple-900">
-                  ${parsedData.cashFlow.toLocaleString()}
-                </div>
-              </div>
-            )}
-          </div>
+          </Button>
         )}
       </CardContent>
     </Card>

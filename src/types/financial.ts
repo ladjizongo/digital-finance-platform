@@ -1,4 +1,3 @@
-
 export interface YearlyMetrics {
   year: string;
   payableDays: number;
@@ -23,6 +22,10 @@ export interface YearlyMetrics {
     expenses: number;
     netIncome: number;
   };
+  // CAC-related fields
+  salesMarketingCosts?: number;
+  newCustomersAcquired?: number;
+  cac?: number;
 }
 
 export interface CashFlowEntry {
