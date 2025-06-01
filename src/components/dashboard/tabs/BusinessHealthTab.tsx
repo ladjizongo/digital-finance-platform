@@ -1,4 +1,3 @@
-
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
 import { BusinessHealthHeader } from "@/components/financial/BusinessHealthHeader";
@@ -7,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { FileUp } from "lucide-react";
 import { EnhancedUploadSection } from "@/components/financial/EnhancedUploadSection";
+import { FinancialAnalysisActions } from "@/components/financial/FinancialAnalysisActions";
 import { toast } from "sonner";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import AnalysisResultsTabs from "@/components/financial/AnalysisResultsTabs";
@@ -16,6 +16,7 @@ const BusinessHealthTab = () => {
   const [activeSubTab, setActiveSubTab] = useState<string>("overview");
   const [file, setFile] = useState<File | null>(null);
   const [parsedDocumentData, setParsedDocumentData] = useState<any>(null);
+  const [showUploadSection, setShowUploadSection] = useState(false);
   
   const {
     metrics,
@@ -40,6 +41,10 @@ const BusinessHealthTab = () => {
   const handleParseComplete = (data: any) => {
     setParsedDocumentData(data);
     console.log("Document parsed:", data);
+  };
+
+  const handleUploadClick = () => {
+    setShowUploadSection(true);
   };
 
   const getFinancialSummary = () => {
@@ -81,6 +86,34 @@ const BusinessHealthTab = () => {
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
+          {/* Financial Analysis Actions */}
+          <FinancialAnalysisActions 
+            metrics={metrics}
+            parsedDocumentData={parsedDocumentData}
+            onUploadClick={handleUploadClick}
+          />
+
+          {/* Document Analysis Section - Show when upload button is clicked */}
+          {showUploadSection && (
+            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-indigo-800">Document Analysis</CardTitle>
+                <CardDescription>
+                  Upload and analyze financial statements with advanced document parsing and AI-powered insights
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnhancedUploadSection 
+                  file={file}
+                  setFile={setFile}
+                  isLoading={isProcessing}
+                  onUpload={handleUpload}
+                  onParseComplete={handleParseComplete}
+                />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Credit Score and Business Score on Same Line */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <BusinessCreditScore />
@@ -110,25 +143,6 @@ const BusinessHealthTab = () => {
               </Card>
             )}
           </div>
-
-          {/* Document Analysis Section */}
-          <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-indigo-800">Document Analysis</CardTitle>
-              <CardDescription>
-                Upload and analyze financial statements with advanced document parsing and AI-powered insights
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <EnhancedUploadSection 
-                file={file}
-                setFile={setFile}
-                isLoading={isProcessing}
-                onUpload={handleUpload}
-                onParseComplete={handleParseComplete}
-              />
-            </CardContent>
-          </Card>
 
           {parsedDocumentData && (
             <Card>
@@ -261,7 +275,7 @@ const BusinessHealthTab = () => {
           )}
 
           {/* Original Financial Health Card for Upload */}
-          {!metrics && (
+          {!metrics && !showUploadSection && (
             <FinancialHealthCard />
           )}
         </TabsContent>
