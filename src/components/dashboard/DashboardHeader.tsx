@@ -1,8 +1,5 @@
 
-import { ArrowRight, Shield } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 const DashboardHeader = () => {
   return (
@@ -13,14 +10,6 @@ const DashboardHeader = () => {
           <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
         </div>
         <div className="flex items-center space-x-4">
-          <Link to="/transactions" className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-500">
-            <ArrowRight className="mr-2 h-4 w-4" />
-            Transactions & Payments
-          </Link>
-          <Link to="/admin" className="inline-flex items-center text-sm font-medium text-purple-600 hover:text-purple-500">
-            <Shield className="mr-2 h-4 w-4" />
-            Admin Portal
-          </Link>
           <a
             href="https://www.canada.ca/en/revenue-agency/services/payments/payments-cra/individual-payments/make-payment.html"
             target="_blank"

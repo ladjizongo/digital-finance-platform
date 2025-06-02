@@ -19,9 +19,12 @@ import {
   FileText, 
   Activity, 
   ExternalLink,
-  LogOut
+  LogOut,
+  ArrowRight,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface DashboardSidebarProps {
   activeTab: string;
@@ -115,6 +118,31 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              
+              {/* Navigation Links */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full justify-start p-3 rounded-lg transition-colors hover:bg-green-50">
+                  <Link to="/transactions" className="flex items-center">
+                    <ArrowRight className="h-5 w-5 mr-3 text-green-600" />
+                    <div className="text-left">
+                      <div className="font-medium text-green-900">Transactions & Payments</div>
+                      <div className="text-xs text-gray-500">Manage transactions</div>
+                    </div>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild className="w-full justify-start p-3 rounded-lg transition-colors hover:bg-purple-50">
+                  <Link to="/admin" className="flex items-center">
+                    <Shield className="h-5 w-5 mr-3 text-purple-600" />
+                    <div className="text-left">
+                      <div className="font-medium text-purple-900">Admin Portal</div>
+                      <div className="text-xs text-gray-500">Administrative access</div>
+                    </div>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
