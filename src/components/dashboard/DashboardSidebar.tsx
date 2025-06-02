@@ -122,7 +122,7 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
               {/* Navigation Links */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full justify-start p-3 rounded-lg transition-colors hover:bg-green-50">
-                  <Link to="/transactions" className="flex items-center">
+                  <Link to="/transactions">
                     <ArrowRight className="h-5 w-5 mr-3 text-green-600" />
                     <div className="text-left">
                       <div className="font-medium text-green-900">Transactions & Payments</div>
@@ -134,7 +134,7 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
               
               <SidebarMenuItem>
                 <SidebarMenuButton asChild className="w-full justify-start p-3 rounded-lg transition-colors hover:bg-purple-50">
-                  <Link to="/admin" className="flex items-center">
+                  <Link to="/admin">
                     <Shield className="h-5 w-5 mr-3 text-purple-600" />
                     <div className="text-left">
                       <div className="font-medium text-purple-900">Admin Portal</div>
