@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,18 @@ import { Badge } from "@/components/ui/badge";
 interface DocumentParserProps {
   file: File;
   onParseComplete: (data: any) => void;
+}
+
+interface MockDataType {
+  revenue: number;
+  expenses: number;
+  totalAssets: number;
+  totalLiabilities: number;
+  netIncome: number;
+  salesMarketingCosts: number;
+  newCustomersAcquired: number;
+  confidence: number;
+  cac?: number;
 }
 
 export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) => {
@@ -23,7 +34,7 @@ export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) =
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     // Mock extracted financial data with CAC information
-    const mockData = {
+    const mockData: MockDataType = {
       revenue: Math.floor(Math.random() * 500000) + 200000,
       expenses: Math.floor(Math.random() * 300000) + 150000,
       totalAssets: Math.floor(Math.random() * 800000) + 400000,
