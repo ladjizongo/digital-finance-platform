@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,10 +16,7 @@ interface MockDataType {
   totalAssets: number;
   totalLiabilities: number;
   netIncome: number;
-  salesMarketingCosts: number;
-  newCustomersAcquired: number;
   confidence: number;
-  cac?: number;
 }
 
 export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) => {
@@ -33,23 +31,15 @@ export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) =
     // Simulate document analysis with AI/OCR
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Mock extracted financial data with CAC information
+    // Mock extracted financial data
     const mockData: MockDataType = {
       revenue: Math.floor(Math.random() * 500000) + 200000,
       expenses: Math.floor(Math.random() * 300000) + 150000,
       totalAssets: Math.floor(Math.random() * 800000) + 400000,
       totalLiabilities: Math.floor(Math.random() * 400000) + 200000,
       netIncome: Math.floor(Math.random() * 100000) + 50000,
-      // CAC-related data
-      salesMarketingCosts: Math.floor(Math.random() * 50000) + 10000,
-      newCustomersAcquired: Math.floor(Math.random() * 200) + 50,
       confidence: Math.floor(Math.random() * 30) + 70
     };
-    
-    // Calculate CAC if we have the necessary data
-    if (mockData.salesMarketingCosts && mockData.newCustomersAcquired > 0) {
-      mockData.cac = mockData.salesMarketingCosts / mockData.newCustomersAcquired;
-    }
     
     setExtractedData(mockData);
     setConfidence(mockData.confidence);
@@ -111,15 +101,6 @@ export const DocumentParser = ({ file, onParseComplete }: DocumentParserProps) =
               <div><span className="font-medium">Expenses:</span> {formatCurrency(extractedData.expenses)}</div>
               <div><span className="font-medium">Assets:</span> {formatCurrency(extractedData.totalAssets)}</div>
               <div><span className="font-medium">Liabilities:</span> {formatCurrency(extractedData.totalLiabilities)}</div>
-              {extractedData.salesMarketingCosts && (
-                <div><span className="font-medium">Sales & Marketing:</span> {formatCurrency(extractedData.salesMarketingCosts)}</div>
-              )}
-              {extractedData.newCustomersAcquired && (
-                <div><span className="font-medium">New Customers:</span> {extractedData.newCustomersAcquired}</div>
-              )}
-              {extractedData.cac && (
-                <div><span className="font-medium">CAC:</span> {formatCurrency(extractedData.cac)}</div>
-              )}
             </div>
           </div>
         )}

@@ -1,3 +1,4 @@
+
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
 import { BusinessHealthHeader } from "@/components/financial/BusinessHealthHeader";
@@ -7,7 +8,6 @@ import { useState } from "react";
 import { FileUp } from "lucide-react";
 import { EnhancedUploadSection } from "@/components/financial/EnhancedUploadSection";
 import { FinancialAnalysisActions } from "@/components/financial/FinancialAnalysisActions";
-import { CACCalculator } from "@/components/financial/CACCalculator";
 import { toast } from "sonner";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import AnalysisResultsTabs from "@/components/financial/AnalysisResultsTabs";
@@ -84,7 +84,6 @@ const BusinessHealthTab = () => {
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
         <TabsList className="w-full max-w-lg mb-4">
           <TabsTrigger value="overview">Business Overview</TabsTrigger>
-          <TabsTrigger value="cac">CAC Calculator</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
@@ -145,37 +144,6 @@ const BusinessHealthTab = () => {
               </Card>
             )}
           </div>
-
-          {/* CAC Information Card */}
-          {metrics && metrics.yearlyData[0]?.cac && (
-            <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-xl font-bold text-green-800">Customer Acquisition Cost</CardTitle>
-                <CardDescription>
-                  Your current CAC performance and recommendations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-3xl font-bold text-green-700">
-                      ${metrics.yearlyData[0].cac.toFixed(2)}
-                    </div>
-                    <div className="text-sm text-green-600">per customer acquired</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-sm font-medium">
-                      Quality: {metrics.yearlyData[0].cac <= 200 ? 'Excellent' : 
-                              metrics.yearlyData[0].cac <= 500 ? 'Good' : 'Needs Improvement'}
-                    </div>
-                    <div className="text-xs text-gray-600">
-                      {metrics.yearlyData[0].newCustomersAcquired} customers acquired
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {parsedDocumentData && (
             <Card>
@@ -311,10 +279,6 @@ const BusinessHealthTab = () => {
           {!metrics && !showUploadSection && (
             <FinancialHealthCard />
           )}
-        </TabsContent>
-
-        <TabsContent value="cac" className="space-y-6">
-          <CACCalculator />
         </TabsContent>
       </Tabs>
     </div>

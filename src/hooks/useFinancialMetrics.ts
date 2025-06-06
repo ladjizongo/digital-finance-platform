@@ -1,10 +1,9 @@
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FinancialFormValues } from "@/schemas/financialFormSchema";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { toast } from "sonner";
 
-// Enhanced scoring logic using financial ratios and CAC
+// Enhanced scoring logic using financial ratios
 export const calculateFinancialScore = (metrics: FinancialMetrics) => {
   if (!metrics || !metrics.yearlyData || metrics.yearlyData.length === 0) return 50;
 
@@ -34,15 +33,7 @@ export const calculateFinancialScore = (metrics: FinancialMetrics) => {
   else if (profitMargin >= 0.05) score += 5;
   else if (profitMargin < 0) score -= 15;
 
-  // CAC Analysis (if available)
-  if (currentYearData.cac && currentYearData.cac > 0) {
-    if (currentYearData.cac <= 100) score += 8; // Excellent CAC
-    else if (currentYearData.cac <= 200) score += 5; // Good CAC
-    else if (currentYearData.cac <= 500) score += 2; // Moderate CAC
-    else score -= 5; // High CAC
-  }
-
-  // Cash flow trend (reuse existing logic)
+  // Cash flow trend
   if (metrics.cashFlow && metrics.cashFlow.length >= 3) {
     const recent = metrics.cashFlow.slice(-3);
     const avgBalance = recent.reduce((sum, f) => sum + f.balance, 0) / recent.length;

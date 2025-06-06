@@ -7,8 +7,7 @@ import {
   Building2, 
   Lightbulb, 
   AlertTriangle,
-  MessageSquare,
-  Calculator
+  MessageSquare
 } from "lucide-react";
 
 interface ChatbotSuggestionsProps {
@@ -49,14 +48,6 @@ const ChatbotSuggestions = ({ onSuggestionClick, isCompact = false }: ChatbotSug
       prompt: 'Show me any financial risk flags or alerts',
       description: 'Identify potential risks',
       color: 'text-red-600'
-    },
-    {
-      id: 'cac-analysis',
-      title: 'Calculate CAC',
-      icon: Calculator,
-      prompt: 'Help me calculate my customer acquisition cost',
-      description: 'Analyze acquisition efficiency',
-      color: 'text-purple-600'
     }
   ];
 
@@ -68,7 +59,7 @@ const ChatbotSuggestions = ({ onSuggestionClick, isCompact = false }: ChatbotSug
           Quick Actions
         </div>
         <div className="grid grid-cols-2 gap-2">
-          {suggestions.slice(0, 4).map((suggestion) => (
+          {suggestions.map((suggestion) => (
             <Button
               key={suggestion.id}
               variant="outline"
