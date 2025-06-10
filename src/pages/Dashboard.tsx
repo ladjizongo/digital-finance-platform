@@ -7,7 +7,6 @@ import AccountsTab from "@/components/dashboard/tabs/AccountsTab";
 import CreditCardsTab from "@/components/dashboard/tabs/CreditCardsTab";
 import LoansTab from "@/components/dashboard/tabs/LoansTab";
 import BusinessHealthTab from "@/components/dashboard/tabs/BusinessHealthTab";
-import ExternalAccountTab from "@/components/dashboard/tabs/ExternalAccountTab";
 import ApprovalTab from "@/components/dashboard/tabs/ApprovalTab";
 import ReportsTab from "@/components/dashboard/tabs/ReportsTab";
 import { financialData } from "@/data/mockFinancialData";
@@ -33,8 +32,6 @@ const Dashboard = () => {
         return <ReportsTab />;
       case "businessHealth":
         return <BusinessHealthTab />;
-      case "externalAccount":
-        return <ExternalAccountTab />;
       default:
         return <AccountsTab financialData={financialData} onTabChange={handleTabChange} />;
     }
