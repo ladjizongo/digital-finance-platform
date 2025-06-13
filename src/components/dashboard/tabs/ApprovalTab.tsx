@@ -75,6 +75,12 @@ const ApprovalTab = () => {
   const [showRSADialog, setShowRSADialog] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<typeof pendingTransactions[0] | null>(null);
 
+  // Get the next pending approver's name for a transaction
+  const getNextApproverName = (transaction: typeof pendingTransactions[0]) => {
+    const nextApprover = transaction.approvers.find(approver => approver.status === 'pending');
+    return nextApprover ? nextApprover.name : 'All Required Approvals Complete';
+  };
+
   // Check if current user can approve a specific transaction
   const canApproveTransaction = (transaction: typeof pendingTransactions[0]) => {
     if (!currentUser) return false;
@@ -263,17 +269,17 @@ const ApprovalTab = () => {
                       <TableHead>From</TableHead>
                       <TableHead>To</TableHead>
                       <TableHead>Amount</TableHead>
-                      <TableHead>Approval Level</TableHead>
+                      <TableHead>Waiting For</TableHead>
                       <TableHead>Initiated By</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredTransactions.map((tx) => {
-                      const approvalLevel = getApprovalLevel(tx.amount);
                       const isExpanded = expandedTransaction === tx.id;
                       const requiresRSA = (tx.type === "eft" || tx.type === "wire") && tx.amount >= 10000;
                       const canApprove = canApproveTransaction(tx);
+                      const nextApproverName = getNextApproverName(tx);
                       
                       return (
                         <React.Fragment key={tx.id}>
@@ -296,7 +302,7 @@ const ApprovalTab = () => {
                             <TableCell>${tx.amount.toLocaleString()}</TableCell>
                             <TableCell>
                               <Badge variant="outline" className="border-amber-500 text-amber-700">
-                                {approvalLevel.name} Level
+                                {nextApproverName}
                               </Badge>
                             </TableCell>
                             <TableCell>{tx.initiatedBy}</TableCell>
