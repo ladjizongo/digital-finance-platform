@@ -10,6 +10,7 @@ import BusinessHealthTab from "@/components/dashboard/tabs/BusinessHealthTab";
 import ApprovalTab from "@/components/dashboard/tabs/ApprovalTab";
 import ReportsTab from "@/components/dashboard/tabs/ReportsTab";
 import { financialData } from "@/data/mockFinancialData";
+import { UserProvider } from "@/contexts/UserContext";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("accounts");
@@ -38,24 +39,26 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SidebarProvider>
-        <div className="flex w-full min-h-screen">
-          <DashboardSidebar 
-            activeTab={activeTab} 
-            onTabChange={handleTabChange} 
-          />
-          <SidebarInset className="flex-1">
-            <DashboardHeader />
-            <main className="flex-1 p-6">
-              <div className="max-w-7xl mx-auto">
-                {renderTabContent()}
-              </div>
-            </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-    </div>
+    <UserProvider>
+      <div className="min-h-screen bg-gray-50">
+        <SidebarProvider>
+          <div className="flex w-full min-h-screen">
+            <DashboardSidebar 
+              activeTab={activeTab} 
+              onTabChange={handleTabChange} 
+            />
+            <SidebarInset className="flex-1">
+              <DashboardHeader />
+              <main className="flex-1 p-6">
+                <div className="max-w-7xl mx-auto">
+                  {renderTabContent()}
+                </div>
+              </main>
+            </SidebarInset>
+          </div>
+        </SidebarProvider>
+      </div>
+    </UserProvider>
   );
 };
 

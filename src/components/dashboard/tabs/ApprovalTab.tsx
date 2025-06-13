@@ -9,13 +9,15 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Clock, Users, Shield } from "lucide-react";
+import { Check, Clock, Users, Shield, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getApprovalLevel } from "@/utils/approvalLevels";
 import { RSATokenVerification } from "@/components/transactions/RSATokenVerification";
+import { useUser } from "@/contexts/UserContext";
 
 // Sample pending transactions for demonstration
 const pendingTransactions = [
@@ -66,13 +68,38 @@ const pendingTransactions = [
 
 const ApprovalTab = () => {
   const { toast } = useToast();
+  const { currentUser } = useUser();
   const [transactions, setTransactions] = useState(pendingTransactions);
   const [activeTab, setActiveTab] = useState("all");
   const [expandedTransaction, setExpandedTransaction] = useState<string | null>(null);
   const [showRSADialog, setShowRSADialog] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<typeof pendingTransactions[0] | null>(null);
 
+  // Check if current user can approve a specific transaction
+  const canApproveTransaction = (transaction: typeof pendingTransactions[0]) => {
+    if (!currentUser) return false;
+    
+    // Admin can't approve, only view
+    if (currentUser.role === 'Admin') return false;
+    
+    // Check if user is in the approvers list and hasn't approved yet
+    const userApprover = transaction.approvers.find(
+      approver => approver.name === currentUser.name
+    );
+    
+    return userApprover && userApprover.status === 'pending';
+  };
+
   const handleApprove = (id: string, transaction: typeof pendingTransactions[0]) => {
+    if (!canApproveTransaction(transaction)) {
+      toast({
+        title: "Access denied",
+        description: "You are not authorized to approve this transaction.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     // Check if transaction requires RSA verification (EFT or Wire with high amount)
     if ((transaction.type === "eft" || transaction.type === "wire") && transaction.amount >= 10000) {
       setSelectedTransaction(transaction);
@@ -85,11 +112,25 @@ const ApprovalTab = () => {
   };
 
   const completeApproval = (id: string) => {
-    setTransactions(prev => prev.filter(tx => tx.id !== id));
+    if (!currentUser) return;
+
+    setTransactions(prev => prev.map(tx => {
+      if (tx.id === id) {
+        return {
+          ...tx,
+          approvers: tx.approvers.map(approver => 
+            approver.name === currentUser.name 
+              ? { ...approver, status: "approved" as const }
+              : approver
+          )
+        };
+      }
+      return tx;
+    }));
     
     toast({
       title: "Transaction approved",
-      description: "The transaction has been approved and will be processed shortly."
+      description: "Your approval has been recorded. The transaction will proceed once all required approvals are obtained."
     });
   };
 
@@ -106,7 +147,16 @@ const ApprovalTab = () => {
     setSelectedTransaction(null);
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = (id: string, transaction: typeof pendingTransactions[0]) => {
+    if (!canApproveTransaction(transaction)) {
+      toast({
+        title: "Access denied",
+        description: "You are not authorized to reject this transaction.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setTransactions(prev => prev.filter(tx => tx.id !== id));
     
     toast({
@@ -184,6 +234,15 @@ const ApprovalTab = () => {
           <CardDescription>
             Review and approve pending transactions that require your authorization. High-value EFT and Wire transfers require RSA token verification.
           </CardDescription>
+          
+          {currentUser?.role === 'Admin' && (
+            <Alert className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Admin View:</strong> You can view all pending approvals but cannot approve transactions. Only designated approvers can approve transactions.
+              </AlertDescription>
+            </Alert>
+          )}
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -214,6 +273,7 @@ const ApprovalTab = () => {
                       const approvalLevel = getApprovalLevel(tx.amount);
                       const isExpanded = expandedTransaction === tx.id;
                       const requiresRSA = (tx.type === "eft" || tx.type === "wire") && tx.amount >= 10000;
+                      const canApprove = canApproveTransaction(tx);
                       
                       return (
                         <React.Fragment key={tx.id}>
@@ -241,36 +301,44 @@ const ApprovalTab = () => {
                             </TableCell>
                             <TableCell>{tx.initiatedBy}</TableCell>
                             <TableCell className="text-right space-x-2">
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="border-red-500 hover:bg-red-50 text-red-600"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleReject(tx.id);
-                                }}
-                              >
-                                Reject
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="border-green-500 hover:bg-green-50 text-green-600"  
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleApprove(tx.id, tx);
-                                }}
-                              >
-                                {requiresRSA ? (
-                                  <>
-                                    <Shield className="mr-1 h-4 w-4" /> RSA Approve
-                                  </>
-                                ) : (
-                                  <>
-                                    <Check className="mr-1 h-4 w-4" /> Approve
-                                  </>
-                                )}
-                              </Button>
+                              {canApprove ? (
+                                <>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="border-red-500 hover:bg-red-50 text-red-600"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleReject(tx.id, tx);
+                                    }}
+                                  >
+                                    Reject
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="border-green-500 hover:bg-green-50 text-green-600"  
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleApprove(tx.id, tx);
+                                    }}
+                                  >
+                                    {requiresRSA ? (
+                                      <>
+                                        <Shield className="mr-1 h-4 w-4" /> RSA Approve
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Check className="mr-1 h-4 w-4" /> Approve
+                                      </>
+                                    )}
+                                  </Button>
+                                </>
+                              ) : (
+                                <div className="text-sm text-gray-500">
+                                  {currentUser?.role === 'Admin' ? 'View Only' : 'Not Authorized'}
+                                </div>
+                              )}
                             </TableCell>
                           </TableRow>
                           {isExpanded && (
