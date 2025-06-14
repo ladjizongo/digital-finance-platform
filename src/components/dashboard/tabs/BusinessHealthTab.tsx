@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import AnalysisResultsTabs from "@/components/financial/AnalysisResultsTabs";
 import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
+import AccountingSummary from "../AccountingSummary";
 
 const BusinessHealthTab = () => {
   const [activeSubTab, setActiveSubTab] = useState<string>("overview");
@@ -80,7 +81,10 @@ const BusinessHealthTab = () => {
   return (
     <div className="space-y-8">
       <BusinessHealthHeader />
-      
+
+      {/* Inserted the Accounting Summary here */}
+      <AccountingSummary />
+
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
         <TabsList className="w-full max-w-lg mb-4">
           <TabsTrigger value="overview">Business Overview</TabsTrigger>
