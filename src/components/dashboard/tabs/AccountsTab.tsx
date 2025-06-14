@@ -54,44 +54,21 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
     }
   };
 
-  // Handler for creating a new account
-  const handleCreateAccount = (newAccount: Partial<Account>) => {
-    // Generate an id and fill any missing safe fields
-    const nextId = (
-      (accounts.length
-        ? Math.max(...accounts.map(acc => Number(acc.id))) + 1
-        : 1
-      ) + ""
-    );
-    const accountToAdd: Account = {
-      id: nextId,
-      name: newAccount.name || "New Account",
-      accountNumber: newAccount.accountNumber || "****" + Math.floor(Math.random()*10000).toString().padStart(4, "0"),
-      balance: Number(newAccount.balance) || 0,
-      currency: newAccount.currency || "CAD",
-    };
-    setAccounts([...accounts, accountToAdd]);
-    setActiveAccount(accountToAdd.id);
-    setShowNewAccountDialog(false);
-    toast.success("Bank account created!");
-  };
-
   return (
     <>
-      {/* Button to open new account dialog */}
+      {/* Button to open request to open bank account dialog */}
       <div className="flex justify-end mb-4">
         <Button
           variant="outline"
           onClick={() => setShowNewAccountDialog(true)}
           className="flex items-center gap-2"
         >
-          + Create Bank Account
+          + Request to Open Bank Account
         </Button>
       </div>
       <NewAccountDialog
         open={showNewAccountDialog}
         onOpenChange={setShowNewAccountDialog}
-        onSubmit={handleCreateAccount}
       />
 
       <AccountOverviewCards 
