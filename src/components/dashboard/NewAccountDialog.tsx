@@ -1,6 +1,5 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -19,10 +18,6 @@ const accountTypes = [
 ];
 
 const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
-  const [name, setName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-  const [balance, setBalance] = useState("");
-  const [currency, setCurrency] = useState("CAD");
   const [accountType, setAccountType] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -30,30 +25,21 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim() || !accountNumber.trim() || isNaN(Number(balance)) || !accountType) {
-      setError("All fields are required, balance must be a number, and account type must be selected.");
+    if (!accountType) {
+      setError("Please select an account type.");
       return;
     }
     setError("");
     setSubmitted(true);
     toast.success("Your request to open a bank account has been submitted!");
-    // Don’t actually create the account here.
-    setName("");
-    setAccountNumber("");
-    setBalance("");
-    setCurrency("CAD");
     setAccountType("");
-    setTimeout(() => { // Automatically close modal after 1.5 seconds
+    setTimeout(() => {
       setSubmitted(false);
       onOpenChange(false);
     }, 1500);
   };
 
   const handleClose = () => {
-    setName("");
-    setAccountNumber("");
-    setBalance("");
-    setCurrency("CAD");
     setAccountType("");
     setError("");
     setSubmitted(false);
@@ -68,34 +54,6 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
         </DialogHeader>
         {!submitted ? (
           <form onSubmit={handleSubmit} className="space-y-3">
-            <Input
-              placeholder="Account Name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-              maxLength={30}
-            />
-            <Input
-              placeholder="Desired Account Number"
-              value={accountNumber}
-              onChange={e => setAccountNumber(e.target.value)}
-              required
-              maxLength={20}
-            />
-            <Input
-              placeholder="Initial Deposit"
-              type="number"
-              inputMode="decimal"
-              value={balance}
-              onChange={e => setBalance(e.target.value)}
-              required
-            />
-            <Input
-              placeholder="Currency (e.g., CAD, USD, EUR)"
-              value={currency}
-              onChange={e => setCurrency(e.target.value)}
-              maxLength={4}
-            />
             <div>
               <Label className="mb-1 block">Account Type</Label>
               <Select value={accountType} onValueChange={setAccountType} required>
@@ -140,3 +98,4 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
 };
 
 export default NewAccountDialog;
+
