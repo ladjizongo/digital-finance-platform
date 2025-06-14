@@ -1,4 +1,3 @@
-
 import FinancialHealthCard from "@/components/FinancialHealthCard";
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
 import { BusinessHealthHeader } from "@/components/financial/BusinessHealthHeader";
@@ -13,6 +12,9 @@ import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import AnalysisResultsTabs from "@/components/financial/AnalysisResultsTabs";
 import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
 import AccountingSummary from "../AccountingSummary";
+import { DocumentAnalysisSection } from "@/components/financial/DocumentAnalysisSection";
+import { CreditAndHealthScoreGroup } from "@/components/financial/CreditAndHealthScoreGroup";
+import { FinancialSummaryCards } from "@/components/financial/FinancialSummaryCards";
 
 const BusinessHealthTab = () => {
   const [activeSubTab, setActiveSubTab] = useState<string>("overview");
@@ -82,7 +84,7 @@ const BusinessHealthTab = () => {
     <div className="space-y-8">
       <BusinessHealthHeader />
 
-      {/* Inserted the Accounting Summary here */}
+      {/* Accounting Summary section */}
       <AccountingSummary />
 
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
@@ -100,54 +102,17 @@ const BusinessHealthTab = () => {
 
           {/* Document Analysis Section - Show when upload button is clicked */}
           {showUploadSection && (
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-indigo-800">Document Analysis</CardTitle>
-                <CardDescription>
-                  Upload and analyze financial statements with advanced document parsing and AI-powered insights
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <EnhancedUploadSection 
-                  file={file}
-                  setFile={setFile}
-                  isLoading={isProcessing}
-                  onUpload={handleUpload}
-                  onParseComplete={handleParseComplete}
-                />
-              </CardContent>
-            </Card>
+            <DocumentAnalysisSection
+              file={file}
+              setFile={setFile}
+              isProcessing={isProcessing}
+              onUpload={handleUpload}
+              onParseComplete={handleParseComplete}
+            />
           )}
 
           {/* Credit Score and Business Score on Same Line */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <BusinessCreditScore />
-            {metrics ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <BusinessHealthScore metrics={metrics} />
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
-                  <CardDescription>
-                    Upload financial documents to calculate your business health score
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-center h-32 text-muted-foreground">
-                    <FileUp className="h-8 w-8 mr-2" />
-                    <span>Awaiting financial data</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          <CreditAndHealthScoreGroup metrics={metrics} />
 
           {parsedDocumentData && (
             <Card>
@@ -181,97 +146,7 @@ const BusinessHealthTab = () => {
 
           {/* Comprehensive Financial Information */}
           {financialSummary && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Key Financial Ratios */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Key Financial Ratios</CardTitle>
-                  <CardDescription>
-                    Critical metrics for business health assessment
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Current Ratio</span>
-                      <span className={`font-bold ${
-                        financialSummary.currentRatio >= 2 ? 'text-green-600' : 
-                        financialSummary.currentRatio >= 1 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {financialSummary.currentRatio.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Debt-to-Equity</span>
-                      <span className={`font-bold ${
-                        financialSummary.debtToEquity <= 0.3 ? 'text-green-600' : 
-                        financialSummary.debtToEquity <= 0.6 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {financialSummary.debtToEquity.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Profit Margin</span>
-                      <span className={`font-bold ${
-                        financialSummary.profitMargin >= 15 ? 'text-green-600' : 
-                        financialSummary.profitMargin >= 5 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {financialSummary.profitMargin.toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Gross Margin</span>
-                      <span className={`font-bold ${
-                        financialSummary.grossMargin >= 20 ? 'text-green-600' : 
-                        financialSummary.grossMargin >= 10 ? 'text-yellow-600' : 'text-red-600'
-                      }`}>
-                        {financialSummary.grossMargin.toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Financial Summary */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Financial Summary</CardTitle>
-                  <CardDescription>
-                    Core financial metrics from latest data
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Annual Revenue</span>
-                      <span className="font-bold text-blue-600">
-                        ${financialSummary.revenue.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Net Income</span>
-                      <span className={`font-bold ${
-                        financialSummary.netIncome >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}>
-                        ${financialSummary.netIncome.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Total Assets</span>
-                      <span className="font-bold text-indigo-600">
-                        ${financialSummary.totalAssets.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Total Liabilities</span>
-                      <span className="font-bold text-orange-600">
-                        ${financialSummary.totalLiabilities.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <FinancialSummaryCards financialSummary={financialSummary} />
           )}
 
           {/* Analysis Results */}
