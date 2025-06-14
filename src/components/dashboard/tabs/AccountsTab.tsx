@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AccountOverviewCards from "@/components/dashboard/AccountOverviewCards";
@@ -9,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { FinancialData, Account } from "@/types/dashboardTypes";
+import NewAccountDialog from "../NewAccountDialog";
 
 interface AccountsTabProps {
   financialData: FinancialData;
@@ -20,6 +20,7 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
   const [accounts, setAccounts] = useState<Account[]>(financialData.accounts);
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingTabName, setEditingTabName] = useState("");
+  const [showNewAccountDialog, setShowNewAccountDialog] = useState(false);
 
   const handleRenameAccount = (accountId: string, newName: string) => {
     setAccounts(prevAccounts => 
@@ -53,8 +54,46 @@ const AccountsTab = ({ financialData, onTabChange }: AccountsTabProps) => {
     }
   };
 
+  // Handler for creating a new account
+  const handleCreateAccount = (newAccount: Partial<Account>) => {
+    // Generate an id and fill any missing safe fields
+    const nextId = (
+      (accounts.length
+        ? Math.max(...accounts.map(acc => Number(acc.id))) + 1
+        : 1
+      ) + ""
+    );
+    const accountToAdd: Account = {
+      id: nextId,
+      name: newAccount.name || "New Account",
+      accountNumber: newAccount.accountNumber || "****" + Math.floor(Math.random()*10000).toString().padStart(4, "0"),
+      balance: Number(newAccount.balance) || 0,
+      currency: newAccount.currency || "CAD",
+    };
+    setAccounts([...accounts, accountToAdd]);
+    setActiveAccount(accountToAdd.id);
+    setShowNewAccountDialog(false);
+    toast.success("Bank account created!");
+  };
+
   return (
     <>
+      {/* Button to open new account dialog */}
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="outline"
+          onClick={() => setShowNewAccountDialog(true)}
+          className="flex items-center gap-2"
+        >
+          + Create Bank Account
+        </Button>
+      </div>
+      <NewAccountDialog
+        open={showNewAccountDialog}
+        onOpenChange={setShowNewAccountDialog}
+        onSubmit={handleCreateAccount}
+      />
+
       <AccountOverviewCards 
         financialData={{
           ...financialData,
