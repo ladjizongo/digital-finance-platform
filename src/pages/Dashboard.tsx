@@ -51,7 +51,6 @@ const Dashboard = () => {
               <DashboardHeader />
               <main className="flex-1 p-6">
                 <div className="max-w-7xl mx-auto">
-                  <FinancialMockApiPanel />
                   {renderTabContent()}
                 </div>
               </main>

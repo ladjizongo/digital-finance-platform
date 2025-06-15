@@ -15,6 +15,7 @@ import AccountingSummary from "../AccountingSummary";
 import { DocumentAnalysisSection } from "@/components/financial/DocumentAnalysisSection";
 import { CreditAndHealthScoreGroup } from "@/components/financial/CreditAndHealthScoreGroup";
 import { FinancialSummaryCards } from "@/components/financial/FinancialSummaryCards";
+import FinancialMockApiPanel from "@/components/financial/FinancialMockApiPanel";
 
 const BusinessHealthTab = () => {
   const [activeSubTab, setActiveSubTab] = useState<string>("overview");
@@ -83,6 +84,9 @@ const BusinessHealthTab = () => {
   return (
     <div className="space-y-8">
       <BusinessHealthHeader />
+
+      {/* Add Financial Snapshot panel here */}
+      <FinancialMockApiPanel />
 
       {/* Accounting Summary section */}
       <AccountingSummary />
