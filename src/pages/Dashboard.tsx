@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
@@ -11,6 +10,7 @@ import ApprovalTab from "@/components/dashboard/tabs/ApprovalTab";
 import ReportsTab from "@/components/dashboard/tabs/ReportsTab";
 import { financialData } from "@/data/mockFinancialData";
 import { UserProvider } from "@/contexts/UserContext";
+import FinancialMockApiPanel from "@/components/financial/FinancialMockApiPanel";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("accounts");
@@ -51,6 +51,7 @@ const Dashboard = () => {
               <DashboardHeader />
               <main className="flex-1 p-6">
                 <div className="max-w-7xl mx-auto">
+                  <FinancialMockApiPanel />
                   {renderTabContent()}
                 </div>
               </main>
