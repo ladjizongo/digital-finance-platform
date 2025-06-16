@@ -1,56 +1,14 @@
-import FinancialHealthCard from "@/components/FinancialHealthCard";
+
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
 import { BusinessHealthHeader } from "@/components/financial/BusinessHealthHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { FileUp } from "lucide-react";
-import { EnhancedUploadSection } from "@/components/financial/EnhancedUploadSection";
-import { FinancialAnalysisActions } from "@/components/financial/FinancialAnalysisActions";
-import { toast } from "sonner";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
-import AnalysisResultsTabs from "@/components/financial/AnalysisResultsTabs";
 import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
-import AccountingSummary from "../AccountingSummary";
-import { DocumentAnalysisSection } from "@/components/financial/DocumentAnalysisSection";
-import { CreditAndHealthScoreGroup } from "@/components/financial/CreditAndHealthScoreGroup";
-import { FinancialSummaryCards } from "@/components/financial/FinancialSummaryCards";
 import FinancialMockApiPanel from "@/components/financial/FinancialMockApiPanel";
 
 const BusinessHealthTab = () => {
-  const [activeSubTab, setActiveSubTab] = useState<string>("overview");
-  const [file, setFile] = useState<File | null>(null);
-  const [parsedDocumentData, setParsedDocumentData] = useState<any>(null);
-  const [showUploadSection, setShowUploadSection] = useState(false);
-  
-  const {
-    metrics,
-    isLoading,
-    isProcessing,
-    processFinancials,
-    handleYearChange,
-    resetMetrics,
-  } = useFinancialMetrics();
-
-  const handleUpload = () => {
-    if (file && parsedDocumentData) {
-      processFinancials();
-      toast.success("Financial document processed and analyzed successfully");
-    } else if (file && !parsedDocumentData) {
-      toast.error("Please analyze the document first before uploading");
-    } else {
-      toast.error("Please select a file to upload");
-    }
-  };
-
-  const handleParseComplete = (data: any) => {
-    setParsedDocumentData(data);
-    console.log("Document parsed:", data);
-  };
-
-  const handleUploadClick = () => {
-    setShowUploadSection(true);
-  };
+  const { metrics } = useFinancialMetrics();
 
   const getFinancialSummary = () => {
     if (!metrics || !metrics.yearlyData || metrics.yearlyData.length === 0) {
@@ -72,10 +30,10 @@ const BusinessHealthTab = () => {
       debtToEquity,
       profitMargin,
       grossMargin,
-      revenue: currentYearData.income.revenue,
-      netIncome: currentYearData.income.netIncome,
-      totalAssets: currentYearData.assets.totalAssets,
-      totalLiabilities: currentYearData.liabilities.totalLiabilities,
+      receivableDays: currentYearData.receivableDays,
+      payableDays: currentYearData.payableDays,
+      monthlyReceivables: currentYearData.monthlyReceivables,
+      monthlyPayables: currentYearData.monthlyPayables,
     };
   };
 
@@ -85,85 +43,126 @@ const BusinessHealthTab = () => {
     <div className="space-y-8">
       <BusinessHealthHeader />
 
-      {/* Add Financial Snapshot panel here */}
+      {/* Financial Snapshot panel */}
       <FinancialMockApiPanel />
 
-      {/* Accounting Summary section */}
-      <AccountingSummary />
+      {/* Credit Score and Business Health Score */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <BusinessCreditScore />
+        {metrics ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BusinessHealthScore metrics={metrics} />
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
+              <CardDescription>
+                No financial data available for health score calculation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center h-32 text-muted-foreground">
+                <span>Financial metrics needed</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
-      <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
-        <TabsList className="w-full max-w-lg mb-4">
-          <TabsTrigger value="overview">Business Overview</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-6">
-          {/* Financial Analysis Actions */}
-          <FinancialAnalysisActions 
-            metrics={metrics}
-            parsedDocumentData={parsedDocumentData}
-            onUploadClick={handleUploadClick}
-          />
-
-          {/* Document Analysis Section - Show when upload button is clicked */}
-          {showUploadSection && (
-            <DocumentAnalysisSection
-              file={file}
-              setFile={setFile}
-              isProcessing={isProcessing}
-              onUpload={handleUpload}
-              onParseComplete={handleParseComplete}
-            />
-          )}
-
-          {/* Credit Score and Business Score on Same Line */}
-          <CreditAndHealthScoreGroup metrics={metrics} />
-
-          {parsedDocumentData && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Extracted Financial Data</CardTitle>
-                <CardDescription>
-                  Key metrics extracted from {file?.name}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {Object.entries(parsedDocumentData).map(([key, value]) => {
-                    if (typeof value === 'number' && key !== 'confidence') {
-                      return (
-                        <div key={key} className="p-4 border rounded-lg">
-                          <div className="text-sm font-medium text-muted-foreground capitalize">
-                            {key.replace(/([A-Z])/g, ' $1').trim()}
-                          </div>
-                          <div className="text-2xl font-bold">
-                            ${value.toLocaleString()}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
+      {/* Key Financial Ratios */}
+      {financialSummary && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Key Financial Ratios</CardTitle>
+            <CardDescription>
+              Critical metrics for business health assessment
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">
+                  {financialSummary.currentRatio.toFixed(2)}
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="text-sm text-muted-foreground">Current Ratio</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {financialSummary.debtToEquity.toFixed(2)}
+                </div>
+                <div className="text-sm text-muted-foreground">Debt-to-Equity</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">
+                  {financialSummary.profitMargin.toFixed(1)}%
+                </div>
+                <div className="text-sm text-muted-foreground">Profit Margin</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">
+                  {financialSummary.grossMargin.toFixed(1)}%
+                </div>
+                <div className="text-sm text-muted-foreground">Gross Margin</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* Comprehensive Financial Information */}
-          {financialSummary && (
-            <FinancialSummaryCards financialSummary={financialSummary} />
-          )}
+      {/* Receivables and Payables Days */}
+      {financialSummary && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Receivables Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Average Collection Days</span>
+                  <span className="text-2xl font-bold text-blue-600">
+                    {financialSummary.receivableDays} days
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Monthly Receivables</span>
+                  <span className="text-lg font-semibold text-green-600">
+                    ${financialSummary.monthlyReceivables.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Analysis Results */}
-          {metrics && (
-            <AnalysisResultsTabs metrics={metrics} />
-          )}
-
-          {/* Original Financial Health Card for Upload */}
-          {!metrics && !showUploadSection && (
-            <FinancialHealthCard />
-          )}
-        </TabsContent>
-      </Tabs>
+          <Card>
+            <CardHeader>
+              <CardTitle>Payables Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Average Payment Days</span>
+                  <span className="text-2xl font-bold text-orange-600">
+                    {financialSummary.payableDays} days
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium">Monthly Payables</span>
+                  <span className="text-lg font-semibold text-red-600">
+                    ${financialSummary.monthlyPayables.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
