@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Sidebar, 
@@ -68,12 +67,6 @@ const DashboardSidebar = ({ activeTab, onTabChange }: DashboardSidebarProps) => 
       title: "Business Health",
       icon: Activity,
       description: "Health metrics"
-    },
-    {
-      id: "externalAccount",
-      title: "External Account",
-      icon: ExternalLink,
-      description: "External connections"
     }
   ];
 
