@@ -1,5 +1,5 @@
 
-import { ArrowRight, Mail, Receipt, CreditCard, FileText, ArrowUpDown } from "lucide-react";
+import { ArrowRight, Mail, Receipt, CreditCard, FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TransferForm from "./TransferForm";
 import { EFTSection } from "./payment-forms/EFTSection";
@@ -7,7 +7,6 @@ import { WireSection } from "./payment-forms/WireSection";
 import BillPaymentForm from "./BillPaymentForm";
 import EmailTransferForm from "./EmailTransferForm";
 import GovTaxPaymentForm from "./GovTaxPaymentForm";
-import FXTabContent from "./forex/FXTabContent";
 
 interface Account {
   id: string;
@@ -78,7 +77,7 @@ const TransactionTabs = ({
 
   return (
     <Tabs value={transactionType} onValueChange={handleTabChange} className="w-full">
-      <TabsList className="grid grid-cols-7 w-full mb-8">
+      <TabsList className="grid grid-cols-6 w-full mb-8">
         <TabsTrigger value="transfer" className="flex items-center">
           <ArrowRight className="mr-2 h-4 w-4" />
           Transfers
@@ -102,10 +101,6 @@ const TransactionTabs = ({
         <TabsTrigger value="tax" className="flex items-center">
           <FileText className="mr-2 h-4 w-4" />
           Tax Payment
-        </TabsTrigger>
-        <TabsTrigger value="forex" className="flex items-center">
-          <ArrowUpDown className="mr-2 h-4 w-4" />
-          Foreign Exchange
         </TabsTrigger>
       </TabsList>
       
@@ -169,19 +164,6 @@ const TransactionTabs = ({
           recipient={recipient}
           onFromAccountChange={onFromAccountChange}
           onRecipientChange={onRecipientChange}
-        />
-      </TabsContent>
-      
-      <TabsContent value="forex">
-        <FXTabContent 
-          accounts={accounts}
-          isSubmitting={isSubmitting}
-          onSubmit={onSubmit}
-          onAmountChange={onAmountChange}
-          selectedFromAccount={selectedFromAccount}
-          selectedToAccount={selectedToAccount}
-          onFromAccountChange={onFromAccountChange}
-          onToAccountChange={onToAccountChange}
         />
       </TabsContent>
       
