@@ -1,5 +1,6 @@
-
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 import { useMockFinancialApi } from "@/hooks/useMockFinancialApi";
 
 export const FinancialMockApiPanel = () => {
@@ -11,6 +12,9 @@ export const FinancialMockApiPanel = () => {
   if (error || !data) {
     return <Card><CardContent>Error loading mock data.</CardContent></Card>;
   }
+
+  // Check if payables days are lower than receivables days
+  const hasCashFlowRisk = data.accountsPayable.averageDays < data.accountsReceivable.averageDays;
 
   return (
     <Card className="mb-8 shadow-md border border-blue-100 bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -35,6 +39,18 @@ export const FinancialMockApiPanel = () => {
             <span className="text-2xl font-bold text-indigo-900 mt-2">${data.netIncome.toLocaleString()}</span>
           </div>
         </div>
+        
+        {/* Cash Flow Warning */}
+        {hasCashFlowRisk && (
+          <Alert className="mb-4 border-orange-200 bg-orange-50">
+            <AlertTriangle className="h-4 w-4 text-orange-600" />
+            <AlertDescription className="text-orange-800">
+              <strong>Cash Flow Warning:</strong> Your average payable days ({data.accountsPayable.averageDays}) are lower than receivable days ({data.accountsReceivable.averageDays}). 
+              Consider reviewing payment terms to avoid potential cash flow issues.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="rounded-lg bg-yellow-50 p-4">
             <div className="text-xs font-medium text-yellow-800">Accounts Receivable</div>
