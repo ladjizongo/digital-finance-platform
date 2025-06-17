@@ -5,11 +5,13 @@ const mockFinancialApiResponse = {
   cashBalance: 15880,
   accountsReceivable: {
     total: 9500,
-    overdue30: 3200
+    overdue30: 3200,
+    averageDays: 45
   },
   accountsPayable: {
     total: 7400,
-    dueIn7Days: 4300
+    dueIn7Days: 4300,
+    averageDays: 30
   },
   shopifyPayouts: [
     { date: "2025-06-12", amount: 1360 },
