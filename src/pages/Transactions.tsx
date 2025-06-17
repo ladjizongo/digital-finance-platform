@@ -34,9 +34,6 @@ const Transactions = () => {
         case "email":
           setTransactionType("email");
           break;
-        case "tax":
-          setTransactionType("tax");
-          break;
         default:
           setTransactionType("transfer");
       }

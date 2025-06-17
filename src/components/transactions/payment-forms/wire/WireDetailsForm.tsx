@@ -49,7 +49,7 @@ export const WireDetailsForm = ({ formData, onChange }: WireDetailsFormProps) =>
     <div className="space-y-6">
       {/* Beneficiary (Recipient) Information */}
       <div className="border rounded-lg p-4 space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Beneficiary Information (ISO 20022)</h3>
+        <h3 className="text-lg font-medium text-gray-900">Beneficiary Information</h3>
         
         <div className="space-y-2">
           <Label htmlFor="wireRecipientName">Beneficiary Name *</Label>
@@ -112,7 +112,7 @@ export const WireDetailsForm = ({ formData, onChange }: WireDetailsFormProps) =>
             <Label htmlFor="wireRecipientCountry">Beneficiary Country *</Label>
             <Input 
               id="wireRecipientCountry" 
-              placeholder="Country (ISO 2-letter code)"
+              placeholder="Country (2-letter code)"
               value={formData.recipientCountry}
               onChange={(e) => onChange("recipientCountry", e.target.value)}
               maxLength={2}
@@ -188,7 +188,7 @@ export const WireDetailsForm = ({ formData, onChange }: WireDetailsFormProps) =>
             <Label htmlFor="wireBankCountry">Bank Country</Label>
             <Input 
               id="wireBankCountry" 
-              placeholder="Country (ISO 2-letter code)"
+              placeholder="Country (2-letter code)"
               value={formData.bankCountry}
               onChange={(e) => onChange("bankCountry", e.target.value)}
               maxLength={2}
@@ -227,7 +227,7 @@ export const WireDetailsForm = ({ formData, onChange }: WireDetailsFormProps) =>
 
       {/* Payment Details */}
       <div className="border rounded-lg p-4 space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Payment Details (ISO 20022)</h3>
+        <h3 className="text-lg font-medium text-gray-900">Payment Details</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

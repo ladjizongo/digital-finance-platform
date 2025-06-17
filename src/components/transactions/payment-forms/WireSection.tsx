@@ -77,8 +77,8 @@ export const WireSection = ({
     localStorage.setItem("wireTemplates", JSON.stringify([...templates, newTemplate]));
     
     toast({
-      title: "ISO 20022 Template Saved",
-      description: "Your wire transfer template has been saved with ISO 20022 compliance."
+      title: "Template Saved",
+      description: "Your wire transfer template has been saved."
     });
   };
 
@@ -88,8 +88,8 @@ export const WireSection = ({
     
     if (file.name.endsWith('.xml')) {
       toast({
-        title: "ISO 20022 XML File Selected",
-        description: "XML file will be processed for ISO 20022 compliant wire transfer details"
+        title: "XML File Selected",
+        description: "XML file will be processed for wire transfer details"
       });
     }
   };
@@ -123,8 +123,8 @@ export const WireSection = ({
     }
     
     toast({
-      title: "ISO 20022 Validation",
-      description: "Wire transfer validated against ISO 20022 standards. Processing..."
+      title: "Validation Complete",
+      description: "Wire transfer validated and ready for processing..."
     });
     
     onSubmit(e);
@@ -133,9 +133,9 @@ export const WireSection = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>ISO 20022 Compliant Wire Transfer</CardTitle>
+        <CardTitle>Wire Transfer</CardTitle>
         <CardDescription>
-          Send funds via wire transfer with full ISO 20022 compliance for international and high-value domestic transfers
+          Send funds via wire transfer for international and high-value domestic transfers
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
@@ -154,9 +154,9 @@ export const WireSection = ({
           <WireFileUpload onFileSelected={handleFileSelected} />
           
           <div className="space-y-2 mt-4 pt-4 border-t">
-            <h3 className="text-lg font-medium">ISO 20022 Wire Transfer Details</h3>
+            <h3 className="text-lg font-medium">Wire Transfer Details</h3>
             <p className="text-sm text-gray-600">
-              Complete all required fields for ISO 20022 compliance. Fields marked with * are mandatory.
+              Complete all required fields for wire transfer. Fields marked with * are mandatory.
             </p>
           </div>
           
@@ -175,7 +175,7 @@ export const WireSection = ({
         
         <CardFooter className="flex gap-4">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}ISO 20022 Wire Transfer`}
+            {isSubmitting ? "Processing..." : `Send ${isRecurring ? "Recurring " : ""}Wire Transfer`}
           </Button>
           
           <WireTemplateDialog
