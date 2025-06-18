@@ -14,14 +14,14 @@ import ReportHeader from "../reports/ReportHeader";
 import ApprovedTransactionsTable from "../reports/ApprovedTransactionsTable";
 import DeclinedTransactionsTable from "../reports/DeclinedTransactionsTable";
 import PendingTransactionsTable from "../reports/PendingTransactionsTable";
-import LoginAuditTable from "../reports/LoginAuditTable";
 import { 
   approvedTransactions, 
-  loginAudits, 
   declinedTransactions, 
   pendingTransactions 
 } from "../reports/data";
-import { ReportTabValue, TransactionReportFilters } from "../reports/types";
+import { TransactionReportFilters } from "../reports/types";
+
+type ReportTabValue = 'approved' | 'declined' | 'pending';
 
 const ReportsTab = () => {
   const [reportType, setReportType] = useState<ReportTabValue>("approved");
@@ -51,9 +51,6 @@ const ReportsTab = () => {
       case "approved":
         data = [...approvedTransactions];
         break;
-      case "login":
-        data = [...loginAudits];
-        break;
       case "declined":
         data = [...declinedTransactions];
         break;
@@ -62,11 +59,6 @@ const ReportsTab = () => {
         break;
       default:
         data = [];
-    }
-    
-    // Skip additional filtering for login audits
-    if (reportType === "login") {
-      return data;
     }
     
     // Filter by transaction type
@@ -134,16 +126,15 @@ const ReportsTab = () => {
           Reports
         </CardTitle>
         <CardDescription>
-          Generate and view reports for transactions, approvals, and system activity
+          Generate and view reports for transactions and approvals
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs value={reportType} onValueChange={setReportType as any} className="w-full">
-          <TabsList className="mb-6 grid w-full grid-cols-4">
+          <TabsList className="mb-6 grid w-full grid-cols-3">
             <TabsTrigger value="approved">Approved Transactions</TabsTrigger>
             <TabsTrigger value="declined">Declined Transactions</TabsTrigger>
             <TabsTrigger value="pending">Pending Approvals</TabsTrigger>
-            <TabsTrigger value="login">Login Audit</TabsTrigger>
           </TabsList>
           
           {/* Report Filters */}
@@ -163,10 +154,6 @@ const ReportsTab = () => {
           {/* Report Tables */}
           <TabsContent value="approved" className="mt-0">
             <ApprovedTransactionsTable transactions={filteredData as any} />
-          </TabsContent>
-          
-          <TabsContent value="login" className="mt-0">
-            <LoginAuditTable auditLogs={filteredData as any} />
           </TabsContent>
           
           <TabsContent value="declined" className="mt-0">
