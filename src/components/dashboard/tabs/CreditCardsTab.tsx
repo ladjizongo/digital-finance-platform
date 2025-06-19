@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MetricCard } from "@/components/financial/MetricCard";
 import CreditCardActions from "../CreditCardActions";
-import type { FinancialData, CreditCard } from "@/types/dashboardTypes";
+import TransactionDisputeDialog from "../TransactionDisputeDialog";
+import type { FinancialData, CreditCard, Transaction } from "@/types/dashboardTypes";
 
 interface CreditCardsTabProps {
   financialData: FinancialData;
@@ -10,6 +11,13 @@ interface CreditCardsTabProps {
 
 const CreditCardsTab = ({ financialData }: CreditCardsTabProps) => {
   const [activeCreditCard, setActiveCreditCard] = useState("cc1");
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [disputeDialogOpen, setDisputeDialogOpen] = useState(false);
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setDisputeDialogOpen(true);
+  };
 
   return (
     <>
@@ -104,7 +112,11 @@ const CreditCardsTab = ({ financialData }: CreditCardsTabProps) => {
               {financialData.creditCards
                 .find(card => card.id === activeCreditCard)
                 ?.transactions.map((transaction, idx) => (
-                  <div key={idx} className="flex justify-between items-center py-2 border-b last:border-0">
+                  <div 
+                    key={idx} 
+                    className="flex justify-between items-center py-2 border-b last:border-0 cursor-pointer hover:bg-gray-50 rounded px-2 transition-colors"
+                    onClick={() => handleTransactionClick(transaction)}
+                  >
                     <div>
                       <p className="font-medium">{transaction.description}</p>
                       <p className="text-sm text-muted-foreground">{transaction.date}</p>
@@ -120,6 +132,12 @@ const CreditCardsTab = ({ financialData }: CreditCardsTabProps) => {
           </CardContent>
         </Card>
       )}
+
+      <TransactionDisputeDialog 
+        transaction={selectedTransaction}
+        open={disputeDialogOpen}
+        onOpenChange={setDisputeDialogOpen}
+      />
     </>
   );
 };
