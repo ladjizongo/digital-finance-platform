@@ -1,7 +1,7 @@
-
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { MetricCard } from "@/components/financial/MetricCard";
+import CreditCardActions from "../CreditCardActions";
 import type { FinancialData, CreditCard } from "@/types/dashboardTypes";
 
 interface CreditCardsTabProps {
@@ -81,6 +81,10 @@ const CreditCardsTab = ({ financialData }: CreditCardsTabProps) => {
                   <span className="text-sm text-muted-foreground">Due Date:</span>
                   <span className="font-medium">{card.dueDate}</span>
                 </div>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t">
+                <CreditCardActions creditCard={card} />
               </div>
             </CardContent>
           </Card>
