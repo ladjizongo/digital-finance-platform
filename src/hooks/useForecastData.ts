@@ -1,13 +1,22 @@
 
 import { useState, useEffect } from 'react';
 import { format, addDays, addMonths, differenceInDays, parseISO } from 'date-fns';
-import { FinancialMetrics, FinancialEvent, DailyCashFlow, ForecastData } from '@/types/financial';
+import { FinancialMetrics, FinancialEvent, DailyCashFlow, ForecastData, CashFlowProjection } from '@/types/financial';
 
 export const useForecastData = (metrics: FinancialMetrics) => {
   const [forecastData, setForecastData] = useState<ForecastData>({
     dailyCashFlow: [],
     events: [],
-    warningDates: []
+    warningDates: [],
+    projection: {
+      currentCash: 0,
+      expectedCashIn: 0,
+      expectedCashOut: 0,
+      adtProjectionIn: 0,
+      adtProjectionOut: 0,
+      projectedBalance: 0,
+      recommendations: []
+    }
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,97 +38,139 @@ export const useForecastData = (metrics: FinancialMetrics) => {
         return;
       }
 
-      // Starting balance (use the latest cash flow entry's balance as starting point)
+      // === IMPLEMENTING PYTHON ALGORITHM ===
+      
+      // Current cash on hand
       const latestCashFlow = metrics.cashFlow.length > 0 
         ? metrics.cashFlow[metrics.cashFlow.length - 1] 
         : null;
+      const currentCash = latestCashFlow ? latestCashFlow.balance : metrics.monthlyAverageBalance;
       
-      const startingBalance = latestCashFlow ? latestCashFlow.balance : metrics.monthlyAverageBalance;
-      
-      // For demo purposes, we'll generate recurring events based on the metrics
       const today = new Date();
-      const events: FinancialEvent[] = [];
+      const forecastDays = 7; // 7-day forecast as per Python algorithm
+      const endDate = addDays(today, forecastDays);
       
-      // Generate 3 months of forecasted data
-      const forecastDays = 90;
-      const dailyCashFlow: DailyCashFlow[] = [];
-      const safeThreshold = startingBalance * 0.3; // Safe threshold is 30% of the starting balance
+      // Generate receivables, payables, and payouts based on financial data
+      const receivables: [number, string][] = [];
+      const payables: [number, string][] = [];
+      const payouts: [number, string][] = [];
       
-      // Generate recurring payroll events (bi-weekly)
-      const payrollAmount = currentYearData.biWeeklyPayroll;
-      let nextPayrollDate = addDays(today, 7 - today.getDay()); // Next Friday
-      
-      while (differenceInDays(nextPayrollDate, today) <= forecastDays) {
-        events.push({
-          date: format(nextPayrollDate, 'yyyy-MM-dd'),
-          title: 'Payroll',
-          type: 'payroll',
-          amount: -payrollAmount,
-          recurring: true,
-          recurrencePattern: 'biweekly'
-        });
-        nextPayrollDate = addDays(nextPayrollDate, 14); // Bi-weekly
-      }
-      
-      // Generate monthly rent event
-      const rentAmount = currentYearData.monthlyPayables * 0.3; // Assume rent is 30% of monthly payables
-      const nextRentDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // First of next month
-      
-      if (differenceInDays(nextRentDate, today) <= forecastDays) {
-        events.push({
-          date: format(nextRentDate, 'yyyy-MM-dd'),
-          title: 'Office Rent',
-          type: 'rent',
-          amount: -rentAmount,
-          recurring: true,
-          recurrencePattern: 'monthly'
-        });
-      }
-      
-      // Generate expected invoice payments (accounts receivable)
-      // Split monthly receivables into a few invoices
+      // Generate receivables (invoices) - spread monthly receivables over the week
       const monthlyReceivables = currentYearData.monthlyReceivables;
-      const numInvoices = 4; // Assume 4 invoices per month
-      const invoiceAmount = monthlyReceivables / numInvoices;
+      const weeklyReceivables = monthlyReceivables / 4; // Approximate weekly amount
+      for (let i = 1; i <= 3; i++) {
+        const amount = weeklyReceivables / 3;
+        const date = format(addDays(today, i * 2), 'yyyy-MM-dd');
+        receivables.push([amount, date]);
+      }
       
-      for (let i = 0; i < numInvoices; i++) {
-        // Space out invoices through the month
-        const daysToAdd = 7 + (i * 7);
-        const invoiceDate = addDays(today, daysToAdd);
-        
-        if (differenceInDays(invoiceDate, today) <= forecastDays) {
-          events.push({
-            date: format(invoiceDate, 'yyyy-MM-dd'),
-            title: `Invoice #${2025000 + i}`,
-            type: 'invoice',
-            amount: invoiceAmount,
-            recurring: false
-          });
+      // Generate payables (bills) - spread monthly payables over the week
+      const monthlyPayables = currentYearData.monthlyPayables;
+      const weeklyPayables = monthlyPayables / 4;
+      for (let i = 1; i <= 3; i++) {
+        const amount = weeklyPayables / 3;
+        const date = format(addDays(today, i * 2 + 1), 'yyyy-MM-dd');
+        payables.push([amount, date]);
+      }
+      
+      // Generate payouts (e.g., from Shopify/Amazon) - assume some e-commerce revenue
+      const ecommerceRevenue = currentYearData.income.revenue * 0.2; // 20% from e-commerce
+      const weeklyPayouts = ecommerceRevenue / 52;
+      payouts.push([weeklyPayouts * 0.6, format(addDays(today, 2), 'yyyy-MM-dd')]);
+      payouts.push([weeklyPayouts * 0.4, format(addDays(today, 6), 'yyyy-MM-dd')]);
+      
+      // Historical daily inflow/outflow - simulate from monthly data
+      const dailyInflowAvg = monthlyReceivables / 30;
+      const dailyOutflowAvg = monthlyPayables / 30;
+      
+      // Generate 30-day history simulation
+      const dailyInflows = Array.from({ length: 30 }, () => 
+        dailyInflowAvg * (0.8 + Math.random() * 0.4) // ±20% variance
+      );
+      const dailyOutflows = Array.from({ length: 30 }, () => 
+        dailyOutflowAvg * (0.8 + Math.random() * 0.4) // ±20% variance
+      );
+      
+      // === CALCULATIONS (from Python algorithm) ===
+      
+      // Helper function to sum within range
+      const sumWithinRange = (data: [number, string][], cutoffDate: Date) => {
+        return data.reduce((sum, [amount, dateStr]) => {
+          const itemDate = new Date(dateStr);
+          return itemDate <= cutoffDate ? sum + amount : sum;
+        }, 0);
+      };
+      
+      // Sums from documents
+      const expectedCashIn = sumWithinRange(receivables, endDate) + sumWithinRange(payouts, endDate);
+      const expectedCashOut = sumWithinRange(payables, endDate);
+      
+      // ADT projections
+      const avgInflow = dailyInflows.reduce((a, b) => a + b, 0) / dailyInflows.length;
+      const avgOutflow = dailyOutflows.reduce((a, b) => a + b, 0) / dailyOutflows.length;
+      
+      const adtProjectionIn = avgInflow * forecastDays;
+      const adtProjectionOut = avgOutflow * forecastDays;
+      
+      // Projected balance
+      const projectedBalance = currentCash + expectedCashIn + adtProjectionIn - expectedCashOut - adtProjectionOut;
+      
+      // === RECOMMENDATIONS (from Python algorithm) ===
+      const recommendations: string[] = [];
+      
+      if (projectedBalance < 0) {
+        recommendations.push("You may not have enough cash to cover payables and daily expenses in the next 7 days.");
+        if (expectedCashIn > 0) {
+          recommendations.push("Reach out to clients with upcoming invoices to accelerate collections.");
         }
+        recommendations.push("Consider securing short-term financing or delaying non-essential payables.");
+      } else if (projectedBalance < avgOutflow * 3) {
+        recommendations.push("Your projected buffer is low. Monitor collections and hold off on large expenses.");
+      } else {
+        recommendations.push("Your short-term cash flow looks stable. Continue normal operations.");
       }
       
-      // Generate quarterly tax payment
-      const taxAmount = currentYearData.income.revenue * 0.05; // Assume 5% tax rate
-      const nextTaxDate = new Date(
-        today.getFullYear(), 
-        Math.floor(today.getMonth() / 3) * 3 + 3, 
-        15
-      ); // 15th of next quarter month
+      // Create projection object
+      const projection: CashFlowProjection = {
+        currentCash,
+        expectedCashIn,
+        expectedCashOut,
+        adtProjectionIn,
+        adtProjectionOut,
+        projectedBalance,
+        recommendations
+      };
       
-      if (differenceInDays(nextTaxDate, today) <= forecastDays) {
-        events.push({
-          date: format(nextTaxDate, 'yyyy-MM-dd'),
-          title: 'Quarterly Tax Payment',
-          type: 'tax',
-          amount: -taxAmount,
-          recurring: true,
-          recurrencePattern: 'quarterly'
-        });
-      }
+      // Generate events for calendar display
+      const events: FinancialEvent[] = [
+        ...receivables.map(([amount, date]) => ({
+          date,
+          title: `Invoice Payment`,
+          type: 'invoice' as const,
+          amount,
+          recurring: false
+        })),
+        ...payables.map(([amount, date]) => ({
+          date,
+          title: `Bill Payment`,
+          type: 'other' as const,
+          amount: -amount,
+          recurring: false
+        })),
+        ...payouts.map(([amount, date]) => ({
+          date,
+          title: `E-commerce Payout`,
+          type: 'other' as const,
+          amount,
+          recurring: false
+        }))
+      ];
       
       // Generate daily cash flow data
-      let runningBalance = startingBalance;
+      let runningBalance = currentCash;
+      const dailyCashFlow: DailyCashFlow[] = [];
       const warningDates: string[] = [];
+      const safeThreshold = avgOutflow * 3; // 3 days of expenses as buffer
       
       for (let i = 0; i <= forecastDays; i++) {
         const currentDate = addDays(today, i);
@@ -128,19 +179,21 @@ export const useForecastData = (metrics: FinancialMetrics) => {
         // Find events for this day
         const dayEvents = events.filter(event => event.date === dateString);
         
-        // Calculate day's income and expenses
+        // Add average daily flows
         const dayIncome = dayEvents
           .filter(event => event.amount > 0)
-          .reduce((sum, event) => sum + event.amount, 0);
+          .reduce((sum, event) => sum + event.amount, 0) + (i > 0 ? avgInflow : 0);
         
         const dayExpenses = Math.abs(
           dayEvents
             .filter(event => event.amount < 0)
             .reduce((sum, event) => sum + event.amount, 0)
-        );
+        ) + (i > 0 ? avgOutflow : 0);
         
         // Update running balance
-        runningBalance += dayIncome - dayExpenses;
+        if (i > 0) {
+          runningBalance += dayIncome - dayExpenses;
+        }
         
         // Check if balance is below safe threshold
         if (runningBalance < safeThreshold) {
@@ -161,7 +214,8 @@ export const useForecastData = (metrics: FinancialMetrics) => {
       setForecastData({
         dailyCashFlow,
         events,
-        warningDates
+        warningDates,
+        projection
       });
       
       setIsLoading(false);

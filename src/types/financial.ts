@@ -74,8 +74,19 @@ export interface DailyCashFlow {
   events: FinancialEvent[];
 }
 
+export interface CashFlowProjection {
+  currentCash: number;
+  expectedCashIn: number;
+  expectedCashOut: number;
+  adtProjectionIn: number;
+  adtProjectionOut: number;
+  projectedBalance: number;
+  recommendations: string[];
+}
+
 export interface ForecastData {
   dailyCashFlow: DailyCashFlow[];
   events: FinancialEvent[];
   warningDates: string[];
+  projection: CashFlowProjection;
 }

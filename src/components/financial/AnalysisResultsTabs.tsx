@@ -5,9 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FinancialMetricsPanel from "./FinancialMetricsPanel";
 import CashFlowPanel from "./CashFlowPanel";
 import ForecastPanel from "./ForecastPanel";
+import { CashFlowForecast } from "./CashFlowForecast";
+import { FinancialMetrics } from "@/types/financial";
 
 interface AnalysisResultsTabsProps {
-  metrics: any; // Using 'any' here, but ideally this should match your metrics type
+  metrics: FinancialMetrics;
 }
 
 const AnalysisResultsTabs = ({ metrics }: AnalysisResultsTabsProps) => {
@@ -40,7 +42,7 @@ const AnalysisResultsTabs = ({ metrics }: AnalysisResultsTabsProps) => {
           </TabsContent>
           
           <TabsContent value="forecast" className="space-y-4">
-            <ForecastPanel />
+            <CashFlowForecast metrics={metrics} />
           </TabsContent>
         </Tabs>
       </CardContent>

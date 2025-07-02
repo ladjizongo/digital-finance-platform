@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
 import FinancialMockApiPanel from "@/components/financial/FinancialMockApiPanel";
+import { CashFlowForecast } from "@/components/financial/CashFlowForecast";
 
 const BusinessHealthTab = () => {
   const { metrics } = useFinancialMetrics();
@@ -162,6 +163,11 @@ const BusinessHealthTab = () => {
             </CardContent>
           </Card>
         </div>
+      )}
+
+      {/* Cash Flow Forecast */}
+      {metrics && (
+        <CashFlowForecast metrics={metrics} />
       )}
     </div>
   );
