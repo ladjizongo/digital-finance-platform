@@ -1,15 +1,33 @@
 
 import { BusinessCreditScore } from "@/components/financial/BusinessCreditScore";
-import { BusinessHealthHeader } from "@/components/financial/BusinessHealthHeader";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useState } from "react";
 import { useFinancialMetrics } from "@/hooks/useFinancialMetrics";
 import { BusinessHealthScore } from "@/components/financial/BusinessHealthScore";
 import FinancialMockApiPanel from "@/components/financial/FinancialMockApiPanel";
 import { CashFlowForecast } from "@/components/financial/CashFlowForecast";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  TrendingUp, 
+  TrendingDown, 
+  DollarSign, 
+  Calendar, 
+  AlertTriangle,
+  CheckCircle,
+  BarChart3,
+  PieChart,
+  Activity,
+  Target,
+  Clock,
+  CreditCard
+} from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const BusinessHealthTab = () => {
   const { metrics } = useFinancialMetrics();
+  const [activeSection, setActiveSection] = useState("overview");
 
   const getFinancialSummary = () => {
     if (!metrics || !metrics.yearlyData || metrics.yearlyData.length === 0) {
@@ -35,140 +53,364 @@ const BusinessHealthTab = () => {
       payableDays: currentYearData.payableDays,
       monthlyReceivables: currentYearData.monthlyReceivables,
       monthlyPayables: currentYearData.monthlyPayables,
+      revenue: currentYearData.income.revenue,
+      netIncome: currentYearData.income.netIncome,
+      totalAssets: currentYearData.assets.totalAssets,
     };
   };
 
   const financialSummary = getFinancialSummary();
 
+  const getHealthStatus = () => {
+    if (!financialSummary) return { status: "unknown", color: "gray" };
+    
+    const healthScore = (
+      (financialSummary.currentRatio > 1.5 ? 25 : 0) +
+      (financialSummary.profitMargin > 10 ? 25 : 0) +
+      (financialSummary.debtToEquity < 2 ? 25 : 0) +
+      (financialSummary.receivableDays < 45 ? 25 : 0)
+    );
+
+    if (healthScore >= 75) return { status: "excellent", color: "green" };
+    if (healthScore >= 50) return { status: "good", color: "blue" };
+    if (healthScore >= 25) return { status: "fair", color: "yellow" };
+    return { status: "needs attention", color: "red" };
+  };
+
+  const healthStatus = getHealthStatus();
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   return (
-    <div className="space-y-8">
-      <BusinessHealthHeader />
-
-      {/* Financial Snapshot panel */}
-      <FinancialMockApiPanel />
-
-      {/* Credit Score and Business Health Score */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <BusinessCreditScore />
-        {metrics ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <BusinessHealthScore metrics={metrics} />
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-bold">Business Health Score</CardTitle>
-              <CardDescription>
-                No financial data available for health score calculation
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center h-32 text-muted-foreground">
-                <span>Financial metrics needed</span>
+    <div className="space-y-8 animate-fade-in">
+      {/* Hero Section with Health Overview */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950 dark:via-indigo-950 dark:to-purple-950 p-8 border border-blue-200 dark:border-blue-800">
+        <div className="relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-full bg-primary/10">
+                  <Activity className="h-8 w-8 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                    Business Financial Health
+                  </h1>
+                  <p className="text-lg text-muted-foreground">
+                    Real-time insights into your business performance
+                  </p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+              
+              {financialSummary && (
+                <div className="flex items-center gap-4">
+                  <Badge 
+                    variant={healthStatus.color === "green" ? "default" : "secondary"}
+                    className={`px-4 py-2 text-sm font-medium capitalize ${
+                      healthStatus.color === "green" ? "bg-green-100 text-green-800 hover:bg-green-200" :
+                      healthStatus.color === "blue" ? "bg-blue-100 text-blue-800 hover:bg-blue-200" :
+                      healthStatus.color === "yellow" ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200" :
+                      "bg-red-100 text-red-800 hover:bg-red-200"
+                    }`}
+                  >
+                    {healthStatus.color === "green" && <CheckCircle className="h-4 w-4 mr-2" />}
+                    {healthStatus.color === "red" && <AlertTriangle className="h-4 w-4 mr-2" />}
+                    Financial Health: {healthStatus.status}
+                  </Badge>
+                  <div className="text-sm text-muted-foreground">
+                    Last updated: {new Date().toLocaleDateString()}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {financialSummary && (
+              <div className="grid grid-cols-2 gap-4 lg:gap-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">
+                    {formatCurrency(financialSummary.revenue)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Annual Revenue</div>
+                </div>
+                <div className="text-center">
+                  <div className={`text-3xl font-bold ${
+                    financialSummary.netIncome > 0 ? "text-green-600" : "text-red-600"
+                  }`}>
+                    {formatCurrency(financialSummary.netIncome)}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Net Income</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Background decorative elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-primary/10 to-transparent rounded-full -translate-y-32 translate-x-32"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-secondary/10 to-transparent rounded-full translate-y-24 -translate-x-24"></div>
       </div>
 
-      {/* Key Financial Ratios */}
-      {financialSummary && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Key Financial Ratios</CardTitle>
-            <CardDescription>
-              Critical metrics for business health assessment
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">
-                  {financialSummary.currentRatio.toFixed(2)}
-                </div>
-                <div className="text-sm text-muted-foreground">Current Ratio</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">
-                  {financialSummary.debtToEquity.toFixed(2)}
-                </div>
-                <div className="text-sm text-muted-foreground">Debt-to-Equity</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">
-                  {financialSummary.profitMargin.toFixed(1)}%
-                </div>
-                <div className="text-sm text-muted-foreground">Profit Margin</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">
-                  {financialSummary.grossMargin.toFixed(1)}%
-                </div>
-                <div className="text-sm text-muted-foreground">Gross Margin</div>
-              </div>
+      {/* Navigation Tabs */}
+      <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+        <TabsList className="grid w-full grid-cols-4 lg:w-fit lg:grid-cols-4 mb-8">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="metrics" className="flex items-center gap-2">
+            <PieChart className="h-4 w-4" />
+            Metrics
+          </TabsTrigger>
+          <TabsTrigger value="forecast" className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Forecast
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            Analysis
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-8">
+          {!metrics ? (
+            <div className="text-center py-12">
+              <Alert className="max-w-md mx-auto">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  Upload financial statements to see your business health metrics and insights.
+                </AlertDescription>
+              </Alert>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <>
+              {/* Key Performance Indicators */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="hover-scale transition-all duration-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Current Ratio</p>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {financialSummary?.currentRatio.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+                        <TrendingUp className="h-6 w-6 text-blue-600" />
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Badge variant={financialSummary?.currentRatio > 1.5 ? "default" : "secondary"}>
+                        {financialSummary?.currentRatio > 1.5 ? "Healthy" : "Monitor"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
 
-      {/* Receivables and Payables Days */}
-      {financialSummary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Receivables Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Average Collection Days</span>
-                  <span className="text-2xl font-bold text-blue-600">
-                    {financialSummary.receivableDays} days
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Monthly Receivables</span>
-                  <span className="text-lg font-semibold text-green-600">
-                    ${financialSummary.monthlyReceivables.toLocaleString()}
-                  </span>
-                </div>
+                <Card className="hover-scale transition-all duration-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Profit Margin</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {financialSummary?.profitMargin.toFixed(1)}%
+                        </p>
+                      </div>
+                      <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+                        <DollarSign className="h-6 w-6 text-green-600" />
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Badge variant={financialSummary?.profitMargin > 10 ? "default" : "secondary"}>
+                        {financialSummary?.profitMargin > 10 ? "Strong" : "Improve"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover-scale transition-all duration-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Collection Days</p>
+                        <p className="text-2xl font-bold text-orange-600">
+                          {financialSummary?.receivableDays}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
+                        <Clock className="h-6 w-6 text-orange-600" />
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Badge variant={financialSummary?.receivableDays < 45 ? "default" : "secondary"}>
+                        {financialSummary?.receivableDays < 45 ? "Good" : "Slow"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover-scale transition-all duration-200">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Debt-to-Equity</p>
+                        <p className="text-2xl font-bold text-purple-600">
+                          {financialSummary?.debtToEquity.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+                        <CreditCard className="h-6 w-6 text-purple-600" />
+                      </div>
+                    </div>
+                    <div className="mt-2">
+                      <Badge variant={financialSummary?.debtToEquity < 2 ? "default" : "secondary"}>
+                        {financialSummary?.debtToEquity < 2 ? "Conservative" : "High"}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Payables Management</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Average Payment Days</span>
-                  <span className="text-2xl font-bold text-orange-600">
-                    {financialSummary.payableDays} days
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Monthly Payables</span>
-                  <span className="text-lg font-semibold text-red-600">
-                    ${financialSummary.monthlyPayables.toLocaleString()}
-                  </span>
-                </div>
+              {/* Health Scores Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="relative overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-primary" />
+                      Business Health Score
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <BusinessHealthScore metrics={metrics} />
+                  </CardContent>
+                </Card>
+
+                <BusinessCreditScore />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            </>
+          )}
+        </TabsContent>
 
-      {/* Cash Flow Forecast */}
-      {metrics && (
-        <CashFlowForecast metrics={metrics} />
-      )}
+        {/* Metrics Tab */}
+        <TabsContent value="metrics" className="space-y-6">
+          <FinancialMockApiPanel />
+        </TabsContent>
+
+        {/* Forecast Tab */}
+        <TabsContent value="forecast" className="space-y-6">
+          {metrics ? (
+            <CashFlowForecast metrics={metrics} />
+          ) : (
+            <Card className="text-center py-12">
+              <CardContent>
+                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <CardTitle className="mb-2">No Financial Data</CardTitle>
+                <CardDescription>
+                  Upload your financial statements to generate cash flow forecasts
+                </CardDescription>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Analysis Tab */}
+        <TabsContent value="analysis" className="space-y-6">
+          {financialSummary ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Receivables Analysis */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    Receivables Management
+                  </CardTitle>
+                  <CardDescription>
+                    Track and optimize your collection efficiency
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Average Collection Days</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {financialSummary.receivableDays} days
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Monthly Receivables</p>
+                      <p className="text-lg font-semibold text-green-600">
+                        {formatCurrency(financialSummary.monthlyReceivables)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {financialSummary.receivableDays > 45 && (
+                    <Alert>
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Collection period is longer than optimal. Consider implementing stricter payment terms.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Payables Analysis */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingDown className="h-5 w-5 text-red-600" />
+                    Payables Management
+                  </CardTitle>
+                  <CardDescription>
+                    Optimize cash flow through strategic payment timing
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Average Payment Days</p>
+                      <p className="text-2xl font-bold text-red-600">
+                        {financialSummary.payableDays} days
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Monthly Payables</p>
+                      <p className="text-lg font-semibold text-red-600">
+                        {formatCurrency(financialSummary.monthlyPayables)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <Alert>
+                    <CheckCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Taking {financialSummary.payableDays} days to pay helps maintain healthy cash flow.
+                    </AlertDescription>
+                  </Alert>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card className="text-center py-12">
+              <CardContent>
+                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <CardTitle className="mb-2">No Analysis Available</CardTitle>
+                <CardDescription>
+                  Upload financial data to see detailed business analysis
+                </CardDescription>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
