@@ -9,6 +9,8 @@ import { CashFlowForecast } from "@/components/financial/CashFlowForecast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UploadSection } from "@/components/financial/UploadSection";
+import { toast } from "sonner";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -26,8 +28,22 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const BusinessHealthTab = () => {
-  const { metrics } = useFinancialMetrics();
+  const { 
+    metrics, 
+    isProcessing, 
+    processFinancials 
+  } = useFinancialMetrics();
   const [activeSection, setActiveSection] = useState("overview");
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleUpload = () => {
+    if (file) {
+      processFinancials();
+      toast.success("Processing financial statements...");
+    } else {
+      toast.error("Please select a file to upload");
+    }
+  };
 
   const getFinancialSummary = () => {
     if (!metrics || !metrics.yearlyData || metrics.yearlyData.length === 0) {
@@ -181,13 +197,26 @@ const BusinessHealthTab = () => {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-8">
           {!metrics ? (
-            <div className="text-center py-12">
-              <Alert className="max-w-md mx-auto">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Upload financial statements to see your business health metrics and insights.
-                </AlertDescription>
-              </Alert>
+            <div className="space-y-8">
+              <Card className="max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-600" />
+                    Get Started with Financial Analysis
+                  </CardTitle>
+                  <CardDescription>
+                    Upload your financial statements to unlock comprehensive business health insights, forecasting, and recommendations.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <UploadSection 
+                    file={file}
+                    setFile={setFile}
+                    isLoading={isProcessing}
+                    onUpload={handleUpload}
+                  />
+                </CardContent>
+              </Card>
             </div>
           ) : (
             <>
