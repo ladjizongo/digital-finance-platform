@@ -17,8 +17,15 @@ const accountTypes = [
   { value: "investment", label: "Investment" },
 ];
 
+const feeOptions = [
+  { value: "basic", label: "Basic (0-10 transactions) - $10/month" },
+  { value: "standard", label: "Standard (up to 100 transactions) - $25/month" },
+  { value: "premium", label: "Premium (100+ transactions) - $50/month" },
+];
+
 const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
   const [accountType, setAccountType] = useState("");
+  const [feeOption, setFeeOption] = useState("");
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -29,10 +36,15 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
       setError("Please select an account type.");
       return;
     }
+    if (accountType === "checking" && !feeOption) {
+      setError("Please select a fee option.");
+      return;
+    }
     setError("");
     setSubmitted(true);
     toast.success("Your request to open a bank account has been submitted!");
     setAccountType("");
+    setFeeOption("");
     setTimeout(() => {
       setSubmitted(false);
       onOpenChange(false);
@@ -41,6 +53,7 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
 
   const handleClose = () => {
     setAccountType("");
+    setFeeOption("");
     setError("");
     setSubmitted(false);
     onOpenChange(false);
@@ -69,6 +82,23 @@ const NewAccountDialog = ({ open, onOpenChange }: NewAccountDialogProps) => {
                 </SelectContent>
               </Select>
             </div>
+            {accountType === "checking" && (
+              <div>
+                <Label className="mb-1 block">Fee Option</Label>
+                <Select value={feeOption} onValueChange={setFeeOption} required>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select fee option..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {feeOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {error && (
               <div className="text-red-500 text-xs">{error}</div>
             )}
