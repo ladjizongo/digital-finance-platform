@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import RecurringOptions from "../RecurringOptions";
 import { EFTAccountSelection } from "./eft/EFTAccountSelection";
 import { EFTTransactionType } from "./eft/EFTTransactionType";
-import { EFTAmountInput } from "./eft/EFTAmountInput";
+
 import { EFTRecipientInfo } from "./eft/EFTRecipientInfo";
 import { EFTFileUpload } from "./eft/EFTFileUpload";
 import { EFTTemplateActions } from "./eft/EFTTemplateActions";
@@ -61,7 +61,7 @@ export const EFTSection = ({
           <CardHeader>
             <CardTitle className="text-xl">Transfer Details</CardTitle>
             <CardDescription>
-              Enter the amount and transaction type
+              Enter the transaction type
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -69,8 +69,6 @@ export const EFTSection = ({
               value={transactionType}
               onChange={setTransactionType}
             />
-
-            <EFTAmountInput onAmountChange={handleAmountChange} />
           </CardContent>
         </Card>
         

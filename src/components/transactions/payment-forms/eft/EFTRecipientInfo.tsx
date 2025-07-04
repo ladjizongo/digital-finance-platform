@@ -11,11 +11,12 @@ interface Recipient {
   transitNumber: string;
   bankId: string;
   accountNumber: string;
+  amount: string;
 }
 
 export const EFTRecipientInfo = () => {
   const [recipients, setRecipients] = useState<Recipient[]>([
-    { id: "1", name: "", transitNumber: "", bankId: "", accountNumber: "" }
+    { id: "1", name: "", transitNumber: "", bankId: "", accountNumber: "", amount: "0.00" }
   ]);
 
   const addRecipient = () => {
@@ -24,7 +25,8 @@ export const EFTRecipientInfo = () => {
       name: "",
       transitNumber: "",
       bankId: "",
-      accountNumber: ""
+      accountNumber: "",
+      amount: "0.00"
     };
     setRecipients([...recipients, newRecipient]);
   };
@@ -76,7 +78,7 @@ export const EFTRecipientInfo = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="space-y-2">
               <Label htmlFor={`recipientName-${recipient.id}`}>Recipient Name</Label>
               <Input 
@@ -127,6 +129,25 @@ export const EFTRecipientInfo = () => {
                 onChange={(e) => updateRecipient(recipient.id, "accountNumber", e.target.value)}
               />
               <p className="text-xs text-muted-foreground">Maximum 11 digits</p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor={`amount-${recipient.id}`}>Amount</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500">$</span>
+                </div>
+                <Input
+                  id={`amount-${recipient.id}`}
+                  value={recipient.amount}
+                  onChange={(e) => updateRecipient(recipient.id, "amount", e.target.value)}
+                  placeholder="0.00"
+                  className="pl-6"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
             </div>
           </div>
         </div>
