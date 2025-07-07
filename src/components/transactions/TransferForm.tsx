@@ -67,7 +67,7 @@ const TransferForm = ({
       </CardHeader>
       <form onSubmit={onSubmit}>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="fromAccount">From Account</Label>
               <Select 
@@ -107,29 +107,29 @@ const TransferForm = ({
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="transferAmount">Amount</Label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="text-gray-500">$</span>
+            
+            <div className="space-y-2">
+              <Label htmlFor="transferAmount">Amount</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500">$</span>
+                </div>
+                <Input 
+                  id="transferAmount" 
+                  type="number" 
+                  min="0.01" 
+                  step="0.01" 
+                  placeholder="0.00" 
+                  className="pl-7"
+                  onChange={handleAmountChange}
+                />
               </div>
-              <Input 
-                id="transferAmount" 
-                type="number" 
-                min="0.01" 
-                step="0.01" 
-                placeholder="0.00" 
-                className="pl-7"
-                onChange={handleAmountChange}
-              />
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="transferDate">Date</Label>
-            <Input id="transferDate" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+            
+            <div className="space-y-2">
+              <Label htmlFor="transferDate">Date</Label>
+              <Input id="transferDate" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+            </div>
           </div>
           
           <div className="space-y-2">
