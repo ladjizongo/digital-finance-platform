@@ -173,26 +173,18 @@ const BusinessHealthTab = () => {
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-secondary/10 to-transparent rounded-full translate-y-24 -translate-x-24"></div>
       </div>
 
-      {/* Navigation Tabs */}
-      <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-fit lg:grid-cols-4 mb-8">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="metrics" className="flex items-center gap-2">
-            <PieChart className="h-4 w-4" />
-            Metrics
-          </TabsTrigger>
-          <TabsTrigger value="forecast" className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            Forecast
-          </TabsTrigger>
-          <TabsTrigger value="analysis" className="flex items-center gap-2">
-            <Target className="h-4 w-4" />
-            Analysis
-          </TabsTrigger>
-        </TabsList>
+        {/* Navigation Tabs */}
+        <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:w-fit lg:grid-cols-2 mb-8">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="metrics" className="flex items-center gap-2">
+              <PieChart className="h-4 w-4" />
+              Cash Flow
+            </TabsTrigger>
+          </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-8">
@@ -323,121 +315,134 @@ const BusinessHealthTab = () => {
 
                 <BusinessCreditScore />
               </div>
+
+              {/* Cash Flow Forecast Section */}
+              <Card className="w-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-blue-600" />
+                    Cash Flow Forecast
+                  </CardTitle>
+                  <CardDescription>
+                    7-day cash flow projection based on current financial position
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CashFlowForecast metrics={metrics} />
+                </CardContent>
+              </Card>
+
+              {/* Financial Analysis Section */}
+              {financialSummary && (
+                <Card className="w-full">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-purple-600" />
+                      Financial Analysis
+                    </CardTitle>
+                    <CardDescription>
+                      Detailed analysis of receivables and payables management
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Receivables Analysis */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <TrendingUp className="h-5 w-5 text-green-600" />
+                            Receivables Management
+                          </CardTitle>
+                          <CardDescription>
+                            Track and optimize your collection efficiency
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Average Collection Days</p>
+                              <p className="text-2xl font-bold text-green-600">
+                                {financialSummary.receivableDays} days
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">Monthly Receivables</p>
+                              <p className="text-lg font-semibold text-green-600">
+                                {formatCurrency(financialSummary.monthlyReceivables)}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          {financialSummary.receivableDays > 45 && (
+                            <Alert>
+                              <AlertTriangle className="h-4 w-4" />
+                              <AlertDescription>
+                                Collection period is longer than optimal. Consider implementing stricter payment terms.
+                              </AlertDescription>
+                            </Alert>
+                          )}
+                        </CardContent>
+                      </Card>
+
+                      {/* Payables Analysis */}
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2">
+                            <TrendingDown className="h-5 w-5 text-red-600" />
+                            Payables Management
+                          </CardTitle>
+                          <CardDescription>
+                            Optimize cash flow through strategic payment timing
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <div className="flex justify-between items-center p-4 bg-red-50 dark:bg-red-950 rounded-lg">
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Average Payment Days</p>
+                              <p className="text-2xl font-bold text-red-600">
+                                {financialSummary.payableDays} days
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">Monthly Payables</p>
+                              <p className="text-lg font-semibold text-red-600">
+                                {formatCurrency(financialSummary.monthlyPayables)}
+                              </p>
+                            </div>
+                          </div>
+                          
+                          <Alert>
+                            <CheckCircle className="h-4 w-4" />
+                            <AlertDescription>
+                              Taking {financialSummary.payableDays} days to pay helps maintain healthy cash flow.
+                            </AlertDescription>
+                          </Alert>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </>
           )}
         </TabsContent>
 
-        {/* Metrics Tab */}
+        {/* Cash Flow Tab - Only showing warning */}
         <TabsContent value="metrics" className="space-y-6">
-          <FinancialMockApiPanel />
-        </TabsContent>
-
-        {/* Forecast Tab */}
-        <TabsContent value="forecast" className="space-y-6">
-          {metrics ? (
-            <CashFlowForecast metrics={metrics} />
-          ) : (
-            <Card className="text-center py-12">
-              <CardContent>
-                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <CardTitle className="mb-2">No Financial Data</CardTitle>
-                <CardDescription>
-                  Upload your financial statements to generate cash flow forecasts
-                </CardDescription>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        {/* Analysis Tab */}
-        <TabsContent value="analysis" className="space-y-6">
-          {financialSummary ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Receivables Analysis */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                    Receivables Management
-                  </CardTitle>
-                  <CardDescription>
-                    Track and optimize your collection efficiency
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Average Collection Days</p>
-                      <p className="text-2xl font-bold text-green-600">
-                        {financialSummary.receivableDays} days
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Monthly Receivables</p>
-                      <p className="text-lg font-semibold text-green-600">
-                        {formatCurrency(financialSummary.monthlyReceivables)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {financialSummary.receivableDays > 45 && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        Collection period is longer than optimal. Consider implementing stricter payment terms.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Payables Analysis */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingDown className="h-5 w-5 text-red-600" />
-                    Payables Management
-                  </CardTitle>
-                  <CardDescription>
-                    Optimize cash flow through strategic payment timing
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-between items-center p-4 bg-red-50 dark:bg-red-950 rounded-lg">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Average Payment Days</p>
-                      <p className="text-2xl font-bold text-red-600">
-                        {financialSummary.payableDays} days
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Monthly Payables</p>
-                      <p className="text-lg font-semibold text-red-600">
-                        {formatCurrency(financialSummary.monthlyPayables)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <Alert>
-                    <CheckCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Taking {financialSummary.payableDays} days to pay helps maintain healthy cash flow.
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <Card className="text-center py-12">
-              <CardContent>
-                <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <CardTitle className="mb-2">No Analysis Available</CardTitle>
-                <CardDescription>
-                  Upload financial data to see detailed business analysis
-                </CardDescription>
-              </CardContent>
-            </Card>
-          )}
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                Cash Flow Monitoring
+              </CardTitle>
+              <CardDescription>
+                Real-time cash flow warnings and alerts based on your financial data
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FinancialMockApiPanel />
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
