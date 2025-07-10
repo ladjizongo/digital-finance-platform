@@ -1,5 +1,6 @@
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import LogoutButton from "@/components/auth/LogoutButton";
 
 const DashboardHeader = () => {
   return (
@@ -19,6 +20,7 @@ const DashboardHeader = () => {
             Pay Government Tax
             <span className="sr-only">(opens in new tab)</span>
           </a>
+          <LogoutButton variant="outline" size="sm" />
         </div>
       </div>
     </header>

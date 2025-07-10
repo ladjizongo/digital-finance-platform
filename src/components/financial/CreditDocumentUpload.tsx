@@ -31,7 +31,7 @@ const CreditDocumentUpload = ({ applicationType = "overdraft" }: CreditDocumentU
   
   const handleDocumentParse = (data: any, fileName: string) => {
     setParsedDocuments(prev => [...prev, { ...data, fileName }]);
-    console.log("Document parsed for credit application:", data);
+    // Document parsed for credit application - in production, this would be securely processed
   };
   
   const handleUpload = () => {

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FinancialFormValues } from "@/schemas/financialFormSchema";
 import { FinancialMetrics, YearlyMetrics } from "@/types/financial";
 import { toast } from "sonner";
+import { encryptData, decryptData, isSessionValid } from "@/utils/security";
 
 // Enhanced scoring logic using financial ratios
 export const calculateFinancialScore = (metrics: FinancialMetrics) => {
@@ -49,8 +50,17 @@ export const useFinancialMetrics = () => {
   const { data: metrics, isLoading } = useQuery({
     queryKey: ['financialMetrics'],
     queryFn: async () => {
-      const storedData = localStorage.getItem('financialMetrics');
-      return storedData ? JSON.parse(storedData) : null;
+      if (!isSessionValid()) return null;
+      try {
+        const storedData = sessionStorage.getItem('financialMetrics');
+        if (storedData) {
+          const decryptedData = decryptData(storedData);
+          return JSON.parse(decryptedData);
+        }
+      } catch (error) {
+        // Data corruption or invalid session
+      }
+      return null;
     },
     staleTime: Infinity,
     gcTime: Infinity,
@@ -105,13 +115,20 @@ export const useFinancialMetrics = () => {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(['financialMetrics'], data);
-      localStorage.setItem('financialMetrics', JSON.stringify(data));
+      if (isSessionValid()) {
+        try {
+          const encryptedData = encryptData(JSON.stringify(data));
+          sessionStorage.setItem('financialMetrics', encryptedData);
+        } catch (error) {
+          // Storage failed, continue without persisting
+        }
+      }
     },
   });
 
   const resetMetrics = () => {
     queryClient.setQueryData(['financialMetrics'], null);
-    localStorage.removeItem('financialMetrics');
+    sessionStorage.removeItem('financialMetrics');
     toast("Reset successful", { description: "Financial data has been reset" });
   };
 
@@ -122,7 +139,14 @@ export const useFinancialMetrics = () => {
         selectedYear: year
       };
       queryClient.setQueryData(['financialMetrics'], updatedMetrics);
-      localStorage.setItem('financialMetrics', JSON.stringify(updatedMetrics));
+      if (isSessionValid()) {
+        try {
+          const encryptedData = encryptData(JSON.stringify(updatedMetrics));
+          sessionStorage.setItem('financialMetrics', encryptedData);
+        } catch (error) {
+          // Storage failed
+        }
+      }
     }
   };
 
@@ -221,7 +245,10 @@ export const useFinancialMetrics = () => {
     }
     
     queryClient.setQueryData(['financialMetrics'], newData);
-    localStorage.setItem('financialMetrics', JSON.stringify(newData));
+    if (isSessionValid()) {
+      const encryptedData = encryptData(JSON.stringify(newData));
+      sessionStorage.setItem('financialMetrics', encryptedData);
+    }
   };
 
   return {

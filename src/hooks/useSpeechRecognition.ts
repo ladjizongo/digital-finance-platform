@@ -49,7 +49,7 @@ export function useSpeechRecognition(onTranscriptReceived: (transcript: string) 
       };
       
       recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error("Speech recognition error", event);
+        // Speech recognition error - in production, this would be securely logged
         setIsListening(false);
         toast({
           title: "Voice recognition failed",
@@ -86,7 +86,7 @@ export function useSpeechRecognition(onTranscriptReceived: (transcript: string) 
         recognitionRef.current.start();
         setIsListening(true);
       } catch (error) {
-        console.error("Failed to start speech recognition:", error);
+        // Failed to start speech recognition - in production, this would be securely logged
         toast({
           title: "Failed to start voice input",
           description: "Please try again or use text input instead.",

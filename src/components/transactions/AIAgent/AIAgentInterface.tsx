@@ -50,7 +50,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
       };
       
       recognitionRef.current.onerror = (event: any) => {
-        console.error("Speech recognition error", event);
+        // Speech recognition error - in production, this would be securely logged
         setIsListening(false);
         toast({
           title: "Voice recognition failed",
@@ -92,7 +92,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
         recognitionRef.current.start();
         setIsListening(true);
       } catch (error) {
-        console.error("Failed to start speech recognition:", error);
+        // Failed to start speech recognition - in production, this would be securely logged
         toast({
           title: "Failed to start voice input",
           description: "Please try again or use text input instead.",
@@ -168,7 +168,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts }: AIAgentProps) => {
       onExecuteTransaction(transactionDetails);
       
     } catch (error) {
-      console.error("Error processing command:", error);
+      // Error processing command - in production, this would be securely logged
       addMessage("Sorry, I encountered an error processing your request. Please try again.", false);
     } finally {
       setIsProcessing(false);

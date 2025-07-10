@@ -33,7 +33,7 @@ const ExternalDataSourcesTab = () => {
 
   const handleParseComplete = (data: any) => {
     setParsedDocumentData(data);
-    console.log("Document parsed:", data);
+    // Document parsed - in production, this would be securely processed
   };
 
   return (

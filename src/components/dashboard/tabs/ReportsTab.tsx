@@ -113,9 +113,8 @@ const ReportsTab = () => {
   const filteredData = getFilteredData();
   
   const handleGenerateReport = () => {
-    // This function can be expanded later to fetch data from an API
-    // For now, it just triggers filtering
-    console.log("Generating report with filters:", filters);
+    // Generate report with current filters - in production, this would use secure API
+    // Validate filters for security before processing
   };
 
   return (

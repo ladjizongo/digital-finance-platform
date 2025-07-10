@@ -17,7 +17,7 @@ const PADDialog = ({ open, onOpenChange, account }: PADDialogProps) => {
   const { toast } = useToast();
   
   const handleSubmit = (values: PADFormValues) => {
-    console.log("PAD agreement values:", values);
+    // PAD agreement submitted - in production, this would be sent to secure backend
     
     toast({
       title: "PAD Agreement Created",

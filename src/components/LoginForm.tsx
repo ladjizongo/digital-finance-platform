@@ -21,7 +21,7 @@ const LoginForm = () => {
     
     setIsLoading(true);
     
-    // Basic validation - just check if fields are not empty
+    // Input validation
     if (!userId || !password) {
       setIsLoading(false);
       toast({
@@ -32,21 +32,58 @@ const LoginForm = () => {
       return;
     }
 
+    // Enhanced validation
+    if (userId.length < 3) {
+      setIsLoading(false);
+      toast({
+        title: "Invalid User ID",
+        description: "User ID must be at least 3 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      setIsLoading(false);
+      toast({
+        title: "Invalid Password",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Simulate login process with a short delay
     setTimeout(() => {
       setIsLoading(false);
       
-      // Accept any user ID and password combination
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
+      // For demo purposes - in production, this would validate against a secure backend
+      const validCredentials = userId === "demo" && password === "demo123";
       
-      // Log the login attempt
-      console.log("Login successful for:", { userId });
-      
-      // Redirect to dashboard
-      navigate("/dashboard");
+      if (validCredentials) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        });
+        
+        // Store session securely
+        import("@/utils/security").then(({ setAuthSession }) => {
+          setAuthSession({
+            userId: userId,
+            loginTime: new Date().toISOString(),
+            sessionId: Math.random().toString(36).substring(7)
+          });
+        });
+        
+        // Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        toast({
+          title: "Login failed",
+          description: "Invalid credentials. Use demo/demo123 for testing.",
+          variant: "destructive",
+        });
+      }
       
     }, 1000);
   };
@@ -118,7 +155,7 @@ const LoginForm = () => {
           <div className="text-sm text-gray-500 mt-4">
             <p className="flex items-center">
               <CheckCircle2 size={14} className="mr-1 text-green-600" />
-              <span>Any username and password can be used to login</span>
+              <span>Demo credentials: demo / demo123</span>
             </p>
           </div>
         </form>

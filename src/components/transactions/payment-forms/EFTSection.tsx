@@ -42,8 +42,7 @@ export const EFTSection = ({
 
   const handleFileSelected = (file: File) => {
     setEftFile(file);
-    console.log("EFT file selected:", file.name);
-    // In a real app, you might want to parse the file here
+    // EFT file selected - in production, this would be securely validated and processed
   };
   
   const handleAmountChange = (amount: number) => {

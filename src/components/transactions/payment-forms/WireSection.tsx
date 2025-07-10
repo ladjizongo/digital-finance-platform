@@ -84,7 +84,7 @@ export const WireSection = ({
 
   const handleFileSelected = (file: File) => {
     setWireFile(file);
-    console.log("Wire file selected:", file.name);
+    // Wire file selected - in production, this would be securely validated
     
     if (file.name.endsWith('.xml')) {
       toast({

@@ -161,7 +161,7 @@ const AIAgentInterface = ({ onExecuteTransaction, accounts = [] }: AIAgentProps)
       }
       
     } catch (error) {
-      console.error("Error processing command:", error);
+      // Error processing command - in production, this would be securely logged
       setIsTyping(false);
       addMessage("Sorry, I encountered an error processing your request. Please try again.", false);
     } finally {
