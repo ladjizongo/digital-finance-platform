@@ -57,33 +57,23 @@ const LoginForm = () => {
     setTimeout(() => {
       setIsLoading(false);
       
-      // For demo purposes - in production, this would validate against a secure backend
-      const validCredentials = userId === "demo" && password === "demo123";
+      // Allow any non-empty credentials to log in
+      toast({
+        title: "Login successful",
+        description: "Welcome back!",
+      });
       
-      if (validCredentials) {
-        toast({
-          title: "Login successful",
-          description: "Welcome back!",
+      // Store session securely
+      import("@/utils/security").then(({ setAuthSession }) => {
+        setAuthSession({
+          userId: userId,
+          loginTime: new Date().toISOString(),
+          sessionId: Math.random().toString(36).substring(7)
         });
-        
-        // Store session securely
-        import("@/utils/security").then(({ setAuthSession }) => {
-          setAuthSession({
-            userId: userId,
-            loginTime: new Date().toISOString(),
-            sessionId: Math.random().toString(36).substring(7)
-          });
-        });
-        
-        // Redirect to dashboard
-        navigate("/dashboard");
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid credentials. Use demo/demo123 for testing.",
-          variant: "destructive",
-        });
-      }
+      });
+      
+      // Redirect to dashboard
+      navigate("/dashboard");
       
     }, 1000);
   };
@@ -155,7 +145,7 @@ const LoginForm = () => {
           <div className="text-sm text-gray-500 mt-4">
             <p className="flex items-center">
               <CheckCircle2 size={14} className="mr-1 text-green-600" />
-              <span>Demo credentials: demo / demo123</span>
+              <span>Enter any user ID and password to login</span>
             </p>
           </div>
         </form>
