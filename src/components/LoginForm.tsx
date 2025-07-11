@@ -32,22 +32,22 @@ const LoginForm = () => {
       return;
     }
 
-    // Enhanced validation
-    if (userId.length < 3) {
+    // Simplified validation - just check if fields are not empty
+    if (userId.trim().length === 0) {
       setIsLoading(false);
       toast({
         title: "Invalid User ID",
-        description: "User ID must be at least 3 characters long.",
+        description: "Please enter a user ID.",
         variant: "destructive",
       });
       return;
     }
 
-    if (password.length < 6) {
+    if (password.trim().length === 0) {
       setIsLoading(false);
       toast({
         title: "Invalid Password",
-        description: "Password must be at least 6 characters long.",
+        description: "Please enter a password.",
         variant: "destructive",
       });
       return;
